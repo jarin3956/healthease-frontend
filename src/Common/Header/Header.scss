@@ -1,0 +1,137 @@
+.headerall {
+  background-color: #3ec5e7;
+  padding: 20px 40px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 25px;
+  margin: 20px;
+
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .navbar-toggler-icon {
+      background-image: url('https://clipartart.com/images/hamburger-menu-icon-clipart-3.png');
+      width: 30px;
+      height: 30px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      cursor: pointer;
+      background-color: transparent;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+
+      .logo {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+        border-radius: 5px;
+      }
+
+      .logo-text {
+        font-size: 20px;
+        font-weight: bold;
+        color: #221a3f;
+      }
+    }
+
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      margin-right: auto;
+    }
+
+    .nav-item {
+      margin-right: 20px;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: #333;
+      padding: 10px;
+      transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+      color: #eef2f3;
+    }
+
+    .userLogbut {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+
+      .logusrButton {
+        padding: 11px 20px;
+        background-color: #7b57ff;
+        transition-duration: .2s;
+        border: none;
+        color: rgb(241, 241, 241);
+        cursor: pointer;
+        font-weight: 600;
+        z-index: 2;
+      }
+
+      .logusrButton:hover {
+        background-color: #714aff;
+        transition-duration: .2s;
+      }
+    }
+
+
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Media query for tablet and mobile */
+@media (max-width: 991px) {
+  .logo-container {
+    margin-right: auto;
+  }
+
+  .nav-menu {
+    display: none;
+  }
+
+
+  .navbar-toggler {
+    display: block;
+    background-color: transparent;
+    border: none;
+    margin-right: 10px;
+  }
+
+  .navbar-toggler:focus {
+    outline: none;
+  }
+
+  .show .nav-menu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .show .nav-item {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+}

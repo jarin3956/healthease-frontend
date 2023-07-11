@@ -1,24 +1,41 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import UserRoute from './Routes/UserRoute';
+import AdminRoute from './Routes/AdminRoute';
+import DoctorRoute from './Routes/DoctorRoute';
+import { useState, useEffect } from 'react';
+import Loader from './Loader/Loader'
+
+
+
 
 function App() {
+
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false)
+    }, 1500);
+  })
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <> {loading ? <Loader /> : <div className="App">
+      <BrowserRouter>
+
+        <Routes>
+
+          <Route path='/admin/*' element={<AdminRoute />} />
+          <Route path='/*' element={<UserRoute />} />
+          <Route path='/doctor/*' element={<DoctorRoute />} />
+
+        </Routes>
+
+      </BrowserRouter>
+    </div>}
+    </>
+
   );
 }
 

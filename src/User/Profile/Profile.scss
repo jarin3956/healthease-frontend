@@ -1,0 +1,108 @@
+
+
+  .pr-cookieCard {
+    
+    background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 50px;
+
+
+    .pr-userprocard {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      background-image: linear-gradient(144deg,  #e2e2ea, #d7d9db 60%, #d2d2d8);
+      border: none;
+      border-radius: 10px;
+      padding-top: 10px;
+      position: relative;
+      margin: auto;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .pr-cookieHeading {
+        font-size: 2em;
+        font-weight: 900;
+        color: rgb(61, 65, 66);
+      }
+      .pr-user-sp {
+        font-weight: 600;
+        color: rgb(47, 58, 60);
+        text-align: center;
+        display: block;
+        padding: 20px;
+        font-size: 1.3em;
+      }
+      .userprocarddet {
+        font-weight: 400;
+        color: rgb(54, 59, 60);
+        display: block;
+        text-align: center;
+        padding-top: 5px;
+        font-size: 1em;
+      }
+      .userpro-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 100%;
+        margin: auto;
+        margin-top: 20px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      .userprocardbutt {
+        padding: 8px 25px;
+        display: block;
+        margin: auto;
+        border-radius: 8px;
+        border: none;
+        margin-top: 30px;
+        background: #65b1d3;
+        color: #111111;
+        font-weight: 600;
+        margin-bottom: 30px;
+      }
+      .userprocardbutt:hover {
+        background: #212121;
+        color: #ffffff;
+      }
+      .more-input {
+        width: 100%;
+        height: 40px;
+        padding: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      
+      .more-img-input {
+        display: block;
+        margin: auto;
+        width: 100px;
+        height: 100px;
+        
+      }
+
+      .theedit-pan{
+        background-color: #7e8184;
+      }
+    }
+  }
+
+
+  @media screen and (max-width: 480px) {
+
+      .pr-userprocard {
+        width: 90%;
+        max-width: none;
+        height: auto;
+      }
+  }

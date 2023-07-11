@@ -1,0 +1,205 @@
+
+.spl-regCard {
+    background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 100px;
+
+    .spl-reg-main{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 100px;
+      margin-bottom: 100px;
+
+      .reg-spl-form-main {
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(255, 255, 255);
+        padding: 30px 30px 30px 30px;
+        border-radius: 30px;
+        box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.062);
+
+
+        .reg-spl-heading {
+          font-size: 2em;
+          color: #2e2e2e;
+          font-weight: 700;
+          margin-top: 55px;
+          margin-bottom: 35px;
+
+        }
+        .reg-spl-inputContainer {
+          width: 90%;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+
+          .reg-spl-inputField {
+            width: 100%;
+            height: 40px;
+            background-color: rgb(228, 231, 232);
+            border: none;
+            border-bottom: 2px solid rgb(173, 173, 173);
+            border-radius: 30px;
+            margin: 10px 0;
+            color: black;
+            font-size: .8em;
+            font-weight: 500;
+            box-sizing: border-box;
+            padding-left: 30px;
+          }
+          
+          .reg-spl-inputField:focus {
+            outline: none;
+            border-bottom: 2px solid rgb(114, 236, 255);
+          }
+          
+          .reg-spl-inputField::placeholder {
+            color: rgb(80, 80, 80);
+            font-size: 1em;
+            font-weight: 500;
+          }
+          .reg-splfle-input {
+            width: 100%;
+            color: #444;
+            padding: 2px;
+            background: #e6e7e8;
+            border-radius: 10px;
+            border: 1px solid rgba(8, 8, 8, 0.288);
+          }
+          
+          .reg-splfle-input::file-selector-button {
+            margin-right: 20px;
+            border: none;
+            background: #1388af;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: background .2s ease-in-out;
+          }
+          
+          .reg-splfle-input::file-selector-button:hover {
+            background: #0d45a5;
+          }
+        }
+
+        
+
+        .reg-splbutton {
+          position: relative;
+          width: 90%;
+          border: 2px solid #259ec0;
+          background-color: #0d98b4;
+          height: 40px;
+          color: white;
+          font-size: .8em;
+          font-weight: 500;
+          letter-spacing: 1px;
+          border-radius: 30px;
+          margin: 10px;
+          cursor: pointer;
+          overflow: hidden;
+        }
+        
+        .reg-splbutton::after {
+          content: "";
+          position: absolute;
+          background-color: rgba(255, 255, 255, 0.253);
+          height: 100%;
+          width: 150px;
+          top: 0;
+          left: -200px;
+          border-bottom-right-radius: 100px;
+          border-top-left-radius: 100px;
+          filter: blur(10px);
+          transition-duration: .5s;
+        }
+        
+        .reg-splbutton:hover::after {
+          transform: translateX(600px);
+          transition-duration: .5s;
+        }
+        .thespl-backbtn{
+          cursor: pointer;
+          font-weight: 500;
+        }
+      }
+  }
+    
+  }
+  
+  .spl-regCard::before {
+    width: 50%;
+    padding-bottom: 50%;
+    content: "";
+    background: linear-gradient(to right, rgb(142, 110, 255), rgb(208, 195, 255));
+    position: absolute;
+    z-index: 1;
+    border-radius: 50%;
+    right: -25%;
+    top: -25%;
+  }
+  
+  
+
+
+  @media (max-width: 767px) {
+    .spl-regCard {
+      .spl-reg-main {
+        margin-top: 40px;
+        margin-bottom: 40px;
+        .reg-spl-form-main {
+          width: 100%;
+          .reg-spl-heading{
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+          }
+  
+          .reg-spl-inputContainer {
+            .reg-spl-inputField {
+              width: 100%;
+            }
+          }
+  
+          .reg-splfle-input {
+            width: 100%;
+          }
+        }
+      }
+    }
+  
+    .spl-regCard::before {
+      display: none;
+    }
+  }
+  
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

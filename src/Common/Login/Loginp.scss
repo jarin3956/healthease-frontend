@@ -1,0 +1,125 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #bfdbd7;
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fafafd;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .doc-logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+
+      .doc-logo-image {
+        width: 80px;
+        height: auto;
+      }
+
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .login-input {
+      margin-top: 1rem;
+      width: 250px;
+      height: 40px;
+      margin-bottom: 15px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .login-button {
+      margin-top: 1rem;
+      margin-bottom: .5rem;
+      margin-bottom: .1rem;
+      width: 100px;
+      height: 40px;
+      background-color: #112f35;
+      color: #ffffff;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    .login-button:hover {
+      background-color: #1d869b;
+    }
+
+    .ptoreg {
+      cursor: pointer;
+    }
+
+    .gosignupbut {
+      margin: .5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 25px;
+      background-color: #112f35;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .gosignupbut:hover {
+      background-color: #1d869b;
+    }
+
+    .gosignupbut:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(219, 68, 55, 0.3);
+    }
+
+    .gosignupbut svg {
+      color: red;
+      margin-right: 8px;
+      font-size: 20px;
+    }
+  }
+}
+
+.login-container.shake {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-10px);
+  }
+
+  40% {
+    transform: translateX(10px);
+  }
+
+  60% {
+    transform: translateX(-10px);
+  }
+
+  80% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
