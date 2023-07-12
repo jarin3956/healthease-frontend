@@ -12,6 +12,8 @@ import CheckDoctor from '../Auth/CheckDoctor';
 import RequireDoctor from '../Auth/RequireDoctor';
 import Header from '../Common/Header/Header';
 
+import ErrorPage from '../ErrorPage/ErrorPage';
+
 function DoctorRoute() {
     return (
         <>
@@ -29,6 +31,7 @@ function DoctorRoute() {
                     <Route path="aboutus" element={<Aboutusp user={"doctor"} />} />
                     <Route path="contactus" element={<Contactusp user={"doctor"} />} />
                 </Route>
+                <Route path='*' element={<ErrorPage/>} />
             </Routes>
         </>
     )

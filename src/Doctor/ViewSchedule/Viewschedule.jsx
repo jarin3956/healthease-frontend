@@ -1,15 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './Viewschedule.css'
+import axiosinstance from '../../Axios/Axios'
+
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 function Viewschedule() {
-
   const [schedule, setSchedule] = useState(true)
   const [completed, setCompleted] = useState(false)
   const [upcomming, setUpcomming] = useState(false)
   const [cancelled, setCancelled] = useState(false)
   const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
   const [selectedDays, setSelectedDays] = useState([])
+  const [docSchedule, setViewSchedule] = useState(null);
+
+  
+
+
 
   const openschedule = () => {
     setSchedule(true)
@@ -37,9 +46,38 @@ function Viewschedule() {
     setCompleted(false)
   }
 
-  const handleSubmit = (e) => {
+  const doctortoken = localStorage.getItem('doctortoken')
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Selected Time Slot:', selectedTimeSlots,"and",selectedDays);
+
+    if (selectedDays.length === 0 || selectedTimeSlots.length === 0) {
+      toast.error('Please select at least one day and one time slot');
+      return;
+    }
+
+    try {
+      const response = await axiosinstance.post('doctor/set-schedule', {
+        selectedTimeSlots,
+        selectedDays,
+      }, {
+        headers: {
+          Authorization: `Bearer ${doctortoken}`
+        }
+      });
+
+      if (response.status === 200) {
+        toast.success("Successfully saved schedule")
+        setViewSchedule(response.data.schedule)
+      } else {
+        toast.error(response.data.message);
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+    console.log('Selected Time Slot:', selectedTimeSlots, "and", selectedDays);
   }
 
   function TimeSlotBox({ timeSlot, isSelected, handleClick }) {
@@ -51,6 +89,7 @@ function Viewschedule() {
       </div>
     );
   }
+
 
   function DaySlotBox({ daySlot, isSelected, handleClick }) {
     const className = `day-slot-box ${isSelected ? 'selected' : ''}`;
@@ -117,17 +156,37 @@ function Viewschedule() {
     '09:30 pm - 10:00 pm',
   ];
 
+  useEffect(() => {
+    const getSchedules = async () => {
+      try {
+        const scheduleData = await axiosinstance.get('doctor/schedule-data', {
+          headers: {
+            Authorization: `Bearer ${doctortoken}`
+          }
+        });
+        if (scheduleData.status === 200) {
+          setViewSchedule(scheduleData.data.schedule);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getSchedules();
+  }, []);
+
 
 
   return (
     <>
+      <ToastContainer />
       <div className="mx-4 mt-5" >
         <section className='rounded-3 doc-schedule-page' >
           <div className='the-buttons-vs p-3'>
             <div className="radio-inputs">
               <label className="radio">
-                <input type="radio" name="radio"  />
-                <span onClick={openschedule} className="name"   >Schedule</span>
+                <input type="radio" name="radio" />
+                <span onClick={openschedule} className="name">Schedule</span>
               </label>
               <label className="radio">
                 <input type="radio" name="radio" />
@@ -146,12 +205,39 @@ function Viewschedule() {
           </div>
           <div className='p-2'>
             {schedule && (
-              <div className="schedule-panel rounded-3">
-                <form onSubmit={handleSubmit}>
+              <div className="schedule-panel rounded-3 ">
 
-                  <h3 className='text-center'>Select your prefered day</h3>
-                  <div className="day-slot-container">
+                {docSchedule && docSchedule.Day && docSchedule.Time ? (
+                  <>
+                    <h3 className="text-center the-first-text">Selected Dates</h3>
+                    <div className="view-day-slot-container">
+                      {docSchedule.Day.map((day) => (
+                        <div className="view-day-box" key={day}>
+                          <h6>{day}</h6>
+                        </div>
+                      ))}
+                    </div>
+                    <h3 className="text-center the-first-text">Selected Time Slots</h3>
+                    <div className="view-time-slot-container">
+                      {docSchedule.Time.map((time) => (
+                        <div className="view-time-box" key={time}>
+                          <h6>{time}</h6>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="time-set-butt">
+                      <button className="time-submit-button">
+                        Change
+                      </button>
+                    </div>
+
+
+                  </>
+                ) : (
+                  <form onSubmit={handleSubmit}>
+                    <h3 className='text-center the-first-text'>Select your prefered day</h3>
                     <div className="day-slot-container">
+
                       {day.map((daySlot) => (
                         <DaySlotBox
                           key={daySlot}
@@ -160,29 +246,29 @@ function Viewschedule() {
                           handleClick={handleDaySlotClick}
                         />
                       ))}
+
                     </div>
-                  </div>
+                    <h3 className="text-center the-first-text">Schedule your time</h3>
+                    <div className="time-slot-container">
+                      {timeSlots.map((timeSlot) => (
+                        <TimeSlotBox
+                          key={timeSlot}
+                          timeSlot={timeSlot}
+                          isSelected={selectedTimeSlots.includes(timeSlot)}
+                          handleClick={handleTimeSlotClick}
+                        />
+                      ))}
+
+                    </div>
+                    <div className="time-set-butt">
+                      <button type="submit" className="time-submit-button">
+                        Save
+                      </button>
+                    </div>
+                  </form>
+                )}
 
 
-
-
-                  <h3 className="text-center">Schedule your time</h3>
-                  <div className="time-slot-container">
-                    {timeSlots.map((timeSlot) => (
-                      <TimeSlotBox
-                        key={timeSlot}
-                        timeSlot={timeSlot}
-                        isSelected={selectedTimeSlots.includes(timeSlot)}
-                        handleClick={handleTimeSlotClick}
-                      />
-                    ))}
-                  </div>
-                  <div className="time-set-butt">
-                    <button type="submit" className="time-submit-button">
-                      Save
-                    </button>
-                  </div>
-                </form>
               </div>
 
             )}

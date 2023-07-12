@@ -18,6 +18,7 @@ import {
     MDBBtn,
     MDBListGroup,
 } from 'mdb-react-ui-kit';
+import { useSelector } from 'react-redux';
 
 
 function Docprofile() {
@@ -37,6 +38,8 @@ function Docprofile() {
     
     const [theMain, setTheMain] = useState(true)
 
+
+    const selecter = useSelector((state) => state.schedule);
 
 
     const doctortoken = localStorage.getItem('doctortoken')
@@ -285,6 +288,11 @@ function Docprofile() {
                                             </MDBCard>
                                             <MDBCard className="mb-4">
                                                 <MDBCardBody>
+                                                    {selecter ? (<>
+                                                    alreday there
+                                                    </>) : (<>
+                                                    not sesle
+                                                    </>)}
                                                     <h3 className="text-center mb-1 mt-1 ">Schedule</h3>
 
                                                     {doctor.approval && (<div className='the-doc-sche'>

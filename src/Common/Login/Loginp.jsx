@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosinstance from '../../Axios/Axios';
 import './Loginp.scss';
-import { SiGoogle } from 'react-icons/si';
+
 
 
 

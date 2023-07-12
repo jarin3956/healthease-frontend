@@ -12,6 +12,8 @@ import CheckUser from '../Auth/CheckUser';
 import RequireUser from '../Auth/RequireUser';
 import Header from '../Common/Header/Header';
 
+import ErrorPage from '../ErrorPage/ErrorPage';
+
 
 
 function UserRoute() {
@@ -26,13 +28,13 @@ function UserRoute() {
                     <Route path="login" element={<Loginp user={"user"} />} />
                 </Route>
                 <Route element={<RequireUser />}>
-                   
                     <Route path="home" element={<Home />} />
                     <Route path='profile' element={<Profile />} />
                     <Route path="aboutus" element={<Aboutusp user={"user"} />} />
                     <Route path="contactus" element={<Contactusp user={"user"} />} />
                     <Route path="bookconsult" element={<Bookconsult />} />
                 </Route>
+                <Route path='*' element={<ErrorPage/>} />
                
             </Routes>
 

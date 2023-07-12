@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux'; 
 import './Header.scss';
+import { removeSchedule } from '../../Redux- toolkit/authslice';
 
 function Header({ userType }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const logOutUser = (e) => {
     e.preventDefault();
     if (userType === 'user') {
-        localStorage.removeItem('token');
-        navigate('/login');
-      } else if (userType === 'doctor') {
-        localStorage.removeItem('doctortoken');
-        navigate('/doctor/login');
-      } else if (userType === 'admin') {
-        localStorage.removeItem('admintoken');
-        navigate('/admin/login');
-      }
-    
+      localStorage.removeItem('token');
+      navigate('/login');
+    } else if (userType === 'doctor') {
+      localStorage.removeItem('doctortoken');
+      dispatch(removeSchedule())
+      navigate('/doctor/login');
+    } else if (userType === 'admin') {
+      localStorage.removeItem('admintoken');
+      navigate('/admin/login');
+    }
+
   };
 
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -27,99 +31,138 @@ function Header({ userType }) {
 
   const getNavigationLinks = () => {
     if (userType === 'user') {
+      let token = localStorage.getItem('token')
       return (
-        <ul className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <Link to="/home" className="nav-link">
-              Home
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/profile" className="nav-link">
-              Profile
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/bookconsult" className="nav-link">
-              Book Consult
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/aboutus" className="nav-link">
-              About Us
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/contactus" className="nav-link">
-              Contact Us
-            </Link>
-          </li>
-        </ul>
+        <>
+          {token && (
+            <>
+              <ul className="navbar-nav ml-auto">
+                <li className="nav-item">
+                  <Link to="/home" className="nav-link">
+                    Home
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/profile" className="nav-link">
+                    Profile
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/bookconsult" className="nav-link">
+                    Book Consult
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/aboutus" className="nav-link">
+                    About Us
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/contactus" className="nav-link">
+                    Contact Us
+                  </Link>
+                </li>
+              </ul>
+              <div className="userLogbut">
+                <button className="btn logusrButton " onClick={logOutUser}>
+                  Logout
+                </button>
+              </div>
+            </>
+          )}
+        </>
+
       );
     } else if (userType === 'doctor') {
+      const doctortoken = localStorage.getItem('doctortoken')
       return (
-        <ul className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <Link to="/doctor/home" className="nav-link">
-              Home
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/doctor/profile" className="nav-link">
-              Profile
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/doctor/view-schedule" className="nav-link">
-              View Schedule
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/doctor/aboutus" className="nav-link">
-              About Us
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/doctor/contactus" className="nav-link">
-              Contact Us
-            </Link>
-          </li>
-        </ul>
+        <>
+          {doctortoken && (
+            <>
+              <ul className="navbar-nav ml-auto">
+                <li className="nav-item">
+                  <Link to="/doctor/home" className="nav-link">
+                    Home
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/doctor/profile" className="nav-link">
+                    Profile
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/doctor/view-schedule" className="nav-link">
+                    View Schedule
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/doctor/aboutus" className="nav-link">
+                    About Us
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/doctor/contactus" className="nav-link">
+                    Contact Us
+                  </Link>
+                </li>
+              </ul>
+              <div className="userLogbut">
+                <button className="btn logusrButton " onClick={logOutUser}>
+                  Logout
+                </button>
+              </div>
+            </>
+          )}
+        </>
+
       );
-    }else if (userType === 'admin') {
+    } else if (userType === 'admin') {
+      const admintoken = localStorage.getItem('admintoken')
       return (
-        <ul className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <Link to="/admin/dashboard" className="nav-link">
-              Dashboard
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/admin/users" className="nav-link">
-              Users
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/admin/doctors" className="nav-link">
-              Doctors
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/admin/specialization" className="nav-link">
-              Specialization
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/admin/bookings" className="nav-link">
-              Bookings
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/admin/revenue" className="nav-link">
-              Revenue
-            </Link>
-          </li>
-        </ul>
+        <>
+          {admintoken && (
+            <>
+              <ul className="navbar-nav ml-auto">
+                <li className="nav-item">
+                  <Link to="/admin/dashboard" className="nav-link">
+                    Dashboard
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/admin/users" className="nav-link">
+                    Users
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/admin/doctors" className="nav-link">
+                    Doctors
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/admin/specialization" className="nav-link">
+                    Specialization
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/admin/bookings" className="nav-link">
+                    Bookings
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/admin/revenue" className="nav-link">
+                    Revenue
+                  </Link>
+                </li>
+              </ul>
+              <div className="userLogbut">
+                <button className="btn logusrButton " onClick={logOutUser}>
+                  Logout
+                </button>
+              </div>
+            </>
+          )}
+        </>
+
       );
     }
   };
@@ -145,11 +188,7 @@ function Header({ userType }) {
             id="navbarNav"
           >
             {getNavigationLinks()}
-            <div className="userLogbut">
-              <button className="btn logusrButton " onClick={logOutUser}>
-                Logout
-              </button>
-            </div>
+
           </div>
         </div>
       </nav>

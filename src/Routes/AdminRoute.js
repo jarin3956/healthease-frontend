@@ -13,6 +13,8 @@ import RequireAdmin from "../Auth/RequireAdmin";
 import {  Routes, Route } from 'react-router-dom';
 import Header from '../Common/Header/Header';
 
+import ErrorPage from '../ErrorPage/ErrorPage';
+
 function AdminRoute() {
     return (
         <>
@@ -32,6 +34,7 @@ function AdminRoute() {
                     <Route path='spec-register' element={<Specregister />} />
                     <Route path='specialization' element={<Specmgt />} />
                 </Route>
+                <Route path='*' element={<ErrorPage/>} />
             </Routes>
 
         </>
