@@ -90,11 +90,7 @@ function Header({ userType }) {
                     Profile
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link to="/doctor/view-schedule" className="nav-link">
-                    View Schedule
-                  </Link>
-                </li>
+                
                 <li className="nav-item">
                   <Link to="/doctor/aboutus" className="nav-link">
                     About Us

@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import './Viewdoc.scss'
 
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -7,35 +8,83 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import axiosinstance from '../../Axios/Axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-function Viewdoc({ doctor }) {
-    console.log(doctor);
+function Viewdoc() {
+
+    const navigate = useNavigate()
+
+    const [doctors, setDoctors] = useState([])
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search);
+    const specialName = searchParams.get('specialization');
+
+    const viewDoctors = async (specialName) => {
+        try {
+            const response = await axiosinstance.get(`view-doctors-spec/${specialName}`)
+            if (response.data.status === 'ok') {
+
+                setDoctors(response.data.doctor)
+
+            } else {
+                console.log("error");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    useEffect(() => {
+        
+        if (specialName) {
+            viewDoctors(specialName)
+        }
+    }, [location])
+
+    const bookAppointment =  (docId) => {
+        navigate(`/bookAppointment?doc=${docId}`)
+    } 
+
     return (
         <>
-            <Card sx={{ maxWidth: 330 }}>
-                <CardMedia
-                    component="img"
-                    alt="doctor"
-                    height="140"
-                    src={`/DocImages/${doctor.profileimg}`}
-                />
-                <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                        Dr.{doctor.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {doctor.experience} Years of experience
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {doctor.specialization}
-                    </Typography>
-                </CardContent>
-                <CardActions>
-                    <Button size="small" >Book Appoinment</Button>
-                </CardActions>
-            </Card>
-            
-            
+            <div className="mx-4 mt-5">
+                <div className="vdoc-cookieCard rounded-3">
+
+                    <p className='text-center the-main-head'>Book an appointment for an online consultation</p>
+
+                    <div className='vdoc-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
+                        {doctors.map((doctor) => (
+                            <div className='p-2' >
+                                <Card key={doctor._id} sx={{ maxWidth: 330 }}>
+                                    <CardMedia
+                                        component="img"
+                                        alt="doctor"
+                                        height="220"
+                                        src={`/DocImages/${doctor.profileimg}`}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            Dr. {doctor.name}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {doctor.experience} Years of experience
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {specialName}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button size="small" onClick={() => bookAppointment(doctor._id)} >Book Appointment</Button>
+                                    </CardActions>
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
+
+                </div>
+            </div>
+
+
         </>
     )
 }

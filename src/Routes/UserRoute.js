@@ -11,7 +11,7 @@ import Bookconsult from '../User/Bookconsult/Bookconsult';
 import CheckUser from '../Auth/CheckUser';
 import RequireUser from '../Auth/RequireUser';
 import Header from '../Common/Header/Header';
-
+import Viewdoc from '../User/ViewDoc/Viewdoc';
 import ErrorPage from '../ErrorPage/ErrorPage';
 
 
@@ -32,7 +32,8 @@ function UserRoute() {
                     <Route path='profile' element={<Profile />} />
                     <Route path="aboutus" element={<Aboutusp user={"user"} />} />
                     <Route path="contactus" element={<Contactusp user={"user"} />} />
-                    <Route path="bookconsult" element={<Bookconsult />} />
+                    <Route path="bookAppointment" element={<Bookconsult />} />
+                    <Route path='viewDoctors'element={<Viewdoc/>} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
                

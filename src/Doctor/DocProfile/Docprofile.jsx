@@ -28,6 +28,7 @@ function Docprofile() {
 
     const [docId, setDocId] = useState('')
     const [age, setAge] = useState('')
+    const [fare, setFare] = useState('')
     const [gender, setGender] = useState('')
     const [regno, setRegno] = useState('')
     const [specialization, setSpecialization] = useState('');
@@ -103,6 +104,13 @@ function Docprofile() {
             return;
         }
 
+        const fareNum = parseInt(fare);
+        if (isNaN(fareNum) || fareNum < 2000 || fareNum > 100) {
+            toast.error("Fare should be a number between 100 and 2000.")
+            return
+            
+        }
+
 
         if (!gender) {
             toast.error('Please select a gender.');
@@ -140,6 +148,7 @@ function Docprofile() {
             formData.append('gender', gender);
             formData.append('regno', regno);
             formData.append('specialization', specialization);
+            formData.append('fare',fare)
             formData.append('experience', experience);
             formData.append('certificate', certificate);
             const response = await axiosinstance.post('doctor/start-journey', formData);
@@ -171,8 +180,6 @@ function Docprofile() {
         <>
 
             <ToastContainer />
-
-
             <div className="mx-4 mt-5">
                 {doctor && (
                     <>
@@ -392,6 +399,7 @@ function Docprofile() {
                                                             <input value={experience} onChange={(e) => setExperience(e.target.value)} type="text" className="doc-addmore-input" placeholder="Experience" required />
                                                             <p className="doc-gender-title">Upload Certificates</p>
                                                             <input type="file" onChange={(e) => setCertificate(e.target.files.item(0))} accept="image/*" className="doc-file-upload" required />
+                                                            <input value={fare} onChange={(e) => setFare(e.target.value)} type="text" className="doc-addmore-input" placeholder="Fare" required />
                                                             <div className='d-flex mb-3' >
                                                                 <button className="doc-procardbutt" onClick={(e) => handlesave(doctor._id, e)} >
                                                                     Save

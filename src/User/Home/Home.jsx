@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import './Home.scss';
-import Header from '../../Common/Header/Header';
 
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -9,31 +8,16 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import axiosinstance from '../../Axios/Axios';
-
-import Viewdoc from '../ViewDoc/Viewdoc';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
 
+    const navigate = useNavigate()
     const [spec, setSpec] = useState([])
-    const [doctors, setDoctors] = useState([])
-    const [data, showData] = useState(false)
-    const [categories, setCategories] = useState(true)
-
-    const viewDoctors = async (specialId) => {
-        try {
-            const response = await axiosinstance.get(`view-doctors-spec/${specialId}`)
-            if (response.data.status === 'ok') {
-                showData(true)
-                setCategories(false)
-                setDoctors(response.data.doctor)
-
-            } else {
-                console.log("error");
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
+   
+    const viewDoctors = (specialName) => {
+        navigate(`/viewDoctors?specialization=${specialName}`);
+      };
 
     useEffect(() => {
         const fetchSpec = async () => {
@@ -50,10 +34,7 @@ function Home() {
     }, [])
 
 
-    const closeDetails = () => {
-        showData(false)
-        setCategories(true)
-    }
+    
 
     return (
         <>
@@ -63,8 +44,6 @@ function Home() {
                     <div className="ho-contentWrapper">
                         <p className="ho-cookieHeading mt-3">Home</p>
                         <p className='text-center the-main-head'>Book an appointment for an online consultation</p>
-
-                        {categories && (
                             <div className='ho-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
                                 {spec.map((special) => (
                                     <div className='p-2' >
@@ -84,34 +63,18 @@ function Home() {
                                                 </Typography>
                                             </CardContent>
                                             <CardActions>
-                                                <Button size="small" onClick={() => viewDoctors(special._id)}>View Doctors</Button>
+                                                <Button size="small" onClick={() => viewDoctors(special.name)}>View Doctors</Button>
                                             </CardActions>
                                         </Card>
                                     </div>
 
                                 ))}
                             </div>
-                        )}
-                        {data && (
-                            <div className='ho-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
-                                {doctors.map((doctor) => (
-                                    <div className='p-2' >
-                                        <Viewdoc doctor={doctor} />
-                                    </div>
-
-                                ))}
-
-                            </div>
-                        )}
+               
+                        
 
                     </div>
-                    {data && (
-                        <div className='m-3 d-flex justify-content-center'>
-                            <Button variant="contained" color="error" onClick={closeDetails} >
-                                Close
-                            </Button>
-                        </div>
-                    )}
+                    
                 </div>
             </div>
         </>

@@ -16,7 +16,7 @@ function Viewschedule() {
   const [selectedDays, setSelectedDays] = useState([])
   const [docSchedule, setViewSchedule] = useState(null);
 
-  
+
 
 
 
@@ -207,21 +207,21 @@ function Viewschedule() {
             {schedule && (
               <div className="schedule-panel rounded-3 ">
 
-                {docSchedule && docSchedule.Day && docSchedule.Time ? (
+                {docSchedule && docSchedule.schedule ? (
                   <>
                     <h3 className="text-center the-first-text">Selected Dates</h3>
                     <div className="view-day-slot-container">
-                      {docSchedule.Day.map((day) => (
-                        <div className="view-day-box" key={day}>
-                          <h6>{day}</h6>
+                      {docSchedule.schedule.map((day) => (
+                        <div className="view-day-box" key={day.day}>
+                          <h6>{day.day}</h6>
                         </div>
                       ))}
                     </div>
                     <h3 className="text-center the-first-text">Selected Time Slots</h3>
                     <div className="view-time-slot-container">
-                      {docSchedule.Time.map((time) => (
-                        <div className="view-time-box" key={time}>
-                          <h6>{time}</h6>
+                      {docSchedule.schedule[0].time.map((time) => (
+                        <div className="view-time-box" key={time.timeslot}>
+                          <h6>{time.timeslot}</h6>
                         </div>
                       ))}
                     </div>

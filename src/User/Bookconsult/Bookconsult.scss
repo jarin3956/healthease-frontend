@@ -6,7 +6,6 @@
     padding: 20px;
     position: relative;
     overflow: hidden;
-    height: 100vh;
     margin-bottom: 40px;
 
     .book-contentWrapper {
@@ -25,37 +24,100 @@
             color: rgb(241, 241, 241);
         }
 
-        .book-cookieDescription {
-            font-size: 0.9em;
-            color: rgb(241, 241, 241);
+
+        .home-sch-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #e8f1f1;
+            width: 1000px;
+            margin: 50px auto 50px;
+
+            .view-day-slot-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+
+                .view-day-box {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 8px;
+                    margin: 4px;
+                    border-radius: 4px;
+                    width: 100px;
+                    height: 40px;
+                    border: 2px solid #259ec0;
+                    background-color: #fff;
+                }
+                .view-day-box.selected {
+                    background-color: #16a4c4;
+                    color: #fff;
+                  }
+            }
+
+            .view-time-slot-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-bottom: 40px;
+
+                .view-time-box {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 8px;
+                    margin: 4px;
+                    background-color: #8bd6e6;
+                    border-radius: 4px;
+                    width: 200px;
+                    height: 43px;
+                }
+                .view-time-box.selected {
+                    background-color: #8da6ae;
+                    color: #fff;
+                  }
+            }
+            .time-set-butt{
+                display: flex;
+                justify-content: center;
+                margin-bottom: 30px;
+
+                .time-submit-button {
+                    display: block;
+                    margin-top: 10px;
+                    padding: 10px 20px;
+                    background-color: #007bff;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 16px;
+                  }
+              }
+            
+            
+              
+
+
         }
-
-    }
-}
-
-.ab-cookieCard::before {
-    width: 50%;
-    padding-bottom: 50%;
-    content: "";
-    background: linear-gradient(to right, rgb(142, 110, 255), rgb(208, 195, 255));
-    position: absolute;
-    z-index: 1;
-    border-radius: 50%;
-    right: -25%;
-    top: -25%;
-}
-
-
-
-@media (max-width: 768px) {
-    .cookieCard {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 40px;
     }
 
-    .cookieCard::before {
-        display: none;
-    }
+    
+
+
+    @media (max-width: 1082px) {
+        .home-sch-panel {
+          width: 100%;
+          height: auto;
+    
+          .view-time-slot-container,
+          .view-day-slot-container {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+      }
 }
