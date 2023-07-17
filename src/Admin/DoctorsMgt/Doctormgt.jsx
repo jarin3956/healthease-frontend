@@ -68,16 +68,16 @@ function Doctormgt() {
                                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                     <TableHead sx={{ backgroundColor: 'lightgrey' }} >
                                         <TableRow>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} >Name</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Reg.no</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Email</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Age</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Gender</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Specialization</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Experience</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Fare</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Status</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Action</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Reg.no</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Email</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Age</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Gender</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Specialization</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Experience</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Fare</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -89,15 +89,15 @@ function Doctormgt() {
                                                 <TableCell component="th" scope="row">
                                                     {doctor.name}
                                                 </TableCell>
-                                                <TableCell align="right">{doctor.regno}</TableCell>
-                                                <TableCell align="right">{doctor.email}</TableCell>
-                                                <TableCell align="right">{doctor.age}</TableCell>
-                                                <TableCell align="right">{doctor.gender}</TableCell>
-                                                <TableCell align="right">{doctor.specialization}</TableCell>
-                                                <TableCell align="right">{doctor.experience} Years</TableCell>
-                                                <TableCell align="right">{doctor.fare} Rupees</TableCell>
-                                                <TableCell align="right">{doctor.approval === true ? "Verified" : "Not Verified"}</TableCell>
-                                                <TableCell align="right">
+                                                <TableCell align="center">{doctor.regno}</TableCell>
+                                                <TableCell align="center">{doctor.email}</TableCell>
+                                                <TableCell align="center">{doctor.age}</TableCell>
+                                                <TableCell align="center">{doctor.gender}</TableCell>
+                                                <TableCell align="center">{doctor.specialization}</TableCell>
+                                                <TableCell align="center">{doctor.experience} Years</TableCell>
+                                                <TableCell align="center">{doctor.fare} Rupees</TableCell>
+                                                <TableCell align="center">{doctor.approval === true ? "Verified" : "Not Verified"}</TableCell>
+                                                <TableCell align="center">
                                                     <Button
                                                         variant="contained"
                                                         color="secondary"

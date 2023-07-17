@@ -1,41 +1,4 @@
-.card {
-    border: none;
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .card:before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 6px;
-    height: 100%;
-    background-color: #bee3e7;
-    transform: scaleY(1);
-    transition: all 0.5s;
-    transform-origin: bottom;
-  }
-  
-  .card:after {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 6px;
-    height: 100%;
-    background-color: #3ec5e7;
-    transform: scaleY(0);
-    transition: all 0.5s;
-    transform-origin: bottom;
-  }
-  
-  .card:hover::after {
-    transform: scaleY(1);
-  }
-  
+
   .about-details {
     display: flex;
     flex-direction: column;

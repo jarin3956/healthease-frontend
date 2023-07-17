@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosinstance from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../Common/Header/Header';
 import './Admindashboard.css'
 
 function Admindashboard() {

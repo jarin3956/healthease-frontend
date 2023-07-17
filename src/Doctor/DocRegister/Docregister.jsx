@@ -27,12 +27,6 @@ function Docregister() {
             setLoading(false);
             return;
         }
-        // if (!name || !age || !gender || !regno || !specialization || !experience || !email || !password || !repassword || !profileimg || !certificate) {
-        //     setError('Please fill in all fields.');
-        //     setShake(true);
-        //     setLoading(false);
-        //     return;
-        // }
 
 
 
@@ -44,48 +38,7 @@ function Docregister() {
             return;
         }
 
-
-        // const ageNum = parseInt(age);
-        // if (isNaN(ageNum) || ageNum < 5 || ageNum > 100) {
-        //     setError('Age should be a number between 5 to 100.');
-        //     setShake(true);
-        //     setLoading(false);
-        //     return;
-        // }
-
-
-        // if (!gender) {
-        //     setError('Please select a gender.');
-        //     setShake(true);
-        //     setLoading(false);
-        //     return;
-        // }
-
-
-        // const regnoRegex = /^[A-Z0-9]{6,12}$/;
-        // if (!regno.match(regnoRegex)) {
-        //     setError('Registration number should only include capital letters and numbers, with a length of 6 to 12 characters.');
-        //     setShake(true);
-        //     setLoading(false);
-        //     return;
-        // }
-
-
-        // if (!specialization) {
-        //     setError('Please select a specialization.');
-        //     setShake(true);
-        //     setLoading(false);
-        //     return;
-        // }
-
-
-        // const experienceNum = parseInt(experience);
-        // if (isNaN(experienceNum) || experienceNum < 0 || experienceNum > 40) {
-        //     setError('Experience should be a number between 0 to 40.');
-        //     setShake(true);
-        //     setLoading(false);
-        //     return;
-        // }
+       
 
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -113,12 +66,6 @@ function Docregister() {
         }
 
 
-        // if (!certificate.type.includes('image')) {
-        //     setError('Please upload a valid certificate image.');
-        //     setShake(true);
-        //     setLoading(false);
-        //     return;
-        // }
 
         try {
             const formData = new FormData();
@@ -168,7 +115,7 @@ function Docregister() {
     return (
         <div className="DocRegApp p-5">
             <div className={`doc-register-container ${shake ? 'shake' : ''}`}>
-                <form onSubmit={registerDoctor} encType="multipart/form-data" className="register-form" onAnimationEnd={handleAnimationEnd} >
+                <form onSubmit={ registerDoctor} encType="multipart/form-data" className="register-form" onAnimationEnd={handleAnimationEnd} >
                     <div className="doc-logo-container">
                         <img src="/healtheaselogo.png" alt="Logo" className="doc-logo-image" />
                     </div>

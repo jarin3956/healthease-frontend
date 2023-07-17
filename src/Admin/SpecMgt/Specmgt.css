@@ -1,0 +1,15 @@
+.theSpecButt {
+    padding: 8px 25px;
+    display: block;
+    margin: auto;
+    border-radius: 8px;
+    border: none;
+    background: #eef5f5;
+    color: #111111;
+    font-weight: 600;
+}
+
+.theSpecButt:hover {
+    background: #212121;
+    color: #ffffff;
+}

@@ -15,6 +15,7 @@ function Viewdoc() {
     const navigate = useNavigate()
 
     const [doctors, setDoctors] = useState([])
+    const [error,setError] = useState(false)
     const location = useLocation()
     const searchParams = new URLSearchParams(location.search);
     const specialName = searchParams.get('specialization');
@@ -24,7 +25,11 @@ function Viewdoc() {
             const response = await axiosinstance.get(`view-doctors-spec/${specialName}`)
             if (response.data.status === 'ok') {
 
-                setDoctors(response.data.doctor)
+                if (response.data.doctor.length > 0) {
+                    setDoctors(response.data.doctor)
+                } else {
+                    setError(true)
+                }
 
             } else {
                 console.log("error");
@@ -49,9 +54,7 @@ function Viewdoc() {
         <>
             <div className="mx-4 mt-5">
                 <div className="vdoc-cookieCard rounded-3">
-
                     <p className='text-center the-main-head'>Book an appointment for an online consultation</p>
-
                     <div className='vdoc-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
                         {doctors.map((doctor) => (
                             <div className='p-2' >
@@ -72,6 +75,9 @@ function Viewdoc() {
                                         <Typography variant="body2" color="text.secondary">
                                             {specialName}
                                         </Typography>
+                                        <Typography variant="body2" color="text.black">
+                                        ₹{doctor.fare} for Consultation
+                                        </Typography>
                                     </CardContent>
                                     <CardActions>
                                         <Button size="small" onClick={() => bookAppointment(doctor._id)} >Book Appointment</Button>
@@ -79,12 +85,11 @@ function Viewdoc() {
                                 </Card>
                             </div>
                         ))}
+                        {error && <h1 className='text-center' >No doctors Available</h1>}
                     </div>
-
+                    
                 </div>
             </div>
-
-
         </>
     )
 }

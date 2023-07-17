@@ -10,30 +10,35 @@ import Contactusp from './../Common/Contactus/Contactusp';
 import Bookconsult from '../User/Bookconsult/Bookconsult';
 import CheckUser from '../Auth/CheckUser';
 import RequireUser from '../Auth/RequireUser';
-import Header from '../Common/Header/Header';
 import Viewdoc from '../User/ViewDoc/Viewdoc';
 import ErrorPage from '../ErrorPage/ErrorPage';
+import Landingpage from '../User/LandingPage/Landingpage';
+import Navbar from '../Common/Navbar/Navbar';
+import Bookings from '../User/Bookings/Bookings'
 
 
 
 function UserRoute() {
+    const user = 'user'
     return (
         <>
-         <Header userType="user" />
+         <Navbar userType={user} />
     
             <Routes>
                 <Route element={<CheckUser />} >
                     <Route path="register" element={<Register />} />
                     <Route path="verify" element={<Verifyp />} />
-                    <Route path="login" element={<Loginp user={"user"} />} />
+                    <Route path="login" element={<Loginp user={user} />} />
+                    <Route path='' element={<Landingpage/>} ></Route>
                 </Route>
                 <Route element={<RequireUser />}>
                     <Route path="home" element={<Home />} />
                     <Route path='profile' element={<Profile />} />
-                    <Route path="aboutus" element={<Aboutusp user={"user"} />} />
-                    <Route path="contactus" element={<Contactusp user={"user"} />} />
+                    <Route path="aboutus" element={<Aboutusp user={user} />} />
+                    <Route path="contactus" element={<Contactusp user={user} />} />
                     <Route path="bookAppointment" element={<Bookconsult />} />
                     <Route path='viewDoctors'element={<Viewdoc/>} />
+                    <Route path='view-Bookings' element={<Bookings/>} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
                

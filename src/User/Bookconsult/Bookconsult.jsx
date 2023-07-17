@@ -3,8 +3,17 @@ import './Bookconsult.scss'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosinstance from '../../Axios/Axios';
 
-import { toast,ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { addBooking } from '../../Redux- toolkit/bookingsSlice';
+import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
+
+import { addDays, format, getDay } from 'date-fns';
+
+
+
+
 
 function Bookconsult() {
 
@@ -14,18 +23,40 @@ function Bookconsult() {
     const location = useLocation()
     const searchParams = new URLSearchParams(location.search);
     const docId = searchParams.get('doc');
+    const [doctorId, setDoctorId] = useState('')
+
+    const dispatch = useDispatch()
+
+    const navigate = useNavigate()
 
     const showSlots = async (docId) => {
         try {
             const response = await axiosinstance.get(`view-doctor-slots/${docId}`)
-            console.log(response, "itha mone puthiya response");
             if (response.status === 200) {
-                setDocSchedule(response.data.schedule)
-                
+                const currentDate = new Date();
+                const currentDay = getDay(currentDate);
 
+
+                const scheduleArray = Object.values(response.data.schedule);
+
+
+                const updatedSchedule = scheduleArray.map((dayObj) => {
+                    const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(dayObj.day);
+                    const dayDate = addDays(currentDate, dayIndex - currentDay);
+                    return {
+                        ...dayObj,
+                        date: format(dayDate, 'MMM d, yyyy'),
+                    };
+                });
+
+                const filteredSchedule = updatedSchedule.filter((schedule) => {
+                    const todayDate = format(currentDate, 'MMM d, yyyy');
+                    return schedule.date !== todayDate;
+                });
+
+                setDocSchedule(filteredSchedule);
             } else {
                 console.log("error");
-                
             }
 
         } catch (error) {
@@ -36,6 +67,7 @@ function Bookconsult() {
     useEffect(() => {
         if (docId) {
             showSlots(docId)
+            setDoctorId(docId)
         }
     }, [location])
 
@@ -47,109 +79,115 @@ function Bookconsult() {
         setSelectedTimeSlot(timeslot)
     }
 
+
     const token = localStorage.getItem('token')
 
-    const bookTheSlot = async (docId) => {
-        // console.log(selectedDay,selectedTime,docId, "these are items to book");
+    const bookTheSlot = async () => {
 
         if (!selectedDay || !selectedTime) {
-            // Display error message using react-toastify
             toast.error('Please select a day and time');
             return;
         }
 
         try {
-            const response = await axiosinstance.post('book-consultation-slot', {
-                docId: docId,
+
+            const bookingData = {
+                docId: doctorId,
                 selectedDay: selectedDay,
-                selectedTime: selectedTime
+                selectedTime: selectedTime,
+                selectedDate: docSchedule.find((day) => day.day === selectedDay)?.date,
+            };
+
+            if (bookingData) {
+                dispatch(addBooking(bookingData))
+                // navigate('/payments')
+
+            }
+            const response = await axiosinstance.post('book-consultation-slot', {
+                bookingData
             },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 })
-            console.log(response);
+
             if (response.status === 200) {
-                toast.success("Successfull booked your slot")
+                Swal.fire('Success!', 'Successfully booked your slot', 'success').then(() => {
+                    window.location.href = '/home';
+                });
             } else {
-                toast.error("Error, Please try again later")
+                Swal.fire('Oops!', 'Something went wrong. Please try again later.', 'error');
             }
+
         } catch (error) {
-            console.log("error");
+            console.log(error);
         }
     }
-
-
-
 
     return (
         <>
 
-            <ToastContainer />
 
+            <ToastContainer />
             <div className="mx-4 mt-5">
                 <div className="book-cookieCard rounded-3">
                     <div className="book-contentWrapper">
-                        <p className="book-cookieHeading mt-3">Book Consult</p>
-                        <div className='p-2'>
-                            <div className="home-sch-panel rounded-3">
-                                {docSchedule && docSchedule.schedule ? (
-                                    <>
-                                        <h3 className="text-center the-first-text">Available Days</h3>
-                                        <div className="view-day-slot-container">
-                                            {docSchedule.schedule.map((day) => (
-                                                <div
-                                                    className={`view-day-box ${selectedDay === day.day ? 'selected' : ''}`}
-                                                    key={day.day}
-                                                    onClick={() => handleDayClick(day.day)}
-                                                >
-                                                    <h6>{day.day}</h6>
+                        <div className="home-sch-panel rounded-3 m-2">
+                            {docSchedule ? (
+                                <>
+                                    <h3 className="text-center the-first-text-bk">Available Days</h3>
+                                    <div className="view-day-slot-container">
+                                        {docSchedule.map((day) => (
+                                            <div
+                                                className={`view-day-box ${selectedDay === day.day ? 'selected' : ''}`}
+                                                key={day.day}
+                                                onClick={() => handleDayClick(day.day)}
+                                            >
+                                                <h6>{`${day.day} (${day.date})`}</h6>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {selectedDay && (
+                                        <>
+                                            <h3 className="text-center the-second-text-bk">Time Slots ({selectedDay})</h3>
+                                            {docSchedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
+                                                <div className="view-time-slot-container">
+                                                    {docSchedule.find((day) => day.day === selectedDay)
+                                                        .time.filter((time) => time.isAvailable)
+                                                        .map((time) => (
+                                                            <div
+                                                                className={`view-time-box ${selectedTime === time.timeslot ? 'selected' : ''}`}
+                                                                key={time.timeslot}
+                                                                onClick={() => handleTimeSlot(time.timeslot)}
+                                                            >
+                                                                <h6>{time.timeslot}</h6>
+                                                            </div>
+                                                        ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                        {selectedDay && (
-                                            <>
-                                                <h3 className="text-center the-first-text">Available Time Slots ({selectedDay})</h3>
-                                                {docSchedule.schedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
-                                                    <div className="view-time-slot-container">
-                                                        {docSchedule.schedule
-                                                            .find((day) => day.day === selectedDay)
-                                                            .time.filter((time) => time.isAvailable)
-                                                            .map((time) => (
-                                                                <div
-                                                                    className={`view-time-box ${selectedTime === time.timeslot ? 'selected' : ''}`}
-                                                                    key={time.timeslot}
-                                                                    onClick={() => handleTimeSlot(time.timeslot)}
-                                                                >
-                                                                    <h6>{time.timeslot}</h6>
-                                                                </div>
-                                                            ))}
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-center">No Time Slots Available for {selectedDay}</p>
-                                                )}
-                                                <div className="time-set-butt">
-                                                    <button className="time-submit-button" onClick={() => bookTheSlot(docSchedule.doc_id)}>
-                                                        Book Slot
-                                                    </button>
-                                                </div>
-                                            </>
-                                        )}
-                                    </>
-                                ) : (
-                                    <h1>No Data Available</h1>
-                                )}
+                                            ) : (
+                                                <p className="text-center">No Time Slots Available for {selectedDay}</p>
+                                            )}
 
+                                            <div className="time-set-butt">
+                                                <button className="time-submit-button" onClick={() => bookTheSlot()}>
+                                                    Book Slot
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                <h1>No Data Available</h1>
+                            )}
 
-
-
-                            </div>
                         </div>
-
                     </div>
+
                 </div>
             </div>
+
+
 
         </>
     )

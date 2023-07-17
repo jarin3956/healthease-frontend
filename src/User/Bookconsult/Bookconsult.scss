@@ -7,38 +7,44 @@
     position: relative;
     overflow: hidden;
     margin-bottom: 40px;
+    min-height: 70vh;
 
     .book-contentWrapper {
-        flex-grow: 1;
+        position: relative;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        gap: 20px;
-        z-index: 2;
-
-
-        .book-cookieHeading {
-            font-size: 2em;
-            font-weight: 900;
-            color: rgb(241, 241, 241);
-        }
-
+        height: 100%;
 
         .home-sch-panel {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             background-color: #e8f1f1;
             width: 1000px;
-            margin: 50px auto 50px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 40px;
+
+
+
+            .the-first-text-bk {
+                margin-top: 50px;
+                margin-bottom: 40px;
+            }
+
+            .the-second-text-bk {
+                margin-top: 15px;
+                margin-bottom: 40px;
+            }
 
             .view-day-slot-container {
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 10px;
+                margin-bottom: 30px;
 
                 .view-day-box {
                     display: inline-flex;
@@ -47,15 +53,17 @@
                     padding: 8px;
                     margin: 4px;
                     border-radius: 4px;
-                    width: 100px;
-                    height: 40px;
+                    width: 120px;
+                    height: 80px;
                     border: 2px solid #259ec0;
                     background-color: #fff;
+
                 }
+
                 .view-day-box.selected {
                     background-color: #16a4c4;
                     color: #fff;
-                  }
+                }
             }
 
             .view-time-slot-container {
@@ -75,12 +83,14 @@
                     width: 200px;
                     height: 43px;
                 }
+
                 .view-time-box.selected {
                     background-color: #8da6ae;
                     color: #fff;
-                  }
+                }
             }
-            .time-set-butt{
+
+            .time-set-butt {
                 display: flex;
                 justify-content: center;
                 margin-bottom: 30px;
@@ -95,29 +105,69 @@
                     border-radius: 4px;
                     cursor: pointer;
                     font-size: 16px;
+                }
+            }
+
+            .payment-card-container {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            
+                .payment-card-form {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+            
+                    .payment-card-element {
+                        margin-bottom: 20px;
+            
+                        .payment-card-label {
+                            font-size: 16px;
+                            font-weight: bold;
+                            margin-bottom: 5px;
+                          }
+            
+                          .payment-card-input {
+                            width: 100%;
+                            padding: 10px;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                            font-size: 16px;
+                          }
+                      }
+                      .payment-card-button {
+                        padding: 10px 20px;
+                        background-color: #007bff;
+                        color: #fff;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 16px;
+                      }
+                      
+                      .payment-card-error {
+                        color: #f52121;
+                        margin-top: 10px;
+                      }
                   }
               }
-            
-            
               
-
-
+              
+              
+              
         }
     }
 
-    
-
-
     @media (max-width: 1082px) {
         .home-sch-panel {
-          width: 100%;
-          height: auto;
-    
-          .view-time-slot-container,
-          .view-day-slot-container {
-            flex-direction: column;
-            align-items: flex-start;
-          }
+            width: 100%;
+            height: auto;
+
+            .view-time-slot-container,
+            .view-day-slot-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
-      }
+    }
 }

@@ -10,26 +10,26 @@ import Aboutusp from '../Common/Aboutus/Aboutusp';
 import Contactusp from '../Common/Contactus/Contactusp';
 import CheckDoctor from '../Auth/CheckDoctor';
 import RequireDoctor from '../Auth/RequireDoctor';
-import Header from '../Common/Header/Header';
-
 import ErrorPage from '../ErrorPage/ErrorPage';
+import Navbar from '../Common/Navbar/Navbar';
 
 function DoctorRoute() {
+    const doctor = 'doctor'
     return (
         <>
-        <Header userType="doctor" />
+        <Navbar userType={doctor} />
             <Routes>
                 <Route element={<CheckDoctor />} >
                     <Route path="register" element={<Docregister />} />
                     <Route path="verify" element={<Verifyp />} />
-                    <Route path="login" element={<Loginp user={"doctor"} />} />
+                    <Route path="login" element={<Loginp user={doctor} />} />
                 </Route>
                 <Route element={<RequireDoctor />}>
                     <Route path='home' element={<Dochome />} />
                     <Route path='profile' element={<Docprofile />}></Route>
                     <Route path='view-schedule' element={<Viewschedule />} />
-                    <Route path="aboutus" element={<Aboutusp user={"doctor"} />} />
-                    <Route path="contactus" element={<Contactusp user={"doctor"} />} />
+                    <Route path="aboutus" element={<Aboutusp user={doctor} />} />
+                    <Route path="contactus" element={<Contactusp user={doctor} />} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

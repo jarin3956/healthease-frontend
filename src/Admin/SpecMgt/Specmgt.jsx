@@ -10,6 +10,8 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 
+import './Specmgt.css'
+
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -116,7 +118,7 @@ function Specmgt() {
     useEffect(() => {
         const fetchSpecData = async () => {
             try {
-                const response = await axiosinstance.get('specialization/view')
+                const response = await axiosinstance.get('specialization/admin-view')
                 const specData = response.data.spec;
                 setSpecialization(specData)
             } catch (error) {
@@ -138,7 +140,7 @@ function Specmgt() {
                                 <p className="cookieHeading text-center mt-3">Specialization Management</p>
                                 {!showEdit && (
                                     <div className=" p-3 d-flex justify-content-center">
-                                        <button className="btn logusrButton" onClick={() => navigate('/admin/spec-register')} >
+                                        <button className="theSpecButt" onClick={() => navigate('/admin/spec-register')} >
                                             Add
                                         </button>
                                     </div>
@@ -210,11 +212,11 @@ function Specmgt() {
                                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                         <TableHead sx={{ backgroundColor: 'lightgrey' }} >
                                             <TableRow>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} >Name</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Image</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Description</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Status</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Action</TableCell>
+                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
+                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Image</TableCell>
+                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Description</TableCell>
+                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
+                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -226,10 +228,10 @@ function Specmgt() {
                                                     <TableCell component="th" scope="row">
                                                         {spec.name}
                                                     </TableCell>
-                                                    <TableCell align="right"><img src={`/SpecializationImages/${spec.image}`} alt={spec.name} style={{ width: '100px' }} /></TableCell>
-                                                    <TableCell align="right">{spec.description}</TableCell>
-                                                    <TableCell align="right">{spec.status === true ? 'Active' : 'Blocked'}</TableCell>
-                                                    <TableCell align="right">
+                                                    <TableCell align="center"><img src={`/SpecializationImages/${spec.image}`} alt={spec.name} style={{ width: '100px' }} /></TableCell>
+                                                    <TableCell align="center">{spec.description}</TableCell>
+                                                    <TableCell align="center">{spec.status === true ? 'Active' : 'Blocked'}</TableCell>
+                                                    <TableCell align="center">
                                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                                                             <Button variant="contained" color="secondary" onClick={() => handleBlock(spec._id)} >
                                                                 {spec.status ? 'Block' : 'Unblock'}

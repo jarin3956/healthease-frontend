@@ -75,12 +75,12 @@ function Usersmgt() {
                                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                     <TableHead sx={{ backgroundColor: 'lightgrey' }} >
                                         <TableRow>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} >Name</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Email</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Age</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Gender</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Status</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="right">Action</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Email</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Age</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Gender</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -92,11 +92,11 @@ function Usersmgt() {
                                                 <TableCell component="th" scope="row">
                                                     {user.name}
                                                 </TableCell>
-                                                <TableCell align="right">{user.email}</TableCell>
-                                                <TableCell align="right">{user.age ? user.age :'No data updated'}</TableCell>
-                                                <TableCell align="right">{user.gender ? user.gender : 'No data updated'}</TableCell>
-                                                <TableCell align="right">{user.status === true ? "Active" : "Blocked"}</TableCell>
-                                                <TableCell align="right">
+                                                <TableCell align="center">{user.email}</TableCell>
+                                                <TableCell align="center">{user.age ? user.age :'No data updated'}</TableCell>
+                                                <TableCell align="center">{user.gender ? user.gender : 'No data updated'}</TableCell>
+                                                <TableCell align="center">{user.status === true ? "Active" : "Blocked"}</TableCell>
+                                                <TableCell align="center">
                                                     <Button
                                                         variant="contained"
                                                         color="secondary"

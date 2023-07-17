@@ -18,7 +18,6 @@ import {
     MDBBtn,
     MDBListGroup,
 } from 'mdb-react-ui-kit';
-import { useSelector } from 'react-redux';
 
 
 function Docprofile() {
@@ -40,9 +39,6 @@ function Docprofile() {
     const [theMain, setTheMain] = useState(true)
 
 
-    const selecter = useSelector((state) => state.schedule);
-
-
     const doctortoken = localStorage.getItem('doctortoken')
     useEffect(() => {
         if (!doctortoken) {
@@ -53,7 +49,7 @@ function Docprofile() {
                     Authorization: `Bearer ${doctortoken}`
                 }
             }).then((res) => {
-                setDoctor(res.data);
+                setDoctor(res.data.doctor);
             }).catch((error) => {
                 console.log(error);
             })
@@ -105,7 +101,7 @@ function Docprofile() {
         }
 
         const fareNum = parseInt(fare);
-        if (isNaN(fareNum) || fareNum < 2000 || fareNum > 100) {
+        if (isNaN(fareNum)) {
             toast.error("Fare should be a number between 100 and 2000.")
             return
             
@@ -295,11 +291,6 @@ function Docprofile() {
                                             </MDBCard>
                                             <MDBCard className="mb-4">
                                                 <MDBCardBody>
-                                                    {selecter ? (<>
-                                                    alreday there
-                                                    </>) : (<>
-                                                    not sesle
-                                                    </>)}
                                                     <h3 className="text-center mb-1 mt-1 ">Schedule</h3>
 
                                                     {doctor.approval && (<div className='the-doc-sche'>

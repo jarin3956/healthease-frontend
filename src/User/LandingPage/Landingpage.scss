@@ -1,0 +1,47 @@
+
+  
+  .land-cookieCard {
+    
+    background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 50px;
+
+    .the-main-head-land {
+      font-size: 2em;
+      font-weight: 900;
+      color:  rgb(241, 241, 241);
+      padding: 40px;
+    }
+    .land-thecrd-container{
+      background-color: rgb(210, 218, 220);
+      padding: 30px;
+      border-radius: 8px;
+    }
+
+  }
+  
+  
+  @media (max-width: 768px) {
+    .land-cookieCard {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0;
+      
+      .land-thecrd-container{
+        background-color: rgb(210, 218, 220);
+         padding: 15px;
+         border-radius: 0;
+
+        
+       }
+
+    }
+    
+  }
+
+  

@@ -11,18 +11,22 @@ import Specmgt from '../Admin/SpecMgt/Specmgt';
 import CheckAdmin from '../Auth/CheckAdmin';
 import RequireAdmin from "../Auth/RequireAdmin";
 import {  Routes, Route } from 'react-router-dom';
-import Header from '../Common/Header/Header';
 
 import ErrorPage from '../ErrorPage/ErrorPage';
+import Viewdoctor from '../Admin/ViewDoctor/Viewdoctor';
+import ViewUser from '../Admin/ViewUsers/ViewUser';
+
+import Navbar from '../Common/Navbar/Navbar';
 
 function AdminRoute() {
+    const admin = 'admin'
     return (
         <>
-        <Header userType='admin' />
+        <Navbar userType={admin} />
 
             <Routes>
                 <Route element={<CheckAdmin />} >
-                    <Route path="login" element={<Loginp user={"admin"} />} />
+                    <Route path="login" element={<Loginp user={admin} />} />
                     <Route path='register' element={<Adminregister />} />
                 </Route>
                 <Route element={<RequireAdmin />} >
@@ -33,6 +37,8 @@ function AdminRoute() {
                     <Route path='revenue' element={<Revenue />} />
                     <Route path='spec-register' element={<Specregister />} />
                     <Route path='specialization' element={<Specmgt />} />
+                    <Route path='viewDoctorProfile' element={<Viewdoctor/>} />
+                    <Route path='viewUserProfile' element={<ViewUser/>} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

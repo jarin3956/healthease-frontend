@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import './Viewschedule.css'
 import axiosinstance from '../../Axios/Axios'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { addSchedule } from '../../Redux- toolkit/authslice'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,10 +16,6 @@ function Viewschedule() {
   const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
   const [selectedDays, setSelectedDays] = useState([])
   const [docSchedule, setViewSchedule] = useState(null);
-
-
-
-
 
   const openschedule = () => {
     setSchedule(true)
@@ -156,24 +153,34 @@ function Viewschedule() {
     '09:30 pm - 10:00 pm',
   ];
 
-  useEffect(() => {
-    const getSchedules = async () => {
-      try {
-        const scheduleData = await axiosinstance.get('doctor/schedule-data', {
-          headers: {
-            Authorization: `Bearer ${doctortoken}`
-          }
-        });
-        if (scheduleData.status === 200) {
-          setViewSchedule(scheduleData.data.schedule);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const dispatch = useDispatch()
 
-    getSchedules();
-  }, []);
+  const selector = useSelector((state) => state.schedule.schedule);
+
+  useEffect(() => {
+    if (selector) {
+      setViewSchedule(selector); 
+    } else {
+     
+      const getSchedules = async () => {
+        try {
+          const scheduleData = await axiosinstance.get('doctor/schedule-data', {
+            headers: {
+              Authorization: `Bearer ${doctortoken}`,
+            },
+          });
+          if (scheduleData.status === 200) {
+            setViewSchedule(scheduleData.data.schedule); 
+            dispatch(addSchedule(scheduleData.data.schedule)); 
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      getSchedules();
+    }
+  }, [selector]); 
 
 
 
@@ -230,8 +237,6 @@ function Viewschedule() {
                         Change
                       </button>
                     </div>
-
-
                   </>
                 ) : (
                   <form onSubmit={handleSubmit}>
@@ -267,8 +272,6 @@ function Viewschedule() {
                     </div>
                   </form>
                 )}
-
-
               </div>
 
             )}
