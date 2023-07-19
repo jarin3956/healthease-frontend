@@ -76,6 +76,7 @@ function Doctormgt() {
                                             <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Specialization</TableCell>
                                             <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Experience</TableCell>
                                             <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Fare</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Final Fare</TableCell>
                                             <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
                                             <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
                                         </TableRow>
@@ -96,6 +97,7 @@ function Doctormgt() {
                                                 <TableCell align="center">{doctor.specialization}</TableCell>
                                                 <TableCell align="center">{doctor.experience} Years</TableCell>
                                                 <TableCell align="center">{doctor.fare} Rupees</TableCell>
+                                                <TableCell align="center">{doctor.final_fare} Rupees</TableCell>
                                                 <TableCell align="center">{doctor.approval === true ? "Verified" : "Not Verified"}</TableCell>
                                                 <TableCell align="center">
                                                     <Button

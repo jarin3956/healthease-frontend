@@ -14,7 +14,8 @@ import Viewdoc from '../User/ViewDoc/Viewdoc';
 import ErrorPage from '../ErrorPage/ErrorPage';
 import Landingpage from '../User/LandingPage/Landingpage';
 import Navbar from '../Common/Navbar/Navbar';
-import Bookings from '../User/Bookings/Bookings'
+import Bookings from '../User/Bookings/Bookings';
+import Payment from '../User/Payment/Payment';
 
 
 
@@ -39,6 +40,7 @@ function UserRoute() {
                     <Route path="bookAppointment" element={<Bookconsult />} />
                     <Route path='viewDoctors'element={<Viewdoc/>} />
                     <Route path='view-Bookings' element={<Bookings/>} />
+                    <Route path='payment' element={<Payment/>} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
                

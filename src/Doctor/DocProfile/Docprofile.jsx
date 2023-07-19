@@ -390,7 +390,7 @@ function Docprofile() {
                                                             <input value={experience} onChange={(e) => setExperience(e.target.value)} type="text" className="doc-addmore-input" placeholder="Experience" required />
                                                             <p className="doc-gender-title">Upload Certificates</p>
                                                             <input type="file" onChange={(e) => setCertificate(e.target.files.item(0))} accept="image/*" className="doc-file-upload" required />
-                                                            <input value={fare} onChange={(e) => setFare(e.target.value)} type="text" className="doc-addmore-input" placeholder="Fare" required />
+                                                            <input value={fare} onChange={(e) => setFare(e.target.value)} type="number" className="doc-addmore-input" placeholder="Fare" required />
                                                             <div className='d-flex mb-3' >
                                                                 <button className="doc-procardbutt" onClick={(e) => handlesave(doctor._id, e)} >
                                                                     Save

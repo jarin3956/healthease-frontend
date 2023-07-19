@@ -36,9 +36,7 @@ function Bookconsult() {
                 const currentDate = new Date();
                 const currentDay = getDay(currentDate);
 
-
                 const scheduleArray = Object.values(response.data.schedule);
-
 
                 const updatedSchedule = scheduleArray.map((dayObj) => {
                     const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(dayObj.day);
@@ -100,25 +98,10 @@ function Bookconsult() {
 
             if (bookingData) {
                 dispatch(addBooking(bookingData))
-                // navigate('/payments')
+                navigate('/payment')
 
             }
-            const response = await axiosinstance.post('book-consultation-slot', {
-                bookingData
-            },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-
-            if (response.status === 200) {
-                Swal.fire('Success!', 'Successfully booked your slot', 'success').then(() => {
-                    window.location.href = '/home';
-                });
-            } else {
-                Swal.fire('Oops!', 'Something went wrong. Please try again later.', 'error');
-            }
+            
 
         } catch (error) {
             console.log(error);

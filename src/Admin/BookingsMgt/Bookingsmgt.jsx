@@ -57,14 +57,15 @@ function Bookingsmgt() {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead sx={{ backgroundColor: 'lightgrey' }} >
                     <TableRow>
-                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Booking Id</TableCell>
-                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Doctor</TableCell>
+                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booking Id</TableCell>
+                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Doctor</TableCell>
                       <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">User</TableCell>
                       <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Amount</TableCell>
                       <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booking Date</TableCell>
-                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Day</TableCell>
-                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Time Slot</TableCell>
-                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Created Date</TableCell>
+                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booked Day</TableCell>
+                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booked Time Slot</TableCell>
+                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booking Date</TableCell>
+                      <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Payment Id</TableCell>
                       <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
                     </TableRow>
                   </TableHead>
@@ -88,10 +89,11 @@ function Bookingsmgt() {
                           </Button>
                         </TableCell>
                         <TableCell align="center">{booking.Fare} Rupees</TableCell>
-                        <TableCell align="center">{booking.Date}</TableCell>
-                        <TableCell align="center">{booking.Day}</TableCell>
-                        <TableCell align="center">{booking.TimeSlot}</TableCell>
+                        <TableCell align="center">{booking.Booked_date}</TableCell>
+                        <TableCell align="center">{booking.Booked_day}</TableCell>
+                        <TableCell align="center">{booking.Booked_timeSlot}</TableCell>
                         <TableCell align="center">{booking.CreatedAt}</TableCell>
+                        <TableCell align="center">{booking.Payment_id}</TableCell>
                         <TableCell align="center">{booking.Status === true ? "Not Completed" : "Completed"}</TableCell>
                       </TableRow>
                     ))}

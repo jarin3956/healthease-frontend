@@ -76,7 +76,7 @@ function Viewdoc() {
                                             {specialName}
                                         </Typography>
                                         <Typography variant="body2" color="text.black">
-                                        ₹{doctor.fare} for Consultation
+                                        ₹{doctor.final_fare} for Consultation
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
