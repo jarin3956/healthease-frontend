@@ -7,7 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { addBooking } from '../../Redux- toolkit/bookingsSlice';
 import { useDispatch } from 'react-redux';
-import Swal from 'sweetalert2';
+
 
 import { addDays, format, getDay } from 'date-fns';
 
@@ -111,7 +111,6 @@ function Bookconsult() {
     return (
         <>
 
-
             <ToastContainer />
             <div className="mx-4 mt-5">
                 <div className="book-cookieCard rounded-3">
@@ -166,12 +165,8 @@ function Bookconsult() {
 
                         </div>
                     </div>
-
                 </div>
             </div>
-
-
-
         </>
     )
 }

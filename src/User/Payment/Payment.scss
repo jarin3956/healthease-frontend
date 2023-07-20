@@ -27,27 +27,19 @@
             margin: 0 auto;
             padding: 40px;
         }
+        .razorpay-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #e8f1f1;
+            width: 1000px;
+            min-height: 400px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 40px;
+        }
     }
 
-    // .my-swal-container {
-    //     width: 400px;
-
-    // }
-
-    // .my-swal-title {
-    //     font-size: 24px;
-    //     color: #4caf50;
-
-    // }
-
-    // .my-swal-html-container {
-    //     font-size: 18px;
-    //     text-align: left;
-
-    // }
-
-    // .my-swal-confirm-button {
-    //     background-color: #4ca8af;
-    //     color: white;
-    // }
+    
 }

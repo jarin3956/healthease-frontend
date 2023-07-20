@@ -94,7 +94,7 @@ function Bookingsmgt() {
                         <TableCell align="center">{booking.Booked_timeSlot}</TableCell>
                         <TableCell align="center">{booking.CreatedAt}</TableCell>
                         <TableCell align="center">{booking.Payment_id}</TableCell>
-                        <TableCell align="center">{booking.Status === true ? "Not Completed" : "Completed"}</TableCell>
+                        <TableCell align="center">{booking.Status}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

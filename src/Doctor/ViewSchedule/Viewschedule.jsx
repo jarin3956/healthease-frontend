@@ -13,10 +13,13 @@ function Viewschedule() {
   const [completed, setCompleted] = useState(false)
   const [upcomming, setUpcomming] = useState(false)
   const [cancelled, setCancelled] = useState(false)
-  const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
-  const [selectedDays, setSelectedDays] = useState([])
+  const [viewSelectedDay, setViewSelectedDay] = useState('')
+
+
   const [docSchedule, setViewSchedule] = useState(null);
 
+  const [selectedDays, setSelectedDays] = useState([])
+  const [selectedTimeSlotsByDay, setSelectedTimeSlotsByDay] = useState({});
   const openschedule = () => {
     setSchedule(true)
     setUpcomming(false)
@@ -46,42 +49,52 @@ function Viewschedule() {
   const doctortoken = localStorage.getItem('doctortoken')
 
 
+ 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (selectedDays.length === 0 || selectedTimeSlots.length === 0) {
+    if (selectedDays.length === 0 || Object.keys(selectedTimeSlotsByDay).length === 0) {
       toast.error('Please select at least one day and one time slot');
       return;
     }
 
     try {
-      const response = await axiosinstance.post('doctor/set-schedule', {
-        selectedTimeSlots,
-        selectedDays,
-      }, {
-        headers: {
-          Authorization: `Bearer ${doctortoken}`
+      const response = await axiosinstance.post(
+        'doctor/set-schedule',
+        {
+          schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
+            day,
+            time: timeSlots.map((timeslot) => ({ timeslot })),
+          })),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${doctortoken}`,
+          },
         }
-      });
+      );
 
       if (response.status === 200) {
-        toast.success("Successfully saved schedule")
-        setViewSchedule(response.data.schedule)
+        toast.success('Successfully saved schedule');
+        setViewSchedule(response.data.schedule);
       } else {
         toast.error(response.data.message);
       }
-
     } catch (error) {
       console.log(error);
     }
-    console.log('Selected Time Slot:', selectedTimeSlots, "and", selectedDays);
-  }
+    console.log('Selected Time Slots:', selectedTimeSlotsByDay, 'and', selectedDays);
+  };
 
-  function TimeSlotBox({ timeSlot, isSelected, handleClick }) {
+
+
+
+  function TimeSlotBox({ timeSlot, daySlot, isSelected, handleClick }) {
     const className = `time-slot-box ${isSelected ? 'selected' : ''}`;
 
     return (
-      <div className={className} onClick={() => handleClick(timeSlot)}>
+      <div className={className} onClick={() => handleClick(timeSlot, daySlot)}>
         {timeSlot}
       </div>
     );
@@ -98,20 +111,40 @@ function Viewschedule() {
     );
   }
 
-  const handleTimeSlotClick = (timeSlot) => {
-    if (selectedTimeSlots.includes(timeSlot)) {
-      setSelectedTimeSlots(selectedTimeSlots.filter((slot) => slot !== timeSlot));
-    } else {
-      setSelectedTimeSlots([...selectedTimeSlots, timeSlot]);
-    }
+  
+
+  const handleTimeSlotClick = (timeSlot, daySlot) => {
+    setSelectedTimeSlotsByDay((prevSelectedTimeSlotsByDay) => {
+      const selectedTimeSlotsForDay = prevSelectedTimeSlotsByDay[daySlot] || [];
+      if (selectedTimeSlotsForDay.includes(timeSlot)) {
+        return {
+          ...prevSelectedTimeSlotsByDay,
+          [daySlot]: selectedTimeSlotsForDay.filter((slot) => slot !== timeSlot),
+        };
+      } else {
+        return {
+          ...prevSelectedTimeSlotsByDay,
+          [daySlot]: [...selectedTimeSlotsForDay, timeSlot],
+        };
+      }
+    });
   };
 
+
+
   const handleDaySlotClick = (daySlot) => {
-    if (selectedDays.includes(daySlot)) {
-      setSelectedDays(selectedDays.filter((slot) => slot !== daySlot));
-    } else {
-      setSelectedDays([...selectedDays, daySlot]);
-    }
+    setSelectedDays((prevSelectedDays) => {
+      if (prevSelectedDays.includes(daySlot)) {
+        setSelectedTimeSlotsByDay((prevSelectedTimeSlotsByDay) => {
+          const updatedSelectedTimeSlotsByDay = { ...prevSelectedTimeSlotsByDay };
+          delete updatedSelectedTimeSlotsByDay[daySlot];
+          return updatedSelectedTimeSlotsByDay;
+        });
+        return prevSelectedDays.filter((slot) => slot !== daySlot);
+      } else {
+        return [...prevSelectedDays, daySlot];
+      }
+    });
   };
 
   const day = [
@@ -150,7 +183,6 @@ function Viewschedule() {
     '08:00 pm - 08:30 pm',
     '08:30 pm - 09:00 pm',
     '09:00 pm - 09:30 pm',
-    '09:30 pm - 10:00 pm',
   ];
 
   const dispatch = useDispatch()
@@ -159,9 +191,9 @@ function Viewschedule() {
 
   useEffect(() => {
     if (selector) {
-      setViewSchedule(selector); 
+      setViewSchedule(selector.schedule);
     } else {
-     
+
       const getSchedules = async () => {
         try {
           const scheduleData = await axiosinstance.get('doctor/schedule-data', {
@@ -170,8 +202,8 @@ function Viewschedule() {
             },
           });
           if (scheduleData.status === 200) {
-            setViewSchedule(scheduleData.data.schedule); 
-            dispatch(addSchedule(scheduleData.data.schedule)); 
+            setViewSchedule(scheduleData.data.schedule);
+            dispatch(addSchedule(scheduleData.data.schedule));
           }
         } catch (error) {
           console.log(error);
@@ -180,7 +212,11 @@ function Viewschedule() {
 
       getSchedules();
     }
-  }, [selector]); 
+  }, [selector]);
+
+  const viewHandleDayClick = (day) => {
+    setViewSelectedDay(day)
+  }
 
 
 
@@ -214,24 +250,47 @@ function Viewschedule() {
             {schedule && (
               <div className="schedule-panel rounded-3 ">
 
-                {docSchedule && docSchedule.schedule ? (
+                {docSchedule ? (
                   <>
                     <h3 className="text-center the-first-text">Selected Dates</h3>
                     <div className="view-day-slot-container">
-                      {docSchedule.schedule.map((day) => (
-                        <div className="view-day-box" key={day.day}>
+                      {docSchedule.map((day) => (
+                        <div className={`view-day-box ${viewSelectedDay === day.day ? 'selected' : ''}`}
+                          key={day.day}
+                          onClick={() => viewHandleDayClick(day.day)}
+                        >
                           <h6>{day.day}</h6>
                         </div>
                       ))}
                     </div>
-                    <h3 className="text-center the-first-text">Selected Time Slots</h3>
-                    <div className="view-time-slot-container">
-                      {docSchedule.schedule[0].time.map((time) => (
-                        <div className="view-time-box" key={time.timeslot}>
-                          <h6>{time.timeslot}</h6>
+
+
+                    {viewSelectedDay && (
+                      <>
+
+                        <h3 className="text-center the-next-text">Selected Time Slots</h3>
+                        <div className='d-flex justify-content-center m-3'>
+                          <div className='notselected-box-ident' >
+                            <h6>Not Booked</h6>
+                          </div>
+                          <div className='selected-box-identi' >
+                            <h6>Booked</h6>
+                          </div>
                         </div>
-                      ))}
-                    </div>
+                        {docSchedule.find((day) => day.day === viewSelectedDay)?.time.some((time) => time.isAvailable) ? (
+                          <div className="view-time-slot-container">
+                            {docSchedule.find((day) => day.day === viewSelectedDay)?.time.map((time) => (
+                              <div className={`view-time-box ${!time.isAvailable ? 'booked' : ''}`} key={time.timeslot}>
+                                <h6>{time.timeslot}</h6>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-center">No Time Slots Available for {viewSelectedDay}</p>
+
+                        )}
+                      </>
+                    )}
                     <div className="time-set-butt">
                       <button className="time-submit-button">
                         Change
@@ -253,18 +312,23 @@ function Viewschedule() {
                       ))}
 
                     </div>
-                    <h3 className="text-center the-first-text">Schedule your time</h3>
-                    <div className="time-slot-container">
-                      {timeSlots.map((timeSlot) => (
-                        <TimeSlotBox
-                          key={timeSlot}
-                          timeSlot={timeSlot}
-                          isSelected={selectedTimeSlots.includes(timeSlot)}
-                          handleClick={handleTimeSlotClick}
-                        />
-                      ))}
 
-                    </div>
+                    {selectedDays.map((selectedDay) => (
+                      <div key={selectedDay}>
+                        <h3 className="text-center the-first-text">Available Time Slots for {selectedDay}</h3>
+                        <div className="time-slot-container">
+                          {timeSlots.map((timeSlot) => (
+                            <TimeSlotBox
+                              key={timeSlot}
+                              timeSlot={timeSlot}
+                              daySlot={selectedDay}
+                              isSelected={selectedTimeSlotsByDay[selectedDay]?.includes(timeSlot)}
+                              handleClick={handleTimeSlotClick}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                     <div className="time-set-butt">
                       <button type="submit" className="time-submit-button">
                         Save
