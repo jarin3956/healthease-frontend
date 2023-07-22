@@ -1,0 +1,174 @@
+// styles.scss
+
+.doc-schedule-page {
+    background-color: rgb(70, 166, 210);
+    margin-bottom: 50px;
+  
+    .the-buttons-vs {
+      display: flex;
+      justify-content: center;
+      background-color: #1d8bb4;
+      // ... (rest of the styles)
+    }
+  
+    .view-scheHeading {
+      font-size: 2em;
+      font-weight: 900;
+      color: rgb(241, 241, 241);
+    }
+  
+    .radio-inputs {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      border-radius: 0.5rem;
+      background-color: #b2c3c3;
+      box-sizing: border-box;
+      box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+      padding: 0.25rem;
+      width: 600px;
+      font-size: 14px;
+  
+      .radio {
+        flex: 1 1 auto;
+        text-align: center;
+  
+        input {
+            display: none;
+      
+            &:checked + .name {
+              background-color: #fff;
+              font-weight: 600;
+            }
+          }
+  
+        .name {
+          display: flex;
+          cursor: pointer;
+          align-items: center;
+          justify-content: center;
+          border-radius: 0.5rem;
+          border: none;
+          padding: .5rem 0;
+          color: rgb(34, 50, 55);
+          transition: all .15s ease-in-out;
+  
+          &.checked {
+            background-color: #fff;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  
+    // ... (rest of the styles)
+  
+    .schedule-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #e8f1f1;
+      // ... (rest of the styles)
+    }
+  
+    .time-slot-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+  
+      .time-slot-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #bcbebf;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        width: 200px;
+        height: 43px;
+  
+        &.selected {
+          background-color: #16a4c4;
+          color: #fff;
+        }
+      }
+    }
+  
+    // ... (rest of the styles)
+  
+    .day-slot-container {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 10px 0;
+      justify-content: center;
+  
+      .day-slot-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 40px;
+        border: 2px solid #259ec0;
+        background-color: #fff;
+        color: #444;
+        font-weight: 500;
+        margin: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+  
+        &.selected {
+          background-color: #259ec0;
+          color: #fff;
+        }
+  
+        &:hover {
+          background-color: #1388af;
+          color: #fff;
+        }
+      }
+    }
+  
+    // ... (rest of the styles)
+  
+    .time-set-butt {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+  
+      .time-submit-button {
+        display: block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+  
+        &:hover {
+          background-color: #193944;
+        }
+  
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  
+    .the-first-text {
+      margin-top: 60px;
+      margin-bottom: 40px;
+    }
+  
+    @media (max-width: 1082px) {
+      .schedule-panel {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+  

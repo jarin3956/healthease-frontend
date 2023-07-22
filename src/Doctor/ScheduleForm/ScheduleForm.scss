@@ -1,0 +1,87 @@
+.the-first-heading {
+    margin-top: 60px;
+    margin-bottom: 40px;
+}
+
+.day-slot-container-fo {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    justify-content: center;
+
+    .day-slot-boxx {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 40px;
+        border: 2px solid #259ec0;
+        background-color: #fff;
+        color: #444;
+        font-weight: 500;
+        margin: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+  
+        &.selected {
+          background-color: #259ec0;
+          color: #fff;
+        }
+  
+        &:hover {
+          background-color: #1388af;
+          color: #fff;
+        }
+      }
+}
+
+.time-slot-container-fo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+
+    .time-slot-boxx {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #bcbebf;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        width: 200px;
+        height: 43px;
+  
+        &.selected {
+          background-color: #16a4c4;
+          color: #fff;
+        }
+      }
+}
+
+.time-set-butt-fo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+
+    .timesubmit-button {
+        display: block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+
+        &:hover {
+            background-color: #193944;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}

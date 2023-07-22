@@ -39,12 +39,12 @@ function Profile() {
                         }
                     });
                     setUserr(response.data);
-                    setImagee(response.data.image)
-                    setNamee(response.data.name)
+                    setImagee(response.data.image);
+                    setNamee(response.data.name);
                     setAgee(response.data.age);
-                    setHeighte(response.data.height)
-                    setWeighte(response.data.weight)
-                    setGendere(response.data.gender)
+                    setHeighte(response.data.height);
+                    setWeighte(response.data.weight);
+                    setGendere(response.data.gender);
                 } catch (error) {
                     console.log(error);
                 }
@@ -212,6 +212,7 @@ function Profile() {
                                 </div>
                                 <span className='pr-user-sp'>{user.name}</span>
                                 <h6 className="userprocarddet">{user.email}</h6>
+                                <h6 className="userprocarddet">Wallet Balance : ₹{user.wallet}</h6>
                                 {user.age && <h6 className="userprocarddet">Age : {user.age}</h6>}
                                 {user.gender && <h6 className="userprocarddet">Gender : {user.gender}</h6>}
                                 {user.height && <h6 className="userprocarddet">Height : {user.height}cms</h6>}
