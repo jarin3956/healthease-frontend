@@ -52,12 +52,12 @@ function Viewdoc() {
 
     return (
         <>
-            <div className="mx-4 mt-5">
-                <div className="vdoc-cookieCard rounded-3">
+           
+                <div className="vdoc-cookieCard ">
                     <p className='text-center the-main-head'>Book an appointment for an online consultation</p>
                     <div className='vdoc-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
                         {doctors.map((doctor) => (
-                            <div className='p-2' >
+                            <div className='p-3' >
                                 <Card key={doctor._id} sx={{ maxWidth: 330 }}>
                                     <CardMedia
                                         component="img"
@@ -89,7 +89,7 @@ function Viewdoc() {
                     </div>
                     
                 </div>
-            </div>
+       
         </>
     )
 }

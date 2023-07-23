@@ -195,8 +195,8 @@ function Profile() {
     return (
         <>
             
-            <div  className="mx-4 mt-5">
-                <div className='pr-cookieCard rounded-3'>
+            
+                <div className='pr-cookieCard'>
                     {user && (
                         <div className="pr-userprocard">
                             <p className="pr-cookieHeading mt-3">Profile</p>
@@ -393,7 +393,7 @@ function Profile() {
                         </div>
                     )}
                 </div>
-            </div>
+            
         </>
     )
 }

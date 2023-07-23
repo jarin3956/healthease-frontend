@@ -28,8 +28,8 @@ function Home() {
     return (
         <>
 
-            <div className="mx-4 mt-5">
-                <div className="ho-cookieCard rounded-3">
+            <div className="">
+                <div className="ho-cookieCard ">
                     <div className="ho-contentWrapper">
                         <p className="ho-cookieHeading mt-3">Home</p>
                         <p className='text-center the-main-head'>Book an appointment for an online consultation</p>

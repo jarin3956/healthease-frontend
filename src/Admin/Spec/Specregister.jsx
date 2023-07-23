@@ -55,8 +55,8 @@ function Specregister() {
     return (
         <>
 
-            <div className="mx-4 mt-5">
-                <div className="spl-regCard rounded-3">
+            
+                <div className="spl-regCard ">
                     <div className='spl-reg-main' >
                         <form className="reg-spl-form-main p-2" >
                             <p className="reg-spl-heading">Add Specialization</p>
@@ -79,7 +79,7 @@ function Specregister() {
                         </form>
                     </div>
                 </div>
-            </div>
+           
 
         </>
     )

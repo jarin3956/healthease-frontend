@@ -68,8 +68,8 @@ function Bookings() {
       showCancelButton: true,
       confirmButtonText: 'Yes, cancel it!',
       cancelButtonText: 'No, keep it',
-      confirmButtonColor: '#FF0000', // Red color for the confirm button
-      cancelButtonColor: '#333333', // Customize the cancel button color if needed
+      confirmButtonColor: '#FF0000', 
+      cancelButtonColor: '#333333', 
     }).then((result) => {
       if (result.isConfirmed) {
 
@@ -94,15 +94,19 @@ function Bookings() {
                       <MDBCardBody className="p-4">
                         {bookings.map((booking) => (
 
-                          <MDBCard className="shadow-0 border m-2">
+                          <MDBCard className="shadow border m-2">
                             <MDBCardBody>
                               <MDBRow>
                                 <MDBCol md="2">
                                   <MDBCardImage
                                     src={`/DocImages/${booking.doctorData.profileimg}`}
-                                    className='rounded-5'
+                                    className='rounded-5 '
                                     fluid
                                     alt="Phone"
+                                    style={{
+                                      height: '130px', 
+                                      width: '130px', 
+                                  }}
                                   />
                                 </MDBCol>
 
@@ -137,7 +141,12 @@ function Bookings() {
                                     md="1"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-                                    <p className=" mb-0 small">{booking.bookingData.Status}</p>
+                                    {booking.bookingData.Status === 'CANCELLED' ? (
+                                      <p className=" mb-0 small text-danger" style={{fontWeight:'700'}}>{booking.bookingData.Status}</p>
+                                    ): (
+                                      <p className=" mb-0 small">{booking.bookingData.Status}</p>
+                                    )}
+                                    
 
                                   </MDBCol>
 

@@ -4,9 +4,9 @@ function Aboutusp({ user }) {
     return (
         <>
             
-            <div className="mx-4 mt-5">
+            
                 <div className="txtcontainer" style={{ maxWidth: "1750px" }}>
-                    <div className="ab-cookieCard rounded-3">
+                    <div className="ab-cookieCard ">
                         <div className="ab-contentWrapper">
                             <p className="ab-cookieHeading mt-3">About Us</p>
                             <h6 className="ab-cookieDescription">
@@ -24,7 +24,7 @@ function Aboutusp({ user }) {
                         </div>
                     </div>
                 </div>
-            </div>
+            
 
         </>
 

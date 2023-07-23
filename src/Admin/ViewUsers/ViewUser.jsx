@@ -44,11 +44,8 @@ function ViewUser() {
     return (
         <>
 
-            <div className="mx-4 mt-5">
-                <div className="row justify-content-center">
-                    <div className='adminusrtable rounded-3 ' >
-                        <p className="cookieHeading text-center mt-3">View User</p>
-                        <section className='mb-3 rounded-3' style={{ backgroundColor: '#f4f5f7' }}>
+            
+                        <section className="card p-3 py-4 mb-5  rounded-0 vh-100" style={{ backgroundColor: 'rgb(70, 166, 210)' }}>
                             <MDBContainer className="py-5 h-100">
                                 <MDBRow className="justify-content-center align-items-center h-100">
                                     <MDBCol lg="6" className="mb-4 mb-lg-0">
@@ -113,9 +110,7 @@ function ViewUser() {
                                 </MDBRow>
                             </MDBContainer>
                         </section>
-                    </div>
-                </div>
-            </div>
+                    
 
         </>
     )

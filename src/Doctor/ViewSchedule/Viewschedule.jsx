@@ -10,6 +10,7 @@ import Docschedule from '../Docschedule/Docschedule'
 import ScheduleForm from '../ScheduleForm/ScheduleForm'
 import Bookings from '../Bookings/Bookings'
 
+import NotFound from '../../Common/NotFound/NotFound'
 
 
 function Viewschedule() {
@@ -70,26 +71,7 @@ function Viewschedule() {
 
 
 
-  // function TimeSlotBox({ timeSlot, daySlot, isSelected, handleClick }) {
-  //   const className = `time-slot-box ${isSelected ? 'selected' : ''}`;
-
-  //   return (
-  //     <div className={className} onClick={() => handleClick(timeSlot, daySlot)}>
-  //       {timeSlot}
-  //     </div>
-  //   );
-  // }
-
-
-  // function DaySlotBox({ daySlot, isSelected, handleClick }) {
-  //   const className = `day-slot-box ${isSelected ? 'selected' : ''}`;
-
-  //   return (
-  //     <div className={className} onClick={() => handleClick(daySlot)}>
-  //       {daySlot}
-  //     </div>
-  //   );
-  // }
+  
 
 
 
@@ -139,7 +121,7 @@ function Viewschedule() {
 
 
   const timeSlots = [
-    '09:00 am - 09:30 am', '09:30 am - 10:00 am', '10:00 am - 10:30 am', '10:30 am - 11:00 am', '11:00 am - 11:30 am', '11:30 am - 12:00 pm', '12:00 pm - 12:30 pm', '12:30 pm - 01:00 pm', '01:00 pm - 01:30 pm', '01:30 pm - 02:00 pm', '02:00 pm - 02:30 pm', '02:30 pm - 03:00 pm', '03:00 pm - 03:30 pm', '03:30 pm - 04:00 pm', '04:00 pm - 04:30 pm', '04:30 pm - 05:00 pm', '05:00 pm - 05:30 pm', '05:30 pm - 06:00 pm', '06:00 pm - 07:00 pm', '07:00 pm - 07:30 pm', '07:30 pm - 08:00 pm', '08:00 pm - 08:30 pm', '08:30 pm - 09:00 pm', '09:00 pm - 09:30 pm',
+    '10:00 am - 10:30 am', '10:30 am - 11:00 am', '11:00 am - 11:30 am', '11:30 am - 12:00 pm', '12:00 pm - 12:30 pm', '12:30 pm - 01:00 pm', '01:00 pm - 01:30 pm', '01:30 pm - 02:00 pm', '02:00 pm - 02:30 pm', '02:30 pm - 03:00 pm', '03:00 pm - 03:30 pm', '03:30 pm - 04:00 pm', '04:00 pm - 04:30 pm', '04:30 pm - 05:00 pm', '05:00 pm - 05:30 pm',
   ];
 
   const dispatch = useDispatch()
@@ -211,9 +193,9 @@ function Viewschedule() {
   return (
     <>
       <ToastContainer />
-      <div className="mx-4 mt-5" >
+      
         <section className='rounded-3 doc-schedule-page' >
-          <div className='the-buttons-vs p-3 rounded-3 ' >
+          <div className='the-buttons-vs p-3 ' >
             <div className="radio-inputs">
               <label className="radio">
                 <input
@@ -299,7 +281,8 @@ function Viewschedule() {
               {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED').length > 0 ? (
                 <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED')} />
               ) : (
-                <h3 className='text-center'>No Completed data available to display</h3>
+                <NotFound/>
+                
               )}
             </>
           )}
@@ -308,7 +291,7 @@ function Viewschedule() {
               {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING').length > 0 ? (
                 <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING')} handleCancelBooking={handleCancelBooking} />
               ) : (
-                <h3 className='text-center'>No Upcoming data available to display</h3>
+                <NotFound/>
               )}
             </>
           )}
@@ -317,12 +300,12 @@ function Viewschedule() {
               {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED').length > 0 ? (
                 <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED')} />
               ) : (
-                <h3 className='text-center'>No Cancelled data available to display</h3>
+                <NotFound/>
               )}
             </>
           )}
         </section>
-      </div>
+      
     </>
   )
 }

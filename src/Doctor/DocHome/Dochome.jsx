@@ -4,6 +4,8 @@ import axiosinstance from '../../Axios/Axios';
 
 import Docschedule from '../Docschedule/Docschedule';
 
+import NotFound from '../../Common/NotFound/NotFound';
+
 function Dochome() {
 
   const [schedule, setSchedule] = useState(null)
@@ -33,22 +35,22 @@ function Dochome() {
 
   return (
     <>
-      <div className="mx-4 mt-5">
-        <section className="rounded-3 doc-home-page">
+      
+        <section className=" doc-home-page">
           <div className="p-2">
-            <p className="cookieHeading text-center mt-3">Your Schedule</p>
+            <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
             <div className="home-sch-panel rounded-3">
               {schedule ? (
                 <>
                 <Docschedule data={schedule}/>
                 </>
               ) : (
-                <h1>Please Schedule</h1>
+                <NotFound/>
               )}
             </div>
           </div>
         </section>
-      </div>
+      
     </>
   );
 }

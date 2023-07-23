@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from 'react'
 import axiosinstance from '../../Axios/Axios';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
+
+import {
+    TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    Paper,
+    Button,
+    TablePagination,
+    TextField,
+} from '@mui/material';
+
 import { useNavigate } from 'react-router-dom';
 
-import './Specmgt.css'
+import Swal from 'sweetalert2';
+
+
+import './Specmgt.scss'
 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import NotFound from '../../Common/NotFound/NotFound'
+
+
 
 function Specmgt() {
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchQuery, setSearchQuery] = useState('');
+
     const navigate = useNavigate()
     const [specialization, setSpecialization] = useState([])
     const [name, setName] = useState('')
@@ -26,7 +43,24 @@ function Specmgt() {
     const [specid, setSpecId] = useState('')
     const [imageUrl, setImageUrl] = useState('');
 
-    
+
+    const blockSpec = async (specId) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'To change the status of specialization!',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, sure it!',
+            cancelButtonText: 'No, keep it',
+            confirmButtonColor: '#FF0000', 
+            cancelButtonColor: '#333333', 
+          }).then((result) => {
+            if (result.isConfirmed) {
+      
+                handleBlock(specId);
+            }
+          });
+    }
 
     const handleBlock = async (specId) => {
         try {
@@ -38,9 +72,9 @@ function Specmgt() {
 
             if (response.status === 200) {
                 toast.success(response.data.message);
-              } else {
+            } else {
                 toast.error(response.data.message);
-              }
+            }
 
         } catch (error) {
             console.log(error);
@@ -48,14 +82,32 @@ function Specmgt() {
         }
     }
 
+    const deleteConfirm = async (specId) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'This action cannot be undone!',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it',
+            confirmButtonColor: '#FF0000', 
+            cancelButtonColor: '#333333', 
+          }).then((result) => {
+            if (result.isConfirmed) {
+      
+                deleteSpec(specId);
+            }
+          });
+    }
+
     const deleteSpec = async (specId) => {
         try {
             const response = await axiosinstance.delete(`specialization/delete-specialization/${specId}`);
             if (response.status === 200) {
                 toast.success(response.data.message);
-              } else {
+            } else {
                 toast.error(response.data.message);
-              }
+            }
         } catch (error) {
             console.log(error);
             toast.error('Error deleting the specialization');
@@ -102,9 +154,9 @@ function Specmgt() {
 
             if (editresponse.status === 200) {
                 toast.success(editresponse.data.message);
-              } else {
+            } else {
                 toast.error(editresponse.data.message);
-              }
+            }
 
             setSpecialization(editresponse.data.spec)
 
@@ -128,133 +180,193 @@ function Specmgt() {
         fetchSpecData();
     }, [deleteSpec]);
 
+
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+        setPage(0);
+    };
+
+    const filteredSpecialization = specialization.filter((spec) => {
+        return (
+            spec.name.toLowerCase().includes(searchQuery)
+        )
+    })
+
+    const isDataFound = filteredSpecialization.length > 0;
+
+
+
     return (
         <>
-        <ToastContainer />
-            
-            <div className="mx-4 mt-5">
-                <div className="row justify-content-center">
-                    <div className="col-md-12">
-                        <div className="card p-3 py-4 mb-5">
-                            <div className='adminusrtable rounded-3' >
-                                <p className="cookieHeading text-center mt-3">Specialization Management</p>
-                                {!showEdit && (
-                                    <div className=" p-3 d-flex justify-content-center">
-                                        <button className="theSpecButt" onClick={() => navigate('/admin/spec-register')} >
-                                            Add
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                            {showEdit && (
-                                <>
-                                    <div className="txtcontainer p-3" style={{ maxWidth: "800px" }}>
-                                        <div className="cookieCard rounded-3">
-                                            <div className="contentWrapper">
-                                                <p className="cookieHeading text-center mt-3 ">Edit</p>
-                                                <form encType="multipart/form-data" className="register-form" onSubmit={handleSave} >
-                                                    <div className='p-3 bg-info rounded-3 mb-3'>
-                                                        
-                                                        {/* <p>Enter Name</p> */}
-                                                        <input
-                                                            type="text"
-                                                            value={name}
-                                                            className='more-input'
-                                                            onChange={(e) => setName(e.target.value)}
-                                                            placeholder="Name"
-                                                            required
-                                                        />
-                                                        {/* <p>Enter Description</p> */}
-                                                        <input
-                                                            type="text"
-                                                            value={description}
-                                                            className='more-input'
-                                                            onChange={(e) => setDescription(e.target.value)}
-                                                            placeholder="Description"
-                                                            required
-                                                        />
-
-                                                        <img
-                                                            src={imageUrl}
-                                                            alt={name}
-                                                            style={{ width: '100px', height: '100px', borderRadius: '25px' }}
-                                                        />
-                                                        {/* <p>Upload Image</p> */}
-                                                        <input
-                                                            type="file"
-                                                            onChange={(e) => {
-                                                                const file = e.target.files.item(0);
-                                                                setImage(file); // Set the selected file
-                                                                setImageUrl(URL.createObjectURL(file)); // Set the URL of the selected file
-                                                            }}
-                                                            accept="image/*"
-                                                            className="more-input bg-white"
-                                                        />
-
-                                                        <div className='d-flex ' >
-                                                            <button className="userprocardbutt" type='submit' >
-                                                                Save
-                                                            </button>
-                                                            <button className="userprocardbutt ms-2" onClick={() => closeEdit()} >
-                                                                Close
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-
-                            {!showEdit && (
-                                <TableContainer component={Paper}>
-                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                        <TableHead sx={{ backgroundColor: 'lightgrey' }} >
-                                            <TableRow>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Image</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Description</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
-                                                <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {specialization.map((spec) => (
-                                                <TableRow
-                                                    key={spec.name}
-                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                >
-                                                    <TableCell component="th" scope="row">
-                                                        {spec.name}
-                                                    </TableCell>
-                                                    <TableCell align="center"><img src={`/SpecializationImages/${spec.image}`} alt={spec.name} style={{ width: '100px' }} /></TableCell>
-                                                    <TableCell align="center">{spec.description}</TableCell>
-                                                    <TableCell align="center">{spec.status === true ? 'Active' : 'Blocked'}</TableCell>
-                                                    <TableCell align="center">
-                                                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                                            <Button variant="contained" color="secondary" onClick={() => handleBlock(spec._id)} >
-                                                                {spec.status ? 'Block' : 'Unblock'}
-                                                            </Button>
-                                                            <Button variant="contained" color="secondary" onClick={() => viewEdit(spec._id)} >
-                                                                Edit
-                                                            </Button>
-                                                            <Button variant="contained" color="secondary" onClick={() => deleteSpec(spec._id)}  >
-                                                                Delete
-                                                            </Button>
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            )}
-
+            <ToastContainer />
+            <div className="card p-3 py-4 mb-5  rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)', minHeight: '100vh' }}>
+                <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
+                    <p className="text-center text-white pt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Specialization Management</p>
+                    {!showEdit && (
+                        <div className=" p-3 d-flex justify-content-center">
+                            <button className="theSpecButt" onClick={() => navigate('/admin/spec-register')} >
+                                Add
+                            </button>
                         </div>
-                    </div>
+                    )}
                 </div>
+                {showEdit && (
+                    <>
+
+                        <div className="spl-regCard ">
+                            <div className='spl-reg-main' >
+                                <form className="reg-spl-form-main p-2" >
+                                    <p className="reg-spl-heading">Edit Specialization</p>
+
+                                    <div className="reg-spl-inputContainer">
+                                        <input placeholder="Name" value={name} className="reg-spl-inputField" type="text" onChange={(e) => setName(e.target.value)} />
+                                    </div>
+                                    <div className="reg-spl-inputContainer">
+                                        <input placeholder="Description" value={description} className="reg-spl-inputField" type="text" onChange={(e) => setDescription(e.target.value)} />
+                                    </div>
+                                    <div className="reg-spl-inputContainer">
+                                        <img
+                                            src={imageUrl}
+                                            alt={name}
+                                            style={{ width: '100px', height: '100px', borderRadius: '25px' }}
+                                        />
+                                    </div>
+                                    <div className="reg-spl-inputContainer">
+                                        <input type="file" accept="image/*" onChange={(e) => {
+                                            const file = e.target.files.item(0);
+                                            setImage(file);
+                                            setImageUrl(URL.createObjectURL(file));
+                                        }} required="" className="reg-splfle-input" />
+                                    </div>
+                                    <button className="reg-splbutton" onClick={handleSave} >Save</button>
+                                    <p onClick={closeEdit} className='text-danger thespl-backbtn' >Go Back</p>
+                                </form>
+                            </div>
+                        </div>
+
+
+
+                    </>
+                )}
+
+                {!showEdit && (
+                    <div className='bg-white'>
+                        <div className='d-flex justify-content-center'>
+                            <TextField
+                                label="Search"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                variant="outlined"
+                                sx={{ m: 1 }}
+                                InputProps={{
+                                    sx: {
+                                        width: '300px',
+                                        height: '45px',
+
+                                    },
+                                }}
+                            />
+                        </div>
+                        {isDataFound ? (
+                            <TableContainer component={Paper}>
+                                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                    <TableHead sx={{ backgroundColor: 'lightgrey' }} >
+                                        <TableRow>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Image</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Description</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
+                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {filteredSpecialization.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((spec) => (
+                                            <TableRow
+                                                key={spec.name}
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">
+                                                    {spec.name}
+                                                </TableCell>
+                                                <TableCell align="center"><img src={`/SpecializationImages/${spec.image}`} alt={spec.name} style={{ width: '100px' }} /></TableCell>
+                                                <TableCell align="center">{spec.description}</TableCell>
+                                                <TableCell align="center">{spec.status === true ? 'Active' : 'Blocked'}</TableCell>
+                                                <TableCell align="center">
+                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                                        <Button variant="contained" color="secondary" onClick={() => blockSpec(spec._id)}
+                                                            sx={{
+                                                                backgroundColor: 'rgb(23, 116, 197)',
+                                                                color: '#fff', 
+                                                                '&:hover': {
+                                                                    backgroundColor: '#094593', 
+                                                                    
+                                                                },
+                                                            }} >
+                                                            {spec.status ? 'Block' : 'Unblock'}
+                                                        </Button>
+                                                        <Button variant="contained" color="secondary" onClick={() => viewEdit(spec._id)}
+                                                        sx={{
+                                                            backgroundColor: 'rgb(23, 116, 197)',
+                                                            color: '#fff', 
+                                                            '&:hover': {
+                                                                backgroundColor: '#094593', 
+                                                                
+                                                            },
+                                                        }}
+                                                         >
+                                                            Edit
+                                                        </Button>
+                                                        <Button variant="contained" color="secondary" onClick={() => deleteConfirm(spec._id)}
+                                                        sx={{
+                                                            backgroundColor: '#D41D1D',
+                                                            color: '#fff', 
+                                                            '&:hover': {
+                                                                backgroundColor: '#B40F0F', 
+                                                                
+                                                            },
+                                                        }}
+                                                          >
+                                                            Delete
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        ) : (
+                            <NotFound />
+                        )}
+                        <div className='d-flex justify-content-center' >
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25]}
+                                component="div"
+                                count={specialization.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                sx={{ mt: '10px' }}
+                            />
+                        </div>
+
+                    </div>
+
+                )}
+
             </div>
+
         </>
     )
 }

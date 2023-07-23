@@ -112,8 +112,8 @@ function Bookconsult() {
         <>
 
             <ToastContainer />
-            <div className="mx-4 mt-5">
-                <div className="book-cookieCard rounded-3">
+            
+                <div className="book-cookieCard ">
                     <div className="book-contentWrapper">
                         <div className="home-sch-panel rounded-3 m-2">
                             {docSchedule ? (
@@ -166,7 +166,7 @@ function Bookconsult() {
                         </div>
                     </div>
                 </div>
-            </div>
+            
         </>
     )
 }

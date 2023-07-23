@@ -2,13 +2,11 @@
 
 .doc-schedule-page {
     background-color: rgb(70, 166, 210);
-    margin-bottom: 50px;
-  
+    min-height: 100vh;  
     .the-buttons-vs {
       display: flex;
       justify-content: center;
       background-color: #1d8bb4;
-      // ... (rest of the styles)
     }
   
     .view-scheHeading {

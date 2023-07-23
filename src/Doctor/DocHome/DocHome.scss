@@ -1,7 +1,6 @@
 .doc-home-page {
   background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
-  margin-bottom: 50px;
-
+  min-height: 100vh;
   .home-sch-panel {
     display: flex;
     flex-direction: column;

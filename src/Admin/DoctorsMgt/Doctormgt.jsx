@@ -1,20 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import axiosinstance from '../../Axios/Axios';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
+import {
+    TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    Paper,
+    Button,
+    TablePagination,
+    TextField,
+} from '@mui/material';
+
+import Swal from 'sweetalert2';
+
 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import NotFound from '../../Common/NotFound/NotFound'
+
 function Doctormgt() {
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchQuery, setSearchQuery] = useState('');
+
     const [doctors, setDoctors] = useState([])
+
     useEffect(() => {
+
         const fetchDoctorsData = async () => {
             try {
 
@@ -29,27 +45,72 @@ function Doctormgt() {
         fetchDoctorsData()
     }, [])
 
+    const BlockDoctor = async (doctorId) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'to change user status',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, sure!',
+            cancelButtonText: 'No, keep it'
+          });
+          if (result.isConfirmed) {
+            handleBlockDoctor(doctorId);
+          }
+    }
+
     const handleBlockDoctor = async (doctorId) => {
         try {
-          const response = await axiosinstance.put(`admin/change-doctor-status/${doctorId}`);
-          const updatedDoctor = response.data.doctor;
-      
-          setDoctors((prevDoctors) =>
-            prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
-          );
-            
-          if (response.status === 200) {
-            toast.success(response.data.message);
-          } else {
-            toast.error(response.data.message);
-          }
-          
+            const response = await axiosinstance.put(`admin/change-doctor-status/${doctorId}`);
+            const updatedDoctor = response.data.doctor;
+
+            setDoctors((prevDoctors) =>
+                prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
+            );
+
+            if (response.status === 200) {
+                toast.success(response.data.message);
+            } else {
+                toast.error(response.data.message);
+            }
+
         } catch (error) {
-          console.log(error);
-          toast.error('An error occurred. Please try again.');
+            console.log(error);
+            toast.error('An error occurred. Please try again.');
         }
-      };
-      
+    };
+
+
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+        setPage(0);
+    };
+
+    const filteredDoctors = doctors.filter((doctor) => {
+        return (
+            doctor.name.toLowerCase().includes(searchQuery) ||
+            doctor.age.toString().toLowerCase().includes(searchQuery) ||
+            doctor.regno.toLowerCase().includes(searchQuery) ||
+            doctor.email.toLowerCase().includes(searchQuery)
+        )
+
+    });
+
+
+    const isDataFound = filteredDoctors.length > 0;
+
 
 
 
@@ -57,66 +118,105 @@ function Doctormgt() {
         <>
             <ToastContainer />
 
-            <div className="mx-4 mt-5">
-                <div className="row justify-content-center">
-                    <div className="col-md-12">
-                        <div className="card p-3 py-4 mb-5">
-                            <div className='adminusrtable rounded-3' >
-                                <p className="cookieHeading text-center mt-3">Doctor Management</p>
-                            </div>
-                            <TableContainer component={Paper}>
-                                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                    <TableHead sx={{ backgroundColor: 'lightgrey' }} >
-                                        <TableRow>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Reg.no</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Email</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Age</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Gender</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Specialization</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Experience</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Fare</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Final Fare</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
-                                            <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
+
+            <div className="card p-3 py-4 mb-5  rounded-0 vh-100" style={{ backgroundColor: 'rgb(70, 166, 210)' }}>
+                <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
+                    <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Doctor Management</p>
+                </div>
+                <div className='bg-white'>
+                    <div className='d-flex justify-content-center'>
+                        <TextField
+                            label="Search"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            variant="outlined"
+                            sx={{ m: 1 }}
+                            InputProps={{
+                                sx: {
+                                    width: '300px',
+                                    height: '45px',
+
+                                },
+                            }}
+                        />
+                    </div>
+                    {isDataFound ? (
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead sx={{ backgroundColor: 'lightgrey' }} >
+                                    <TableRow>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Reg.no</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Email</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Age</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Gender</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Specialization</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Experience</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Fare</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Final Fare</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {filteredDoctors.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((doctor) => (
+                                        <TableRow
+                                            key={doctor.name}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {doctor.name}
+                                            </TableCell>
+                                            <TableCell align="center">{doctor.regno}</TableCell>
+                                            <TableCell align="center">{doctor.email}</TableCell>
+                                            <TableCell align="center">{doctor.age}</TableCell>
+                                            <TableCell align="center">{doctor.gender}</TableCell>
+                                            <TableCell align="center">{doctor.specialization}</TableCell>
+                                            <TableCell align="center">{doctor.experience} Years</TableCell>
+                                            <TableCell align="center">{doctor.fare} Rupees</TableCell>
+                                            <TableCell align="center">{doctor.final_fare} Rupees</TableCell>
+                                            <TableCell align="center">{doctor.approval === true ? "Verified" : "Not Verified"}</TableCell>
+                                            <TableCell align="center">
+                                                <Button
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    onClick={() => BlockDoctor(doctor._id)}
+                                                    sx={{
+                                                        backgroundColor: '#D41D1D',
+                                                        color: '#fff', 
+                                                        '&:hover': {
+                                                            backgroundColor: '#B40F0F', 
+                                                            
+                                                        },
+                                                    }}
+                                                >
+                                                    {doctor.approval === true ? 'Block' : 'Verify'}
+                                                </Button>
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {doctors.map((doctor) => (
-                                            <TableRow
-                                                key={doctor.name}
-                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                            >
-                                                <TableCell component="th" scope="row">
-                                                    {doctor.name}
-                                                </TableCell>
-                                                <TableCell align="center">{doctor.regno}</TableCell>
-                                                <TableCell align="center">{doctor.email}</TableCell>
-                                                <TableCell align="center">{doctor.age}</TableCell>
-                                                <TableCell align="center">{doctor.gender}</TableCell>
-                                                <TableCell align="center">{doctor.specialization}</TableCell>
-                                                <TableCell align="center">{doctor.experience} Years</TableCell>
-                                                <TableCell align="center">{doctor.fare} Rupees</TableCell>
-                                                <TableCell align="center">{doctor.final_fare} Rupees</TableCell>
-                                                <TableCell align="center">{doctor.approval === true ? "Verified" : "Not Verified"}</TableCell>
-                                                <TableCell align="center">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        onClick={() => handleBlockDoctor(doctor._id)}
-                                                    >
-                                                        {doctor.approval === true ? 'Block' : 'Verify'}
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </div>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    ) : (
+                        <NotFound />
+                    )}
+                    <div className='d-flex justify-content-center' >
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={doctors.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            sx={{ mt: '10px' }}
+                        />
                     </div>
                 </div>
+
             </div>
+
         </>
     )
 }

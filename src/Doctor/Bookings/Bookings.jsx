@@ -8,11 +8,29 @@ import {
     MDBRow,
 } from "mdb-react-ui-kit";
 
+import Swal from 'sweetalert2';
+
 function Bookings({ bookingData, handleCancelBooking }) {
 
     const handleCancelBookingClick = async (bookingId) => {
         try {
-            await handleCancelBooking(bookingId)
+
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this booking!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!',
+                cancelButtonText: 'No, keep it'
+              });
+              if (result.isConfirmed) {
+                // User clicked on "Confirm", cancel the booking
+                await handleCancelBooking(bookingId);
+                Swal.fire('Cancelled!', 'Your booking has been cancelled.', 'success');
+              }
+
         } catch (error) {
             console.log(error);
         }
@@ -22,19 +40,24 @@ function Bookings({ bookingData, handleCancelBooking }) {
         <>
             <MDBContainer className="py-5 h-100">
                 <MDBRow className="justify-content-center align-items-center h-100">
-                    <MDBCol lg="10" xl="8">
+                    <MDBCol lg="10" xl="11">
                         <MDBCard style={{ borderRadius: "10px" }}>
                             <MDBCardBody className="p-4">
                                 {bookingData.map((booking) => (
 
-                                    <MDBCard className="shadow-0 border m-2">
+                                    <MDBCard className="shadow border m-2">
                                         <MDBCardBody>
                                             <MDBRow>
-                                                <MDBCol md="2">
+                                                <MDBCol md="2"className="d-flex justify-content-center" >
                                                     <MDBCardImage
                                                         src={`/UserImages/${booking.userData.image}`}
+                                                        className='rounded-5 '
                                                         fluid
                                                         alt="Phone"
+                                                        style={{
+                                                            height: '130px', 
+                                                            width: '130px', 
+                                                        }}
                                                     />
                                                 </MDBCol>
                                                 {booking.bookingData.Status === "PENDING" ? (

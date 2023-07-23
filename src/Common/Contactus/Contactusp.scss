@@ -7,8 +7,7 @@
     padding: 20px;
     position: relative;
     overflow: hidden;
-    margin-bottom: 40px;
-
+    min-height: 100vh;
     .con-contentWrapper {
       padding: 50px;
       gap: 20px;
@@ -21,7 +20,7 @@
     }
     .acceptButton {
       padding: 11px 20px;
-      background-color: #7b57ff;
+      background-color:  rgb(23, 116, 197);
       transition-duration: .2s;
       border: none;
       color: rgb(241, 241, 241);
@@ -31,7 +30,7 @@
     }
     
     .acceptButton:hover {
-      background-color: #714aff;
+      background-color:  rgb(152, 192, 227);
       transition-duration: .2s;
     }
   }
@@ -40,7 +39,7 @@
     width: 50%;
     padding-bottom: 50%;
     content: "";
-    background: linear-gradient(to right, rgb(142, 110, 255), rgb(208, 195, 255));
+    background: linear-gradient(to right, rgb(23, 116, 197), rgb(208, 195, 255));
     position: absolute;
     z-index: 1;
     border-radius: 50%;

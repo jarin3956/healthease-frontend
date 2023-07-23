@@ -176,13 +176,13 @@ function Docprofile() {
         <>
 
             <ToastContainer />
-            <div className="mx-4 mt-5">
+            <div >
                 {doctor && (
                     <>
                         {doctor.age && (
-                            <section className='rounded-3 doc-profile-page' >
+                            <section className=' doc-profile-page' >
                                 <MDBContainer className="py-5">
-                                    <p className="cookieHeading mt-3">Profile</p>
+                                    <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Profile</p>
                                     <MDBRow>
                                         <MDBCol lg="4">
                                             <MDBCard className="mb-4">

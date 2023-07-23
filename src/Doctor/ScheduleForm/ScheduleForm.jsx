@@ -35,7 +35,7 @@ function ScheduleForm({ selectedDays, selectedTimeSlotsByDay, handleSubmit, hand
         <>
             <MDBContainer className="py-5 h-100">
                 <MDBRow className="justify-content-center align-items-center h-100">
-                    <MDBCol lg="12" xl="8">
+                    <MDBCol lg="12" xl="11">
                         <MDBCard style={{ borderRadius: "10px" }}>
                             <MDBCardBody >
                                 <MDBCard className="shadow-0 border-0 m-4">

@@ -222,8 +222,8 @@ function Payment() {
         <>
             <ToastContainer />
 
-            <div className="mx-4 mt-5">
-                <div className="payment-cookieCard rounded-3">
+            
+                <div className="payment-cookieCard ">
                     <div className="payment-contentWrapper">
                         {!view && (
                             <div className="payment-sch-panel rounded-3 m-2">
@@ -275,7 +275,7 @@ function Payment() {
                         )}
                     </div>
                 </div>
-            </div>
+            
         </>
     )
 }

@@ -18,7 +18,7 @@ function Viewspec({ spec }) {
 
     return (
         <div className='p-2' >
-            <Card sx={{ maxWidth: 330 }}>
+            <Card sx={{ maxWidth: 400 }}>
                 <CardMedia
                     component="img"
                     alt="specialization"
