@@ -75,13 +75,13 @@ function Docregister() {
             formData.append('repassword', repassword);
             formData.append('profileimg', profileimg);
             const response = await axiosinstance.post('doctor/register', formData);
-            console.log(response);
-            const data = response.data;
-            if (data.status === 'ok') {
+            
+            const data = response.data
+            if (response.status === 200) {
                 console.log('Registration successful');
                 navigate(`/doctor/verify?id=${data.id}&userType=doctor`);
 
-            } else if (data.status === 'error') {
+            } else if (data.status === 500) {
                 setError(data.message)
                 setShake(true)
             } else {

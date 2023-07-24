@@ -12,6 +12,8 @@ import Swal from 'sweetalert2';
 
 function Bookings({ bookingData, handleCancelBooking }) {
 
+    const sortedBookingData = bookingData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     const handleCancelBookingClick = async (bookingId) => {
         try {
 
@@ -26,7 +28,6 @@ function Bookings({ bookingData, handleCancelBooking }) {
                 cancelButtonText: 'No, keep it'
               });
               if (result.isConfirmed) {
-                // User clicked on "Confirm", cancel the booking
                 await handleCancelBooking(bookingId);
                 Swal.fire('Cancelled!', 'Your booking has been cancelled.', 'success');
               }
@@ -43,7 +44,7 @@ function Bookings({ bookingData, handleCancelBooking }) {
                     <MDBCol lg="10" xl="11">
                         <MDBCard style={{ borderRadius: "10px" }}>
                             <MDBCardBody className="p-4">
-                                {bookingData.map((booking) => (
+                                {sortedBookingData.map((booking) => (
 
                                     <MDBCard className="shadow border m-2">
                                         <MDBCardBody>
@@ -92,7 +93,6 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             md="1"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-
                                                             <button
                                                                 onClick={() => handleCancelBookingClick(booking.bookingData._id)}
                                                                 className="btn btn-danger btn-sm mb-0 "

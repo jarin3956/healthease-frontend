@@ -6,6 +6,8 @@ import Docschedule from '../Docschedule/Docschedule';
 
 import NotFound from '../../Common/NotFound/NotFound';
 
+
+
 function Dochome() {
 
   const [schedule, setSchedule] = useState(null)
@@ -31,26 +33,28 @@ function Dochome() {
     getSchedule()
   }, [])
 
-  
+
 
   return (
     <>
-      
-        <section className=" doc-home-page">
-          <div className="p-2">
-            <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
-            <div className="home-sch-panel rounded-3">
-              {schedule ? (
-                <>
-                <Docschedule data={schedule}/>
-                </>
-              ) : (
-                <NotFound/>
-              )}
-            </div>
+
+      <section className=" doc-home-page">
+        <p className='text-center the-main-head-dochome'>Embrace the future of medical consultations with HealthEase.</p>
+        
+        <div className="p-2">
+          <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
+          <div className="home-sch-panel rounded-3">
+            {schedule ? (
+              <>
+                <Docschedule data={schedule} />
+              </>
+            ) : (
+              <NotFound />
+            )}
           </div>
-        </section>
-      
+        </div>
+      </section>
+
     </>
   );
 }

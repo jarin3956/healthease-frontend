@@ -30,6 +30,8 @@ function Bookings() {
       });
 
       if (response.status === 200) {
+        
+        
         setBooking(response.data.bookingData)
       }
 
@@ -82,8 +84,7 @@ function Bookings() {
 
     <>
       <ToastContainer />
-      <div className="mx-4 mt-5">
-        <div className="ho-cookieCard rounded-3">
+        <div className="ho-cookieCard ">
           <div className="ho-contentWrapper">
             <p className="ho-cookieHeading mt-3">Bookings</p>
             {bookings && bookings.length > 0 ? (
@@ -197,7 +198,6 @@ function Bookings() {
 
           </div>
         </div>
-      </div>
     </>
 
 

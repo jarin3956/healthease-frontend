@@ -307,9 +307,9 @@ function Docprofile() {
                             </section>
                         )}
                         {!doctor.age && (
-                            <section className='rounded-3 doc-profile-page' >
+                            <section className=' doc-profile-page' style={{minHeight:'100vh'}} >
                                 <MDBContainer className="py-5">
-                                    <p className="cookieHeading mt-3">Profile</p>
+                                    <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Profile</p>
                                     <MDBRow>
                                         <MDBCol lg="12">
                                             {theMain && (

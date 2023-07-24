@@ -7,8 +7,12 @@ import {
     MDBCardBody,
     MDBCard,
 } from "mdb-react-ui-kit";
+import { useNavigate } from 'react-router-dom';
 
 function Docschedule({ data }) {
+
+    const navigate = useNavigate()
+
     const [viewSelectedDay, setViewSelectedDay] = useState('')
     const viewHandleDayClick = (day) => {
         setViewSelectedDay(day)
@@ -60,7 +64,7 @@ function Docschedule({ data }) {
                                         )}
 
                                         <div className="time-set-butt">
-                                            <button className="time-submit-button">
+                                            <button className="time-submit-button" onClick={() => navigate('/doctor/edit-schedule') } >
                                                 Change
                                             </button>
                                         </div>
