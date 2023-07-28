@@ -49,7 +49,11 @@ function Dochome() {
                 <Docschedule data={schedule} />
               </>
             ) : (
+              <>
+              <p className='text-center the-main-head-dochome' >Please Update your Profile</p>
               <NotFound />
+              </>
+              
             )}
           </div>
         </div>

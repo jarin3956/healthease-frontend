@@ -31,12 +31,11 @@ function Bookings() {
 
       if (response.status === 200) {
         
-        
         setBooking(response.data.bookingData)
       }
 
     } catch (error) {
-      console.log(error);
+      toast.error('Error when loading , please try after sometime')
     }
   }
 
@@ -84,7 +83,7 @@ function Bookings() {
 
     <>
       <ToastContainer />
-        <div className="ho-cookieCard ">
+        <div className="ho-cookieCard " style={{minHeight:'100vh'}}>
           <div className="ho-contentWrapper">
             <p className="ho-cookieHeading mt-3">Bookings</p>
             {bookings && bookings.length > 0 ? (
@@ -99,7 +98,8 @@ function Bookings() {
                             <MDBCardBody>
                               <MDBRow>
                                 <MDBCol md="2">
-                                  <MDBCardImage
+                                  {booking.doctorData ? (
+                                    <MDBCardImage
                                     src={`/DocImages/${booking.doctorData.profileimg}`}
                                     className='rounded-5 '
                                     fluid
@@ -109,6 +109,10 @@ function Bookings() {
                                       width: '130px', 
                                   }}
                                   />
+                                  ): (
+                                    <p>No image</p>
+                                  )}
+                                  
                                 </MDBCol>
 
                                 <>
@@ -116,7 +120,12 @@ function Bookings() {
                                     md="2"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-                                    <p className=" mb-0">{booking.doctorData.name}</p>
+                                    { booking.doctorData ? (
+                                      <p className=" mb-0">Dr.{booking.doctorData.name}</p>
+                                    ) : (
+                                      <p>No data</p>
+                                    ) }
+                                    
                                   </MDBCol>
                                   <MDBCol
                                     md="1"

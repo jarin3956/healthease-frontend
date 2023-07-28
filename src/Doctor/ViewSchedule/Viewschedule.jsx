@@ -126,7 +126,7 @@ function Viewschedule() {
 
   const dispatch = useDispatch()
 
-  const selector = useSelector((state) => state.schedule.schedule);
+  // const selector = useSelector((state) => state.schedule.schedule);
 
   const fetchBookingData = async () => {
     try {
@@ -155,7 +155,7 @@ function Viewschedule() {
           },
         });
         if (scheduleData.status === 200) {
-          setViewSchedule(scheduleData.data.schedule);
+          setViewSchedule(scheduleData.data.schedule.schedule);
           dispatch(addSchedule(scheduleData.data.schedule));
         }
       } catch (error) {
@@ -164,15 +164,17 @@ function Viewschedule() {
     };
 
 
-    if (selector) {
-      setViewSchedule(selector.schedule);
-    } else {
-      getSchedules();
-    }
+    // if (selector) {
+    //   setViewSchedule(selector.schedule);
+    // } else {
+      
+    // }
+
+    getSchedules();
 
     fetchBookingData()
 
-  }, [selector]);
+  }, []);
 
   const handleCancelBooking = async (bookingId) => {
     try {

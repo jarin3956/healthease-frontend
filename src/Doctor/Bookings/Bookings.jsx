@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 
 function Bookings({ bookingData, handleCancelBooking }) {
 
-    const sortedBookingData = bookingData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
 
     const handleCancelBookingClick = async (bookingId) => {
         try {
@@ -44,13 +44,14 @@ function Bookings({ bookingData, handleCancelBooking }) {
                     <MDBCol lg="10" xl="11">
                         <MDBCard style={{ borderRadius: "10px" }}>
                             <MDBCardBody className="p-4">
-                                {sortedBookingData.map((booking) => (
+                                {bookingData.map((booking) => (
 
                                     <MDBCard className="shadow border m-2">
                                         <MDBCardBody>
                                             <MDBRow>
                                                 <MDBCol md="2"className="d-flex justify-content-center" >
-                                                    <MDBCardImage
+                                                    { booking.userData ? (
+                                                        <MDBCardImage
                                                         src={`/UserImages/${booking.userData.image}`}
                                                         className='rounded-5 '
                                                         fluid
@@ -60,6 +61,10 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             width: '130px', 
                                                         }}
                                                     />
+                                                    ) : (
+                                                        <p>No image</p>
+                                                    ) }
+                                                    
                                                 </MDBCol>
                                                 {booking.bookingData.Status === "PENDING" ? (
                                                     <>
@@ -67,7 +72,12 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <p className=" mb-0">{booking.userData.name}</p>
+                                                            { booking.userData ? (
+                                                                <p className=" mb-0">{booking.userData.name}</p>
+                                                            ) : (
+                                                                <p>No data</p>
+                                                            ) }
+                                                            
                                                         </MDBCol>
                                                         <MDBCol
                                                             md="2"

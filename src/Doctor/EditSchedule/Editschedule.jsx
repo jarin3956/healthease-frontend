@@ -41,8 +41,8 @@ function Editschedule() {
         const timeSlots = item.time.map((slot) => slot.timeslot);
         timeSlotsByDay[item.day] = timeSlots;
       } else {
-        // Handle the case where there are no time slots for the day
-        timeSlotsByDay[item.day] = []; // or any other default value you prefer
+        //  where there are no time slots for the day
+        timeSlotsByDay[item.day] = []; 
       }
 
     });
@@ -50,7 +50,7 @@ function Editschedule() {
     setSelectedDays(days);
     setSelectedTimeSlotsByDay(timeSlotsByDay)
 
-  }, [selector])
+  }, [])
 
   const doctortoken = localStorage.getItem('doctortoken')
 

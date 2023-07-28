@@ -2,52 +2,73 @@ import React, { useState, useEffect } from 'react';
 import axiosinstance from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
 import './Admindashboard.scss'
+import Swal from 'sweetalert2';
 
 function Admindashboard() {
     const navigate = useNavigate()
     const [admin, setAdmin] = useState(null)
     const admintoken = localStorage.getItem('admintoken')
     useEffect(() => {
-        if (!admintoken) {
-            navigate('/admin/login')
-        } else {
-            axiosinstance.get('admin/dashboard', {
-                headers: {
-                    Authorization: `Bearer ${admintoken}`
+
+        const adminData = async () => {
+            try {
+                const response = await axiosinstance.get('admin/dashboard', {
+                    headers: {
+                        Authorization: `Bearer ${admintoken}`
+                    }
+                })
+                if (response.status === 200) {
+                    setAdmin(response.data.dashData);
+                } else {
+                    Swal.fire('Oops!', 'Error when loading admin data', 'error')
                 }
-            }).then((res) => {
-                setAdmin(res.data);
-            }).catch((error) => {
+            } catch (error) {
                 console.log(error);
-            })
+            }
         }
+        adminData()
+
     }, [])
+
+
+
+
     return (
         <>
-
             <div className="ad-cookieCard">
-                <div className="contentWrapper">
-                    <p className="cookieHeading text-center mt-3">Dashboard</p>
-                    <h6 className="cookieDescription">
-                        {admin && (<h1>{admin.name}</h1>)}
-                    </h6>
-                    <h6 className="cookieDescription">
-                        Through our user-friendly interface, you can easily schedule appointments, securely share medical records and symptoms, and engage in video or chat consultations with healthcare professionals. Our team of experienced doctors is dedicated to providing comprehensive diagnoses, offering expert advice, and developing tailored treatment plans to address your specific needs.
-                    </h6>
-                    <h6 className="cookieDescription">
-                        HealthEase ensures that your sensitive medical information is handled with utmost confidentiality and adheres to strict privacy and security standards. We prioritize patient satisfaction and strive to deliver high-quality healthcare services that are accessible to all, breaking geographical barriers and providing healthcare solutions to individuals regardless of their location.
-                    </h6>
-                    <h6 className="cookieDescription">
-                        Experience the convenience and peace of mind that HealthEase brings, as we empower you to take control of your health journey with ease, convenience, and confidence. Say goodbye to long queues and limited accessibility, and embrace the future of medical consultations with HealthEase.
-                    </h6>
-                </div>
+                <p className="cookieHeading text-center p-3">Admin Dashboard</p>
+                {admin && (
+                    <>
+
+                        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4  ad-cards">
+                            
+                                <div className="ad-card red">
+                                    <p className="tip">User Count</p>
+                                    <p className="second-text">{admin.userCount} users</p>
+                                </div>
+                            
+                                <div className="ad-card blue">
+                                    <p className="tip">Doctor Count</p>
+                                    <p className="second-text">{admin.doctorCount} doctors</p>
+                                </div>
+                            
+                                <div className="ad-card green">
+                                    <p className="tip">Bookings Count</p>
+                                    <p className="second-text">{admin.bookingCount} bookings</p>
+                                </div>
+                            
+                                <div className="ad-card yellow">
+                                    <p className="tip">Specialization Count</p>
+                                    <p className="second-text">{admin.specCount} specializations</p>
+                                </div>
+                        </div>
+
+                    </>
+
+                )}
+
+
             </div>
-
-
-
-
-
-
         </>
     )
 }

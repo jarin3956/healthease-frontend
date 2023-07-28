@@ -126,6 +126,7 @@ function Bookingsmgt() {
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booked Time Slot</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booking Date</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Payment Id</TableCell>
+                    <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Payment Type</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
                   </TableRow>
                 </TableHead>
@@ -154,6 +155,7 @@ function Bookingsmgt() {
                       <TableCell align="center">{booking.Booked_timeSlot}</TableCell>
                       <TableCell align="center">{booking.CreatedAt}</TableCell>
                       <TableCell align="center">{booking.Payment_id}</TableCell>
+                      <TableCell align="center">{booking.Payment_type}</TableCell>
                       <TableCell align="center">{booking.Status}</TableCell>
                     </TableRow>
                   ))}

@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Card, CardMedia, CardContent, Typography, CardActions, Button } from '@mui/material';
 import { styled } from '@mui/system';
 
+
+
 import Swal from 'sweetalert2';
 
 import { useDispatch } from 'react-redux'
@@ -32,6 +34,15 @@ function Payment() {
 
     const [doctor, setDoctor] = useState(null)
     const [view, setView] = useState(false)
+    const [userWallet, setUserWallet] = useState(false)
+    const [walletBalance, setWalletBalance] = useState(null)
+
+    const [selectedPayment, setSelectedPayment] = useState('paypal');
+
+    const handlePaymentChange = (event) => {
+        setSelectedPayment(event.target.value);
+    };
+
 
     const dispatch = useDispatch()
 
@@ -58,41 +69,114 @@ function Payment() {
         }
     }, [selector]);
 
-    
-    async function verifySlotAvailability() {
+
+    async function verifySlotAvailability(paymentType) {
 
         const verifyData = {
             selectedDay: selector.selectedDay,
             selectedTime: selector.selectedTime,
             docId: selector.docId,
+            paymentType: paymentType
         }
+        console.log(selector, 'selector for booking data');
+
 
         try {
-          const response = await axiosinstance.post('/booking/check-doc-availability', {
-            verifyData
-          });
-      
-          if (response.status === 200) {
-            
-              // Slot is available, set view to true to load the PayPal button
-              setView(true);
-          }
-           else {
-            // Handle other status codes if necessary
-            toast.error(response.data.message);
-          }
+            const response = await axiosinstance.post('/booking/check-doc-availability', {
+                verifyData
+            });
+
+            if (response.status === 200) {
+                if (verifyData.paymentType === 'paypal') {
+                    setView(true);
+                } else if (verifyData.paymentType === 'wallet') {
+                    walletBooking()
+                }
+            }
+            else {
+                toast.error(response.data.message);
+            }
         } catch (error) {
-          console.error('Error verifying slot availability:', error);
-          Swal.fire('Oops!', 'The selected time slot is already booked.', 'error').then(() => {
-            window.location.href = '/home';
-          });
+            console.error('Error verifying slot availability:', error);
+            Swal.fire('Oops!', 'The selected time slot is already booked.', 'error').then(() => {
+                window.location.href = '/home';
+            });
         }
-      }
+    }
+
+    const walletBooking = async () => {
+        const bookingData = {
+            selectedDay: selector.selectedDay,
+            selectedTime: selector.selectedTime,
+            selectedDate: selector.selectedDate,
+            docId: selector.docId,
+            final_fare: doctor.final_fare
+        }
+        try {
+            const response = await axiosinstance.post('booking/wallet-booking-data', {
+                bookingData
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (response.status === 200) {
+
+                // dispatch(removeBooking())
+
+                const { Booked_date, Booked_day, Booked_timeSlot, Fare, Payment_id, _id } = response.data.bookingData;
+                const alertMessage = `<div style="text-align: left;">
+                                        <strong>Booking ID:</strong> ${_id}<br>
+                                        <strong>Payment ID:</strong> ${Payment_id}<br>
+                                        <strong>Amount:</strong> ${Fare}<br>
+                                        <strong>Booked Date:</strong> ${Booked_date}<br>
+                                        <strong>Booked Day:</strong> ${Booked_day}<br>
+                                        <strong>Time Slot:</strong> ${Booked_timeSlot}
+                                      </div>`;
+
+
+
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Successfully booked your slot',
+                    confirmButtonText: 'OK',
+                    html: alertMessage,
+                    customClass: {
+                        container: 'my-swal-container',
+                        title: 'my-swal-title',
+                        htmlContainer: 'my-swal-html-container',
+                        confirmButton: 'my-swal-confirm-button',
+                    },
+                }).then(() => {
+                    window.location.href = '/home';
+                });
+            }
+            else {
+                toast.error(response.data.message)
+            }
+
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'The selected time slot is already booked. If money was debited, it will be refunded within 2-3 business days.',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                window.location.href = '/home';
+            });
+            console.log(error);
+        }
+    }
 
 
 
     const openPayment = () => {
-        verifySlotAvailability()
+        verifySlotAvailability('paypal')
+    }
+    const openWalletPayment = () => {
+        verifySlotAvailability('wallet')
     }
 
     const paypal = useRef()
@@ -184,7 +268,7 @@ function Payment() {
                                         }).then(() => {
                                             window.location.href = '/home';
                                         });
-                                    } 
+                                    }
                                     else {
                                         toast.error(response.data.message)
                                     }
@@ -194,9 +278,9 @@ function Payment() {
                                         title: 'Oops!',
                                         text: 'The selected time slot is already booked. If money was debited, it will be refunded within 2-3 business days.',
                                         confirmButtonText: 'OK',
-                                      }).then(() => {
+                                    }).then(() => {
                                         window.location.href = '/home';
-                                      });
+                                    });
                                 }
 
                             } else {
@@ -218,64 +302,150 @@ function Payment() {
         }
     }, [view, doctor]);
 
+    const checkWallet = async () => {
+        try {
+            const checkWallet = await axiosinstance.get('booking/check-wallet', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (checkWallet.status === 200) {
+                setUserWallet(true)
+                const formattedBalance = checkWallet.data.wallet.toFixed(2);
+                setWalletBalance(formattedBalance)
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Failed to fetch your wallet, please try after sometime',
+                    confirmButtonText: 'OK',
+                })
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Internal server error, Please try after sometime.',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                window.location.href = '/home';
+            });
+            console.log(error);
+        }
+    }
+
     return (
         <>
             <ToastContainer />
 
-            
-                <div className="payment-cookieCard ">
-                    <div className="payment-contentWrapper">
-                        {!view && (
-                            <div className="payment-sch-panel rounded-3 m-2">
-                                {doctor && (
-                                    <div className='p-2' >
-                                        <Card sx={{ maxWidth: 330 }}>
-                                            <CardMedia
-                                                component="img"
-                                                alt="specialization"
-                                                height="140"
-                                                src={`/DocImages/${doctor.profileimg}`}
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h5" component="div">
-                                                    Dr.{doctor.name}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Specialization :{doctor.specialization}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Amount :{doctor.final_fare}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Selected Day :{selector.selectedDay}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Selected Time Slot :{selector.selectedTime}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Selected Date :{selector.selectedDate}
-                                                </Typography>
-                                            </CardContent>
-                                            <CardActions>
-                                                <CenteredButton size="small" onClick={openPayment} >PAY ₹ {doctor.final_fare} </CenteredButton>
-                                            </CardActions>
-                                        </Card>
-                                    </div>
-                                )}
+            <div className="payment-cookieCard ">
+                <div className="payment-contentWrapper">
+                    {!view && (
+                        <div className="payment-sch-panel rounded-3 m-2">
+                            {doctor && (
+                                <div className='p-2' >
+                                    <Card sx={{ maxWidth: 330 }}>
+                                        <CardMedia
+                                            component="img"
+                                            alt="specialization"
+                                            height="140"
+                                            src={`/DocImages/${doctor.profileimg}`}
+                                        />
+                                        <CardContent>
+                                            <Typography gutterBottom variant="h5" component="div">
+                                                Dr.{doctor.name}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Specialization :{doctor.specialization}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Amount :{doctor.final_fare}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Selected Day :{selector.selectedDay}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Selected Time Slot :{selector.selectedTime}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Selected Date :{selector.selectedDate}
+                                            </Typography>
+
+                                        </CardContent>
+
+                                        {/* <CardActions>
+                                            <CenteredButton size="small" onClick={openPayment} >PAY ₹ {doctor.final_fare} using PayPal </CenteredButton>
+                                        </CardActions>
+                                        <CardActions>
+                                            <CenteredButton size="small" onClick={checkWallet} >PAY ₹ {doctor.final_fare} using Wallet </CenteredButton>
+                                        </CardActions> */}
+
+                                        <CardActions>
+                                            <div>
+                                                <input
+                                                    type="radio"
+                                                    value="paypal"
+                                                    checked={selectedPayment === 'paypal'}
+                                                    onChange={handlePaymentChange}
+                                                />
+                                                <label>PAY ₹ {doctor.final_fare} using PayPal</label>
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="radio"
+                                                    value="wallet"
+                                                    checked={selectedPayment === 'wallet'}
+                                                    onChange={handlePaymentChange}
+                                                />
+                                                <label>PAY ₹ {doctor.final_fare} using Wallet</label>
+                                            </div>
+                                        </CardActions>
+
+                                        <CardActions>
+                                            {/* <button onClick={selectedPayment === 'paypal' ? openPayment : checkWallet}>Pay</button> */}
+                                            <CenteredButton size="small" onClick={selectedPayment === 'paypal' ? openPayment : checkWallet} >PAY </CenteredButton>
+                                        </CardActions>
+                                        {userWallet && (
+                                            <>
+                                                <CardContent>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        Walllet Balance :{walletBalance} Rupees
+                                                    </Typography>
+                                                </CardContent>
+                                                {walletBalance >= doctor.final_fare ? (
+                                                    <CardActions>
+                                                        <CenteredButton size="small" onClick={openWalletPayment}  >PAY using Wallet </CenteredButton>
+                                                    </CardActions>
+                                                ) : (
+                                                    <CardContent>
+                                                        <Typography variant="body2" color="text.danger">
+                                                            Not enough balance
+                                                        </Typography>
+                                                    </CardContent>
+
+                                                )}
+
+                                            </>
 
 
-                            </div>
-                        )}
-                        {view && (
 
-                            <div className='razorpay-box rounded-3 m-2' >
-                                <div ref={paypal}></div>
-                            </div>
+                                        )}
+                                    </Card>
+                                </div>
+                            )}
 
-                        )}
-                    </div>
+
+                        </div>
+                    )}
+                    {view && (
+
+                        <div className='razorpay-box rounded-3 m-2' >
+                            <div ref={paypal}></div>
+                        </div>
+
+                    )}
+
                 </div>
-            
+            </div>
+
         </>
     )
 }

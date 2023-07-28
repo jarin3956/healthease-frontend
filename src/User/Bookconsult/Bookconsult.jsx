@@ -34,7 +34,7 @@ function Bookconsult() {
             const response = await axiosinstance.get(`view-doctor-slots/${docId}`)
             if (response.status === 200) {
                 const currentDate = new Date();
-                const currentDay = getDay(currentDate);
+                const currentDay = currentDate.getDay();
 
                 const scheduleArray = Object.values(response.data.schedule);
 
@@ -49,7 +49,7 @@ function Bookconsult() {
 
                 const filteredSchedule = updatedSchedule.filter((schedule) => {
                     const todayDate = format(currentDate, 'MMM d, yyyy');
-                    return schedule.date !== todayDate;
+                    return schedule.date > todayDate;
                 });
 
                 setDocSchedule(filteredSchedule);
