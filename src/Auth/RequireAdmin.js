@@ -6,7 +6,7 @@ function RequireAdmin() {
     const admin = localStorage.getItem('admintoken')
     const location = useLocation()
   return (
-    admin ? <Outlet/> : <Navigate to={'admin/login'} state={{from:location}} replace ></Navigate>
+    admin ? <Outlet/> : <Navigate to={'/admin/login'} state={{from:location}} replace ></Navigate>
   )
 }
 

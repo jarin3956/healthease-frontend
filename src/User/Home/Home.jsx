@@ -8,18 +8,23 @@ function Home() {
 
     const [spec, setSpec] = useState([])
 
-    useEffect(() => {
-        const fetchSpec = async () => {
-            try {
-                const response = await axiosinstance.get('specialization/view')
-                console.log(response);
-                setSpec(response.data.spec)
-            } catch (error) {
-                console.log(error);
-            }
+    const token = localStorage.getItem('token')
 
+    useEffect(() => {
+        if (token) {
+            const fetchSpec = async () => {
+                try {
+                    const response = await axiosinstance.get('view-specialization',{
+                        headers: {'Authorization': `Bearer ${token}`},
+                    })
+                    setSpec(response.data.spec)
+                } catch (error) {
+                    console.log(error);
+                }
+    
+            }
+            fetchSpec()
         }
-        fetchSpec()
     }, [])
 
 
@@ -34,7 +39,7 @@ function Home() {
                         <p className="ho-cookieHeading mt-3">Home</p>
                         <p className='text-center the-main-head'>Book an appointment for an online consultation</p>
                         <div className='ho-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
-                            {spec.map((special) => (
+                            { spec && spec.map((special) => (
                                 <Viewspec spec={special} />
                             ))}
                         </div>

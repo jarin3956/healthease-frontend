@@ -63,6 +63,43 @@ function Doctormgt() {
 
     const handleBlockDoctor = async (doctorId) => {
         try {
+            const response = await axiosinstance.put(`admin/change-doctor-blocking/${doctorId}`);
+            const updatedDoctor = response.data.doctor;
+
+            setDoctors((prevDoctors) =>
+                prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
+            );
+
+            if (response.status === 200) {
+                toast.success(response.data.message);
+            } else {
+                toast.error(response.data.message);
+            }
+
+        } catch (error) {
+            console.log(error);
+            toast.error('An error occurred. Please try again.');
+        }
+    };
+
+    const verifyDoctor = async (doctorId) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'To change verify doctor',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, sure!',
+            cancelButtonText: 'No, keep it'
+          });
+          if (result.isConfirmed) {
+            handleVerifyDoctor(doctorId);
+          }
+    }
+
+    const handleVerifyDoctor = async (doctorId) => {
+        try {
             const response = await axiosinstance.put(`admin/change-doctor-status/${doctorId}`);
             const updatedDoctor = response.data.doctor;
 
@@ -175,8 +212,27 @@ function Doctormgt() {
                                             <TableCell align="center">{doctor.experience} Years</TableCell>
                                             <TableCell align="center">{doctor.fare} Rupees</TableCell>
                                             <TableCell align="center">{doctor.final_fare} Rupees</TableCell>
-                                            <TableCell align="center">{doctor.approval === true ? "Verified" : "Not Verified"}</TableCell>
+                                            <TableCell align="center">{doctor.isBlocked === true ? "Blocked" : "Active"}</TableCell>
                                             <TableCell align="center">
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                            {doctor.approval === false && (
+                                                <Button
+                                                variant="contained"
+                                                color="secondary"
+                                                onClick={() => verifyDoctor(doctor._id)}
+                                                sx={{
+                                                    backgroundColor: '#0AC726',
+                                                    color: '#fff', 
+                                                    '&:hover': {
+                                                        backgroundColor: '#018916', 
+                                                        
+                                                    },
+                                                }}
+                                            >
+                                                Verify
+                                            </Button>
+                                            )}
+                                            
                                                 <Button
                                                     variant="contained"
                                                     color="secondary"
@@ -190,8 +246,10 @@ function Doctormgt() {
                                                         },
                                                     }}
                                                 >
-                                                    {doctor.approval === true ? 'Block' : 'Verify'}
+                                                    {doctor.isBlocked === false ? 'Block' : 'Unblock'}
                                                 </Button>
+                                            </div>
+                                                
                                             </TableCell>
                                         </TableRow>
                                     ))}

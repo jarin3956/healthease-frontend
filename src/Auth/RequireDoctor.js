@@ -6,7 +6,7 @@ function RequireDoctor() {
     const doctor = localStorage.getItem('doctortoken')
     const location = useLocation()
   return (
-    doctor ? <Outlet/> : <Navigate to={'doctor/login'} state={{from:location}} replace ></Navigate>
+    doctor ? <Outlet/> : <Navigate to={'/doctor/login'} state={{from:location}} replace ></Navigate>
   )
 }
 

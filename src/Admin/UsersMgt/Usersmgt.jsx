@@ -163,7 +163,7 @@ function Usersmgt() {
                                             <TableCell align="center">{user.email}</TableCell>
                                             <TableCell align="center">{user.age ? user.age : 'No data updated'}</TableCell>
                                             <TableCell align="center">{user.gender ? user.gender : 'No data updated'}</TableCell>
-                                            <TableCell align="center">{user.status === true ? "Active" : "Blocked"}</TableCell>
+                                            <TableCell align="center">{user.isBlocked === false ? "Active" : "Blocked"}</TableCell>
                                             <TableCell align="center">
                                                 <Button
                                                     variant="contained"
@@ -178,7 +178,7 @@ function Usersmgt() {
                                                         },
                                                     }}
                                                 >
-                                                    {user.status ? 'Block' : 'Unblock'}
+                                                    {user.isBlocked ? 'Unblock' : 'Block'}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
