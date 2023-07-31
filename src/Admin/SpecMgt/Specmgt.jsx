@@ -222,7 +222,6 @@ function Specmgt() {
                 </div>
                 {showEdit && (
                     <>
-
                         <div className="spl-regCard ">
                             <div className='spl-reg-main' >
                                 <form className="reg-spl-form-main p-2" >
@@ -253,9 +252,6 @@ function Specmgt() {
                                 </form>
                             </div>
                         </div>
-
-
-
                     </>
                 )}
 

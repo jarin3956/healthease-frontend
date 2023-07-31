@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import './Home.scss';
 import axiosinstance from '../../Axios/Axios';
 import Viewspec from '../ViewSpec/Viewspec';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+
 
 function Home() {
 
+    const navigate = useNavigate()
 
     const [spec, setSpec] = useState([])
 
@@ -17,9 +21,34 @@ function Home() {
                     const response = await axiosinstance.get('view-specialization',{
                         headers: {'Authorization': `Bearer ${token}`},
                     })
-                    setSpec(response.data.spec)
+                    if (response.status === 200) {
+                        setSpec(response.data.spec)
+                    } else {
+                        Swal.fire('Oops!', 'Error when loading user data', 'error')
+                    } 
                 } catch (error) {
-                    console.log(error);
+                    if (error.response) {
+                        const status = error.response.status;
+                        if (status === 401) {
+                            localStorage.removeItem('token');
+                            Swal.fire('Unauthorized', 'You are not authorized to access this resource.', 'error')
+                            .then(() => {
+                                navigate('/login')
+                            });
+                        } else if (status === 403) {
+                            localStorage.removeItem('token');
+                            Swal.fire('Forbidden', 'You do not have permission to access this resource.', 'error')
+                                .then(() => {
+                                    navigate('/login')
+                                });
+                        } else {
+                            Swal.fire('Oops!', 'Error when loading user data', 'error')
+                            
+                        }
+                    } else {
+                        console.log(error);
+                        Swal.fire('Oops!', 'Error when loading user data', 'error');
+                    }
                 }
     
             }

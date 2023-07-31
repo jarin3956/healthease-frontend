@@ -28,7 +28,28 @@ function Admindashboard() {
                     Swal.fire('Oops!', 'Error when loading admin data', 'error')
                 }
             } catch (error) {
-                console.log(error);
+                if (error.response) {
+                    const status = error.response.status;
+                    if (status === 401) {
+                        localStorage.removeItem('admintoken');
+                        Swal.fire('Unauthorized', 'You are not authorized to access this resource.', 'error')
+                        .then(() => {
+                            window.location = '/admin/login'; 
+                        });
+                    } else if (status === 403) {
+                        localStorage.removeItem('admintoken');
+
+                        Swal.fire('Forbidden', 'You do not have permission to access this resource.', 'error')
+                            .then(() => {
+                                window.location = '/admin/login'; 
+                            });
+                    } else {
+                        Swal.fire('Oops!', 'Error when loading admin data', 'error');
+                    }
+                } else {
+                    console.log(error);
+                    Swal.fire('Oops!', 'Error when loading admin data', 'error');
+                }
             }
         }
         adminData()
@@ -68,23 +89,23 @@ function Admindashboard() {
                             </div>
                         </div>
                         <div className='p-3'>
-                        <div className='d-flex justify-content-center bg-white the-chartmain rounded-3 ' >
-                            <div className="row row-cols-1 row-cols-md-1 row-cols-lg-2 ">
-                                <div className='the-chart-area'>
-                                <Barchart />
+                            <div className='d-flex justify-content-center bg-white the-chartmain rounded-3 ' >
+                                <div className="row row-cols-1 row-cols-md-1 row-cols-lg-2 ">
+                                    <div className='the-chart-area'>
+                                        <Barchart />
+                                    </div>
+                                    <div className='the-chart-area'>
+                                        <Areachart />
+                                    </div>
+                                    <div className='the-chart-area'>
+                                        <Piechart />
+                                    </div>
+                                    <div className='the-chart-area'>
+                                        <Linechart />
+                                    </div>
+
                                 </div>
-                                <div className='the-chart-area'>
-                                <Areachart />
-                                </div>
-                                <div className='the-chart-area'>
-                                <Piechart />
-                                </div>
-                                <div className='the-chart-area'>
-                                <Linechart />
-                                </div>
-                               
                             </div>
-                        </div>
 
                         </div>
 

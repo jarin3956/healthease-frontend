@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+
 import {
     MDBCol,
     MDBContainer,
@@ -18,6 +19,9 @@ import {
     MDBBtn,
     MDBListGroup,
 } from 'mdb-react-ui-kit';
+
+import Swal from 'sweetalert2';
+
 
 
 function Docprofile() {
@@ -33,16 +37,21 @@ function Docprofile() {
     const [specialization, setSpecialization] = useState('');
     const [experience, setExperience] = useState('')
     const [certificate, setCertificate] = useState(null)
-    const [spec, setSpec] = useState([])
+    const [spec, setSpec] = useState([]);
 
-    
+    // const [docEdit, setDocEdit] = useState(false)
+
+
     const [theMain, setTheMain] = useState(true)
+
+
+
 
 
     const doctortoken = localStorage.getItem('doctortoken')
     useEffect(() => {
         if (!doctortoken) {
-            navigate('/doclogin')
+            navigate('/doctor/login')
         } else {
             axiosinstance.get('doctor/profile', {
                 headers: {
@@ -104,7 +113,7 @@ function Docprofile() {
         if (isNaN(fareNum)) {
             toast.error("Fare should be a number between 100 and 2000.")
             return
-            
+
         }
 
 
@@ -144,16 +153,17 @@ function Docprofile() {
             formData.append('gender', gender);
             formData.append('regno', regno);
             formData.append('specialization', specialization);
-            formData.append('fare',fare)
+            formData.append('fare', fare)
             formData.append('experience', experience);
             formData.append('certificate', certificate);
             const response = await axiosinstance.post('doctor/start-journey', formData);
             if (response.status === 200) {
                 setDoctor(response.data.doctor);
+
                 let emailverify = await axiosinstance.post('doctor/send-verifyemail', { doctorId: docId });
                 if (emailverify.status === 200) {
                     setShowMore(false)
-                    toast.success( emailverify.data.message);
+                    toast.success(emailverify.data.message);
                 } else {
                     toast.error(emailverify.data.message);
                 }
@@ -167,9 +177,30 @@ function Docprofile() {
         }
     }
 
-    const handleedit = () => {
-
+    const editDoc = (e) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'You cannot schedule for the next 24 hours!',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, edit profile!',
+            cancelButtonText: 'No, keep it',
+            confirmButtonColor: '#FF0000', 
+            cancelButtonColor: '#333333', 
+          }).then((result) => {
+            if (result.isConfirmed) {
+      
+                handleedit(e)
+            }
+          });
     }
+
+    const handleedit = (e) => {
+        e.preventDefault()
+        navigate('/doctor/edit-profile')
+    }
+
+
 
 
     return (
@@ -179,16 +210,16 @@ function Docprofile() {
             <div >
                 {doctor && (
                     <>
+
                         {doctor.age && (
                             <section className=' doc-profile-page' >
                                 <MDBContainer className="py-5">
                                     <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Profile</p>
                                     <MDBRow>
                                         <MDBCol lg="4">
+
                                             <MDBCard className="mb-4">
                                                 <MDBCardBody className="text-center">
-                                                    {/* {errorMessage && <h6 className="text-center text-danger">{errorMessage}</h6>}
-                                                    {successmsg && <h6 className="text-center text-success">Successful, {successmsg}</h6>} */}
                                                     <MDBCardImage
                                                         src={`/DocImages/${doctor.profileimg}`}
                                                         alt="avatar"
@@ -197,13 +228,15 @@ function Docprofile() {
                                                         fluid
                                                     />
                                                     <p className="text-muted mb-1 mt-1">Dr.{doctor.name}</p>
+
                                                     <p className="text-muted mb-4">{doctor.email}</p>
                                                     <div className="d-flex justify-content-center mb-2">
-                                                        <button className='edit-doc-butt' onClick={handleedit}>Edit</button>
+                                                        <button className='edit-doc-butt' onClick={(e) => editDoc(e)}>Edit</button>
                                                         {!doctor.age && <MDBBtn outline className="ms-1" onClick={startJorney}>Start Journey</MDBBtn>}
                                                     </div>
                                                 </MDBCardBody>
                                             </MDBCard>
+
                                             {doctor.certificate && (
                                                 <MDBCard className="mb-4 mb-lg-0">
                                                     <MDBCardBody className="p-0">
@@ -306,8 +339,17 @@ function Docprofile() {
                                 </MDBContainer>
                             </section>
                         )}
+
+
+
+                        {/* {docEdit && (
+                            <>
+                                <EditProfile handleSaveEdit={handleSaveEdit} spec={spec} />
+
+                            </>
+                        )} */}
                         {!doctor.age && (
-                            <section className=' doc-profile-page' style={{minHeight:'100vh'}} >
+                            <section className=' doc-profile-page' style={{ minHeight: '100vh' }} >
                                 <MDBContainer className="py-5">
                                     <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Profile</p>
                                     <MDBRow>
@@ -327,7 +369,7 @@ function Docprofile() {
                                                         <p className="text-muted mb-1 mt-1">Dr.{doctor.name}</p>
                                                         <p className="text-muted mb-4">{doctor.email}</p>
                                                         <div className="the-doc-butt mb-2">
-                                                            <button onClick={handleedit} className='doc-cardbutt'  >Edit</button>
+                                                            {/* <button onClick={handleedit} className='doc-cardbutt'  >Edit</button> */}
                                                             {!doctor.age && <button outline className="doc-cardbutt ms-1" onClick={(e) => startJorney(e)}>Start</button>}
                                                         </div>
                                                     </MDBCardBody>

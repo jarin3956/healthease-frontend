@@ -12,7 +12,8 @@ import CheckDoctor from '../Auth/CheckDoctor';
 import RequireDoctor from '../Auth/RequireDoctor';
 import ErrorPage from '../ErrorPage/ErrorPage';
 import Navbar from '../Common/Navbar/Navbar';
-import EditSchedule from '../Doctor/EditSchedule/Editschedule'
+import EditSchedule from '../Doctor/EditSchedule/Editschedule';
+import EditProfile from '../Doctor/EditProfile/EditProfile'
 
 function DoctorRoute() {
     const doctor = 'doctor'
@@ -32,6 +33,7 @@ function DoctorRoute() {
                     <Route path='edit-schedule'element={<EditSchedule/>} />
                     <Route path="aboutus" element={<Aboutusp user={doctor} />} />
                     <Route path="contactus" element={<Contactusp user={doctor} />} />
+                    <Route path='edit-profile' element={<EditProfile/>} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

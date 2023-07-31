@@ -9,6 +9,9 @@ import NotFound from '../../Common/NotFound/NotFound';
 import DocChart from '../DocChart/DocChart';
 import { useNavigate } from 'react-router-dom';
 
+import Swal from 'sweetalert2';
+
+
 
 function Dochome() {
 
@@ -34,13 +37,32 @@ function Dochome() {
             setSchedule(response.data.schedule.schedule)
             setDocId(response.data.schedule.doc_id);
           }
-  
+          
+
         } catch (error) {
-          console.log(error);
+          if (error.response) {
+            const status = error.response.status;
+            if (status === 401) {
+              localStorage.removeItem('doctortoken');
+              Swal.fire('Unauthorized', 'You are not authorized to access this resource.', 'error')
+                .then(() => {
+                  navigate('/doctor/login')
+                });
+            } else if (status === 403) {
+              localStorage.removeItem('doctortoken');
+              Swal.fire('Forbidden', 'You do not have permission to access this resource.', 'error')
+                .then(() => {
+                  navigate('/doctor/login')
+                });
+            } 
+          } else {
+            console.log(error);
+            Swal.fire('Oops!', 'Error when loading doctor data', 'error');
+          }
         }
       }
       getSchedule()
-    } 
+    }
   }, [])
 
 
@@ -50,7 +72,7 @@ function Dochome() {
 
       <section className=" doc-home-page">
         <p className='text-center the-main-head-dochome'>Embrace the future of medical consultations with HealthEase.</p>
-        
+
 
         <div className="p-2">
           <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
