@@ -60,6 +60,7 @@ function Docprofile() {
             }).then((res) => {
                 setDoctor(res.data.doctor);
             }).catch((error) => {
+                Swal.fire('Oops!', 'Error when loading schedule data', 'error');
                 console.log(error);
             })
         }
@@ -370,7 +371,7 @@ function Docprofile() {
                                                         <p className="text-muted mb-4">{doctor.email}</p>
                                                         <div className="the-doc-butt mb-2">
                                                             {/* <button onClick={handleedit} className='doc-cardbutt'  >Edit</button> */}
-                                                            {!doctor.age && <button outline className="doc-cardbutt ms-1" onClick={(e) => startJorney(e)}>Start</button>}
+                                                            {!doctor.age && <button outline className="doc-cardbutt" onClick={(e) => startJorney(e)}>Start</button>}
                                                         </div>
                                                     </MDBCardBody>
                                                 </MDBCard>

@@ -13,8 +13,6 @@ import { addDays, format, getDay } from 'date-fns';
 
 
 
-
-
 function Bookconsult() {
 
     const [selectedDay, setSelectedDay] = useState('');
@@ -31,36 +29,34 @@ function Bookconsult() {
 
     const showSlots = async (docId) => {
         try {
-            const response = await axiosinstance.get(`view-doctor-slots/${docId}`)
+            const response = await axiosinstance.get(`view-doctor-slots/${docId}`);
             if (response.status === 200) {
                 const currentDate = new Date();
                 const currentDay = currentDate.getDay();
+                const currentWeekStart = addDays(currentDate, -currentDay);
+                const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',];
 
                 const scheduleArray = Object.values(response.data.schedule);
 
-                const updatedSchedule = scheduleArray.map((dayObj) => {
-                    const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(dayObj.day);
-                    const dayDate = addDays(currentDate, dayIndex - currentDay);
+                const updatedSchedule = scheduleArray.map((dayObj, index) => {
+                    const dayDate = addDays(currentWeekStart, index);
+                    const upcomingDate = addDays(dayDate, dayDate < currentDate ? 7 : 0);
                     return {
                         ...dayObj,
-                        date: format(dayDate, 'MMM d, yyyy'),
+                        day: weekDays[dayDate.getDay()],
+                        date: format(upcomingDate, 'MMM d, yyyy'),
                     };
                 });
 
-                const filteredSchedule = updatedSchedule.filter((schedule) => {
-                    const todayDate = format(currentDate, 'MMM d, yyyy');
-                    return schedule.date > todayDate;
-                });
-
-                setDocSchedule(filteredSchedule);
+                setDocSchedule(updatedSchedule);
             } else {
                 console.log("error");
             }
-
         } catch (error) {
             console.log(error);
         }
-    }
+    };
+
 
     useEffect(() => {
         if (docId) {
@@ -101,7 +97,7 @@ function Bookconsult() {
                 navigate('/payment')
 
             }
-            
+
 
         } catch (error) {
             console.log(error);
@@ -112,61 +108,63 @@ function Bookconsult() {
         <>
 
             <ToastContainer />
-            
-                <div className="book-cookieCard ">
-                    <div className="book-contentWrapper">
-                        <div className="home-sch-panel rounded-3 m-2">
-                            {docSchedule ? (
-                                <>
-                                    <h3 className="text-center the-first-text-bk">Available Days</h3>
-                                    <div className="view-day-slot-container">
-                                        {docSchedule.map((day) => (
-                                            <div
-                                                className={`view-day-box ${selectedDay === day.day ? 'selected' : ''}`}
-                                                key={day.day}
-                                                onClick={() => handleDayClick(day.day)}
-                                            >
-                                                <h6>{`${day.day} (${day.date})`}</h6>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {selectedDay && (
-                                        <>
-                                            <h3 className="text-center the-second-text-bk">Time Slots ({selectedDay})</h3>
-                                            {docSchedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
-                                                <div className="view-time-slot-container">
-                                                    {docSchedule.find((day) => day.day === selectedDay)
-                                                        .time.filter((time) => time.isAvailable)
-                                                        .map((time) => (
-                                                            <div
-                                                                className={`view-time-box ${selectedTime === time.timeslot ? 'selected' : ''}`}
-                                                                key={time.timeslot}
-                                                                onClick={() => handleTimeSlot(time.timeslot)}
-                                                            >
-                                                                <h6>{time.timeslot}</h6>
-                                                            </div>
-                                                        ))}
-                                                </div>
-                                            ) : (
-                                                <p className="text-center">No Time Slots Available for {selectedDay}</p>
-                                            )}
 
-                                            <div className="time-set-butt">
-                                                <button className="time-submit-button" onClick={() => bookTheSlot()}>
-                                                    Book Slot
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                </>
-                            ) : (
-                                <h1>No Data Available</h1>
-                            )}
+            <div className="book-cookieCard ">
+                <div className="book-contentWrapper">
+                    <div className="home-sch-panel rounded-3 m-2">
+                        {docSchedule ? (
+                            <>
+                                <h3 className="text-center the-first-text-bk">Available Days</h3>
+                                <div className="view-day-slot-container">
+                                    {docSchedule.map((day) => (
+                                        <div
+                                            className={`view-day-box ${selectedDay === day.day ? 'selected' : ''}`}
+                                            key={day.day}
+                                            onClick={() => handleDayClick(day.day)}
+                                        >
+                                            <h6>{`${day.day} (${day.date})`}</h6>
+                                        </div>
+                                    ))}
+                                </div>
 
-                        </div>
+
+                                {selectedDay && (
+                                    <>
+                                        <h3 className="text-center the-second-text-bk">Time Slots ({selectedDay})</h3>
+                                        {docSchedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
+                                            <div className="view-time-slot-container">
+                                                {docSchedule.find((day) => day.day === selectedDay)
+                                                    .time.filter((time) => time.isAvailable)
+                                                    .map((time) => (
+                                                        <div
+                                                            className={`view-time-box ${selectedTime === time.timeslot ? 'selected' : ''}`}
+                                                            key={time.timeslot}
+                                                            onClick={() => handleTimeSlot(time.timeslot)}
+                                                        >
+                                                            <h6>{time.timeslot}</h6>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-center">No Time Slots Available for {selectedDay}</p>
+                                        )}
+
+                                        <div className="time-set-butt">
+                                            <button className="time-submit-button" onClick={() => bookTheSlot()}>
+                                                Book Slot
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            <h1>No Data Available</h1>
+                        )}
+
                     </div>
                 </div>
-            
+            </div>
+
         </>
     )
 }

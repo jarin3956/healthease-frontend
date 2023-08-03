@@ -3,11 +3,12 @@
   .pr-cookieCard {
     
     background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
-    align-items: flex-start;
+    display: flex;
     justify-content: center;
     padding: 20px;
     position: relative;
     overflow: hidden;
+    min-height: 90vh;
 
 
     .pr-userprocard {
@@ -18,7 +19,6 @@
       border: none;
       border-radius: 10px;
       padding-top: 10px;
-      position: relative;
       margin: auto;
       font-family: inherit;
       display: flex;
@@ -73,6 +73,67 @@
         background: #212121;
         color: #ffffff;
       }
+      .noselect {
+        width: 150px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        background: red;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+        background: #e62222;
+        
+        &.noselect, &.noselect span {
+          transition: 200ms;
+        }
+        
+        .text {
+          transform: translateX(35px);
+          color: white;
+          font-weight: bold;
+        }
+        
+        .icon {
+          position: absolute;
+          border-left: 1px solid #c41b1b;
+          transform: translateX(110px);
+          height: 40px;
+          width: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          svg {
+            width: 15px;
+            fill: #eee;
+          }
+        }
+        
+        &:hover {
+          background: #ff3636;
+          
+          .text {
+            color: transparent;
+          }
+          
+          .icon {
+            width: 150px;
+            border-left: none;
+            transform: translateX(0);
+          }
+        }
+        
+        &:focus {
+          outline: none;
+        }
+        
+        &:active .icon svg {
+          transform: scale(0.8);
+        }
+      }
+      
       .more-input {
         width: 100%;
         height: 40px;

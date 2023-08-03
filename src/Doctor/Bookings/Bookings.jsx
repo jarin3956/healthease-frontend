@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 
 function Bookings({ bookingData, handleCancelBooking }) {
 
-    
+    //  bookingData.sort((a, b) => new Date(a.CreatedAt) - new Date(b.CreatedAt));
 
     const handleCancelBookingClick = async (bookingId) => {
         try {

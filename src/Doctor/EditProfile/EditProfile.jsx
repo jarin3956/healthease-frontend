@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import axiosinstance from '../../Axios/Axios'
 import Swal from 'sweetalert2';
 
+import { toast, ToastContainer } from 'react-toastify';
+
 
 function EditProfile() {
 
@@ -98,6 +100,54 @@ function EditProfile() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
+        if (!name.match(nameRegex)) {
+            toast.error('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
+            return;
+        }
+
+        
+
+        const ageNum = parseInt(age);
+        if (isNaN(ageNum) || ageNum < 23 || ageNum > 80) {
+            toast.error('Age should be a number between 23 to 80.');
+            return;
+        }
+
+        const fareNum = parseInt(fare);
+        if (isNaN(fareNum)) {
+            toast.error("Fare should be a number between 100 and 2000.")
+            return
+
+        }
+
+        if (!gender) {
+            toast.error('Please select a gender.');
+            return;
+        }
+
+        const regnoRegex = /^[A-Z0-9]{6,12}$/;
+        if (!regno.match(regnoRegex)) {
+            toast.error('Registration number should only include capital letters and numbers, with a length of 6 to 12 characters.');
+            return;
+        }
+
+        if (!specialization) {
+            toast.error('Please select a specialization.');
+            return;
+        }
+
+        const experienceNum = parseInt(experience);
+        if (isNaN(experienceNum) || experienceNum < 0 || experienceNum > 40) {
+            toast.error('Experience should be a number between 0 to 40.');
+            return;
+        }
+
+        
+
+
+
         try {
             const formData = new FormData();
             formData.append('name', name);
@@ -142,6 +192,7 @@ function EditProfile() {
 
     return (
         <>
+         <ToastContainer />
             <div className="spl-regCard ">
                 <div className='spl-reg-main' >
                     <form className="reg-spl-form-main p-2" encType="multipart/form-data" onSubmit={handleSubmit}  >

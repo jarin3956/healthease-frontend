@@ -3,6 +3,8 @@ import './Profile.scss';
 import axiosinstance from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
 
+import WalletTable from '../WalletTable/WalletTable';
+
 function Profile() {
     const navigate = useNavigate();
 
@@ -45,6 +47,7 @@ function Profile() {
                     setHeighte(response.data.height);
                     setWeighte(response.data.weight);
                     setGendere(response.data.gender);
+
                 } catch (error) {
                     console.log(error);
                 }
@@ -131,6 +134,8 @@ function Profile() {
                 setShowEdit(false)
                 setUserr(updateduser)
                 setEditError('')
+                const walletBalance = calculateWalletBalance(updateduser.wallet);
+                setUserr({ ...user, wallet: walletBalance });
             } else {
                 setEditError('There was an error in saving data')
             }
@@ -180,9 +185,13 @@ function Profile() {
             const addMore = await axiosinstance.post(`add-more-info/${userId}`, dataNeeded);
             const { status, user } = addMore.data;
             if (status === 'ok') {
+                const updatedUser = addMore.data.user;
+                const walletBalance = calculateWalletBalance(updatedUser.wallet);
+                setUserr({ ...user, wallet: walletBalance });
                 setShowDetails(false);
                 setUserr(user);
                 setErrorMessage('');
+
             } else {
                 setErrorMessage('Error occurred while saving details.');
             }
@@ -192,208 +201,260 @@ function Profile() {
     };
 
 
+    const calculateWalletBalance = (walletTransactions) => {
+        let balance = 0;
+        for (const transaction of walletTransactions) {
+            if (transaction.type === 'C') {
+                balance += transaction.amount; // Credit
+            } else if (transaction.type === 'D') {
+                balance -= transaction.amount; // Debit
+            }
+        }
+        return balance;
+    };
+
+
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    const openPopup = () => {
+        setIsPopupOpen(true);
+    };
+
+    const closePopup = () => {
+        setIsPopupOpen(false);
+    };
+
+    const walletBalance = user && user.wallet ? calculateWalletBalance(user.wallet) : 0;
     return (
         <>
-            
-            
-                <div className='pr-cookieCard'>
-                    {user && (
-                        <div className="pr-userprocard">
-                            <p className="pr-cookieHeading mt-3">Profile</p>
-                            {main && (<>
-                                <div className="userpro-img">
-                                    {user.image && (
-                                        <img
-                                            src={`/UserImages/${user.image}`}
-                                            alt="Profile"
-                                            style={{ width: "100%", height: "100%", borderRadius: "100%" }}
-                                        />
-                                    )}
-                                </div>
-                                <span className='pr-user-sp'>{user.name}</span>
-                                <h6 className="userprocarddet">{user.email}</h6>
-                                <h6 className="userprocarddet">Wallet Balance : ₹{user.wallet}</h6>
-                                {user.age && <h6 className="userprocarddet">Age : {user.age}</h6>}
-                                {user.gender && <h6 className="userprocarddet">Gender : {user.gender}</h6>}
-                                {user.height && <h6 className="userprocarddet">Height : {user.height}cms</h6>}
-                                {user.weight && <h6 className="userprocarddet">Weight : {user.weight}kgs</h6>}
-                                <div className='d-flex '>
-                                    <button className="userprocardbutt  " onClick={handleedit} >Edit</button>
-                                    {user.age && user.gender && user.height && user.weight ? null : (
-                                        <button className="userprocardbutt ms-2 " onClick={handleAddMoreDetails}>Add More</button>
+
+
+            <div className='pr-cookieCard'>
+                {user && (
+                    <div className="pr-userprocard ">
+                        <p className="pr-cookieHeading mt-3">Profile</p>
+                        {main && !isPopupOpen && (<>
+                            <div className="userpro-img">
+                                {user.image && (
+                                    <img
+                                        src={`/UserImages/${user.image}`}
+                                        alt="Profile"
+                                        style={{ width: "100%", height: "100%", borderRadius: "100%" }}
+                                    />
+                                )}
+                            </div>
+                            <span className='pr-user-sp'>{user.name}</span>
+                            <h6 className="userprocarddet">{user.email}</h6>
+                            {/* <h6 className="userprocarddet">Wallet Balance : ₹{calculateWalletBalance(user.wallet)}</h6> */}
+                            {user.age && <h6 className="userprocarddet">Age : {user.age}</h6>}
+                            {user.gender && <h6 className="userprocarddet">Gender : {user.gender}</h6>}
+                            {user.height && <h6 className="userprocarddet">Height : {user.height}cms</h6>}
+                            {user.weight && <h6 className="userprocarddet">Weight : {user.weight}kgs</h6>}
+                            <div className='d-flex '>
+                                <button className="userprocardbutt  " onClick={handleedit} >Edit</button>
+                                {user.age && user.gender && user.height && user.weight ? null : (
+                                    <button className="userprocardbutt ms-2 " onClick={handleAddMoreDetails}>Add More</button>
+                                )}
+                                <button className="userprocardbutt ms-2" onClick={openPopup} >Wallet</button>
+                            </div>
+
+                        </>)}
+                        {isPopupOpen && (
+                            <div className="popup-overlay">
+                                <div className="popup-content">
+                                    <div className='d-flex justify-content-center p-2' >
+                                        <button onClick={closePopup} className="noselect">
+                                            <span className="text">Close</span><span className="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z">
+                                                    </path>
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        {walletBalance ? (
+                                            <h6 className="text-center text-bold text-success">Wallet Balance : ₹{walletBalance}</h6>
+                                        ) : (
+                                            <h6 className="text-center text-bold text-danger">Wallet Balance : ₹{walletBalance}</h6>
+                                        )}
+                                    </div>
+                                    {user.wallet.length > 0 && (
+                                        <WalletTable userwallet={user.wallet} />
                                     )}
 
                                 </div>
-                            </>)}
-                            {showEdit && (<>
-                                <h3 className='text-white' >Edit Profile</h3>
-                                <div className='p-3 theedit-pan rounded-3 mb-3'>
+                            </div>
+                        )}
+                        {showEdit && (<>
+                            <h3 className='text-white' >Edit Profile</h3>
+                            <div className='p-3 theedit-pan rounded-3 mb-3'>
+                                <input
+                                    type="text"
+                                    value={namee}
+                                    className='more-input'
+                                    onChange={(e) => setNamee(e.target.value)}
+                                    placeholder="Name"
+                                />
+                                {imagee && (
+                                    <img
+                                        src={`/UserImages/${imagee}`}
+                                        alt=""
+                                        style={{ width: '100px', height: '100px' }}
+                                        className='more-img-input p-2 rounded-3'
+                                    />
+                                )}
+                                <input
+                                    type="file"
+                                    onChange={(e) => setImagee(e.target.files.item(0))}
+                                    accept="image/*"
+                                    className="more-input bg-white" />
+                                {user.age && user.gender && user.weight && user.height ? (<>
                                     <input
                                         type="text"
-                                        value={namee}
+                                        value={heighte}
                                         className='more-input'
-                                        onChange={(e) => setNamee(e.target.value)}
-                                        placeholder="Name"
+                                        onChange={(e) => setHeighte(e.target.value)}
+                                        placeholder="Height (cm)"
                                     />
-                                    {imagee && (
-                                        <img
-                                            src={`/UserImages/${imagee}`}
-                                            alt=""
-                                            style={{ width: '100px', height: '100px' }}
-                                            className='more-img-input p-2 rounded-3'
-                                        />
-                                    )}
                                     <input
-                                        type="file"
-                                        onChange={(e) => setImagee(e.target.files.item(0))}
-                                        accept="image/*"
-                                        className="more-input bg-white" />
-                                    {user.age && user.gender && user.weight && user.height ? (<>
-                                        <input
-                                            type="text"
-                                            value={heighte}
-                                            className='more-input'
-                                            onChange={(e) => setHeighte(e.target.value)}
-                                            placeholder="Height (cm)"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={weighte}
-                                            className='more-input'
-                                            onChange={(e) => setWeighte(e.target.value)}
-                                            placeholder="Weight (kg)"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={agee}
-                                            className='more-input'
-                                            onChange={(e) => setAgee(e.target.value)}
-                                            placeholder="Age"
-                                        />
-                                        <p className=" text-center" style={{ fontWeight: '800' }}>Gender</p>
-                                        <div className="gender-selection">
-                                            <br />
-                                            <label className="text-white p-2">
-                                                <input
-                                                    type="radio"
-                                                    name="gender"
-                                                    value="male"
-                                                    checked={gendere === "male"}
-                                                    onChange={(e) => setGendere(e.target.value)}
-                                                />
-                                                Male
-                                            </label>
-                                            <label className="text-white p-2">
-                                                <input
-                                                    type="radio"
-                                                    name="gender"
-                                                    value="female"
-                                                    checked={gendere === "female"}
-                                                    onChange={(e) => setGendere(e.target.value)}
-                                                />
-                                                Female
-                                            </label>
-                                            <label className="text-white p-2">
-                                                <input
-                                                    type="radio"
-                                                    name="gender"
-                                                    value="others"
-                                                    checked={gendere === "others"}
-                                                    onChange={(e) => setGendere(e.target.value)}
-                                                />
-                                                Others
-                                            </label>
-                                        </div></>) : null}
-                                    {editError && <p className="text-center text-danger">{editError}</p>}
+                                        type="text"
+                                        value={weighte}
+                                        className='more-input'
+                                        onChange={(e) => setWeighte(e.target.value)}
+                                        placeholder="Weight (kg)"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={agee}
+                                        className='more-input'
+                                        onChange={(e) => setAgee(e.target.value)}
+                                        placeholder="Age"
+                                    />
+                                    <p className=" text-center" style={{ fontWeight: '800' }}>Gender</p>
+                                    <div className="gender-selection">
+                                        <br />
+                                        <label className="text-white p-2">
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="male"
+                                                checked={gendere === "male"}
+                                                onChange={(e) => setGendere(e.target.value)}
+                                            />
+                                            Male
+                                        </label>
+                                        <label className="text-white p-2">
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="female"
+                                                checked={gendere === "female"}
+                                                onChange={(e) => setGendere(e.target.value)}
+                                            />
+                                            Female
+                                        </label>
+                                        <label className="text-white p-2">
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="others"
+                                                checked={gendere === "others"}
+                                                onChange={(e) => setGendere(e.target.value)}
+                                            />
+                                            Others
+                                        </label>
+                                    </div></>) : null}
+                                {editError && <p className="text-center text-danger">{editError}</p>}
 
+
+                                <div className='d-flex ' >
+                                    <button className="userprocardbutt" onClick={() => handleeditsave(user._id)} >
+                                        Save
+                                    </button>
+                                    <button className="userprocardbutt ms-2" onClick={closeEdit} >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+
+                        </>)}
+                        {showDetails && (
+                            <>
+                                <h3 className='text-white' >Add More Details</h3>
+                                <div className='p-3 theedit-pan rounded-3 m-3'>
+                                    <input
+                                        type="text"
+                                        value={height}
+                                        className='more-input'
+                                        onChange={(e) => setHeight(e.target.value)}
+                                        placeholder="Height (cm)"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={weight}
+                                        className='more-input'
+                                        onChange={(e) => setWeight(e.target.value)}
+                                        placeholder="Weight (kg)"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={age}
+                                        className='more-input'
+                                        onChange={(e) => setAge(e.target.value)}
+                                        placeholder="Age"
+                                    />
+                                    <p className=" text-center" style={{ fontWeight: '800' }}>Gender</p>
+                                    <div className="gender-selection">
+                                        <br />
+                                        <label className="text-white p-2">
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="male"
+                                                checked={gender === "male"}
+                                                onChange={(e) => setGender(e.target.value)}
+                                            />
+                                            Male
+                                        </label>
+                                        <label className="text-white p-2">
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="female"
+                                                checked={gender === "female"}
+                                                onChange={(e) => setGender(e.target.value)}
+                                            />
+                                            Female
+                                        </label>
+                                        <label className="text-white p-2">
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="others"
+                                                checked={gender === "others"}
+                                                onChange={(e) => setGender(e.target.value)}
+                                            />
+                                            Others
+                                        </label>
+                                    </div>
+                                    {errorMessage && <p className="text-center text-danger">{errorMessage}</p>}
 
                                     <div className='d-flex ' >
-                                        <button className="userprocardbutt" onClick={() => handleeditsave(user._id)} >
+                                        <button className="userprocardbutt" onClick={() => handleSave(user._id)} >
                                             Save
                                         </button>
-                                        <button className="userprocardbutt ms-2" onClick={closeEdit} >
+                                        <button className="userprocardbutt ms-2" onClick={closemore} >
                                             Close
                                         </button>
                                     </div>
                                 </div>
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
 
-                            </>)}
-                            {showDetails && (
-                                <>
-                                    <h3 className='text-white' >Add More Details</h3>
-                                    <div className='p-3 theedit-pan rounded-3 m-3'>
-                                        <input
-                                            type="text"
-                                            value={height}
-                                            className='more-input'
-                                            onChange={(e) => setHeight(e.target.value)}
-                                            placeholder="Height (cm)"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={weight}
-                                            className='more-input'
-                                            onChange={(e) => setWeight(e.target.value)}
-                                            placeholder="Weight (kg)"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={age}
-                                            className='more-input'
-                                            onChange={(e) => setAge(e.target.value)}
-                                            placeholder="Age"
-                                        />
-                                        <p className=" text-center" style={{ fontWeight: '800' }}>Gender</p>
-                                        <div className="gender-selection">
-                                            <br />
-                                            <label className="text-white p-2">
-                                                <input
-                                                    type="radio"
-                                                    name="gender"
-                                                    value="male"
-                                                    checked={gender === "male"}
-                                                    onChange={(e) => setGender(e.target.value)}
-                                                />
-                                                Male
-                                            </label>
-                                            <label className="text-white p-2">
-                                                <input
-                                                    type="radio"
-                                                    name="gender"
-                                                    value="female"
-                                                    checked={gender === "female"}
-                                                    onChange={(e) => setGender(e.target.value)}
-                                                />
-                                                Female
-                                            </label>
-                                            <label className="text-white p-2">
-                                                <input
-                                                    type="radio"
-                                                    name="gender"
-                                                    value="others"
-                                                    checked={gender === "others"}
-                                                    onChange={(e) => setGender(e.target.value)}
-                                                />
-                                                Others
-                                            </label>
-                                        </div>
-                                        {errorMessage && <p className="text-center text-danger">{errorMessage}</p>}
-
-                                        <div className='d-flex ' >
-                                            <button className="userprocardbutt" onClick={() => handleSave(user._id)} >
-                                                Save
-                                            </button>
-                                            <button className="userprocardbutt ms-2" onClick={closemore} >
-                                                Close
-                                            </button>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
-                </div>
-            
         </>
     )
 }

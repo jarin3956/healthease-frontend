@@ -190,6 +190,10 @@ function Viewschedule() {
 
 
 
+  
+
+
+
 
 
   return (
@@ -295,6 +299,8 @@ function Viewschedule() {
               ) : (
                 <NotFound/>
               )}
+
+              
             </>
           )}
           {cancelled && (
