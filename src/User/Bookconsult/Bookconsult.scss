@@ -1,20 +1,14 @@
 .book-cookieCard {
     background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding: 20px;
     position: relative;
     overflow: hidden;
     min-height: 90vh;
 
-    .book-contentWrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-
+    
         .home-sch-panel {
             display: flex;
             flex-direction: column;
@@ -47,6 +41,7 @@
 
                 .view-day-box {
                     display: inline-flex;
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     padding: 8px;
@@ -77,14 +72,15 @@
                     justify-content: center;
                     padding: 8px;
                     margin: 4px;
-                    background-color: #8bd6e6;
+                    
+                    background-color: #8da6ae;
                     border-radius: 4px;
                     width: 200px;
                     height: 43px;
                 }
 
                 .view-time-box.selected {
-                    background-color: #8da6ae;
+                    background-color: #16a4c4;
                     color: #fff;
                 }
             }
@@ -155,7 +151,7 @@
               
               
         }
-    }
+    
 
     @media (max-width: 1082px) {
         .home-sch-panel {

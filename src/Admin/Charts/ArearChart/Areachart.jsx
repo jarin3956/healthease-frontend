@@ -54,7 +54,7 @@ function Areachart() {
 
 
     return (
-        <div className="chart-container">
+        <div >
           <h2 className='p-3 text-center'>Monthly Revenue</h2>
           <ResponsiveContainer width="100%" height={300}>
           <AreaChart

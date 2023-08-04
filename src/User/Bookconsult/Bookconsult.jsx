@@ -48,7 +48,17 @@ function Bookconsult() {
                     };
                 });
 
-                setDocSchedule(updatedSchedule);
+                const currentIndex = updatedSchedule.findIndex(day => day.day === weekDays[currentDay]);
+
+                // Rearrange the array to have the current day first, followed by the upcoming days
+                const rearrangedSchedule = [
+                    updatedSchedule[currentIndex],
+                    ...updatedSchedule.slice(0, currentIndex),
+                    ...updatedSchedule.slice(currentIndex + 1)
+                ];
+
+                // setDocSchedule(updatedSchedule);
+                setDocSchedule(rearrangedSchedule);
             } else {
                 console.log("error");
             }
@@ -110,7 +120,7 @@ function Bookconsult() {
             <ToastContainer />
 
             <div className="book-cookieCard ">
-                <div className="book-contentWrapper">
+                
                     <div className="home-sch-panel rounded-3 m-2">
                         {docSchedule ? (
                             <>
@@ -122,7 +132,8 @@ function Bookconsult() {
                                             key={day.day}
                                             onClick={() => handleDayClick(day.day)}
                                         >
-                                            <h6>{`${day.day} (${day.date})`}</h6>
+                                            <h6>{day.day}</h6>
+                                            <h6 style={{color:'#8fb6c4'}} >{`${day.date}`}</h6>
                                         </div>
                                     ))}
                                 </div>
@@ -130,7 +141,7 @@ function Bookconsult() {
 
                                 {selectedDay && (
                                     <>
-                                        <h3 className="text-center the-second-text-bk">Time Slots ({selectedDay})</h3>
+                                        <h3 className="text-center the-second-text-bk">Time Slots for {selectedDay}</h3>
                                         {docSchedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
                                             <div className="view-time-slot-container">
                                                 {docSchedule.find((day) => day.day === selectedDay)
@@ -162,7 +173,7 @@ function Bookconsult() {
                         )}
 
                     </div>
-                </div>
+                
             </div>
 
         </>

@@ -1,7 +1,7 @@
 .payment-cookieCard {
     background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding: 20px;
     position: relative;
@@ -10,9 +10,6 @@
 
     .payment-contentWrapper {
         position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         height: 100%;
 
         .payment-sch-panel {

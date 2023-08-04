@@ -55,8 +55,10 @@ function Viewdoc() {
 
     return (
         <>
-            <div className="vdoc-cookieCard ">
-                <p className='text-center the-main-head'>Book an appointment for an online consultation</p>
+            
+            {error ? <NotFound />:(
+                <div className="vdoc-cookieCard ">
+                <p className='text-center the-main-head '>Book an appointment for an online consultation</p>
                 <div className='vdoc-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
                     {doctors.map((doctor) => (
                         <div className='p-3' >
@@ -87,12 +89,10 @@ function Viewdoc() {
                             </Card>
                         </div>
                     ))}
-                    {error && <NotFound />}
+                    
                 </div>
-
-
             </div>
-
+            )}
         </>
     )
 }

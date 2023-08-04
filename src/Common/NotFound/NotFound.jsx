@@ -8,8 +8,9 @@ import {
 
 function NotFound() {
     return (
-        <MDBContainer className="py-5 h-100">
-            <MDBRow className="justify-content-center align-items-center h-100">
+        <div style={{background:'#3498eb',minHeight:'90vh'}} className='d-flex align-items-center' >
+            <MDBContainer className="py-5 h-100">
+            <MDBRow >
                 <MDBCol lg="12" xl="12">
                     <MDBCard>
                         <picture>
@@ -20,6 +21,8 @@ function NotFound() {
                 </MDBCol>
             </MDBRow>
         </MDBContainer>
+        </div>
+        
     )
 }
 

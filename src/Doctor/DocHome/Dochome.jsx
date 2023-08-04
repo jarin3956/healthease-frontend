@@ -71,17 +71,18 @@ function Dochome() {
     <>
 
       <section className=" doc-home-page">
-        <p className='text-center the-main-head-dochome'>Embrace the future of medical consultations with HealthEase.</p>
+        <p className='text-center the-main-head-dochome '>Embrace the future of medical consultations with HealthEase.</p>
 
 
         <div className="p-2">
-          <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
           <div className="home-sch-panel rounded-3">
             {schedule ? (
               <>
                 {docId &&
                   <DocChart chartData={docId} />
                 }
+                          <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
+
                 <Docschedule data={schedule} />
               </>
             ) : (

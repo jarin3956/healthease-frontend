@@ -200,7 +200,7 @@ function Viewschedule() {
     <>
       <ToastContainer />
       
-        <section className='rounded-3 doc-schedule-page' >
+        <section className='rounded-3 doc-schedule-page' style={{minHeight:'90vh'}} >
           <div className='the-buttons-vs p-3 ' >
             <div className="radio-inputs">
               <label className="radio">

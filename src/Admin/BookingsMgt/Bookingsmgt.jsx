@@ -121,9 +121,7 @@ function Bookingsmgt() {
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Doctor</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">User</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Amount</TableCell>
-                    <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booking Date</TableCell>
-                    <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booked Day</TableCell>
-                    <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booked Time Slot</TableCell>
+                    <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booked Slot</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booking Date</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Payment Id</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Payment Type</TableCell>
@@ -149,10 +147,8 @@ function Bookingsmgt() {
                           View User
                         </Button>
                       </TableCell>
-                      <TableCell align="center">{booking.Fare} Rupees</TableCell>
-                      <TableCell align="center">{booking.Booked_date}</TableCell>
-                      <TableCell align="center">{booking.Booked_day}</TableCell>
-                      <TableCell align="center">{booking.Booked_timeSlot}</TableCell>
+                      <TableCell align="center">₹ {booking.Fare}</TableCell>
+                      <TableCell align="center">{booking.Booked_date}, {booking.Booked_day}, {booking.Booked_timeSlot}</TableCell>
                       <TableCell align="center">{booking.CreatedAt}</TableCell>
                       <TableCell align="center">{booking.Payment_id}</TableCell>
                       <TableCell align="center">{booking.Payment_type}</TableCell>
