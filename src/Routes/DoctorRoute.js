@@ -13,7 +13,9 @@ import RequireDoctor from '../Auth/RequireDoctor';
 import ErrorPage from '../ErrorPage/ErrorPage';
 import Navbar from '../Common/Navbar/Navbar';
 import EditSchedule from '../Doctor/EditSchedule/Editschedule';
-import EditProfile from '../Doctor/EditProfile/EditProfile'
+import EditProfile from '../Doctor/EditProfile/EditProfile';
+import VideoCall from '../VideoCall/VideoCall';
+import Room from '../VideoCall/Room';
 
 function DoctorRoute() {
     const doctor = 'doctor'
@@ -34,6 +36,8 @@ function DoctorRoute() {
                     <Route path="aboutus" element={<Aboutusp user={doctor} />} />
                     <Route path="contactus" element={<Contactusp user={doctor} />} />
                     <Route path='edit-profile' element={<EditProfile/>} />
+                    <Route path='video-call' element={<VideoCall/>}/>
+                    <Route path='room/:roomId'element={<Room/>} /> 
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>
