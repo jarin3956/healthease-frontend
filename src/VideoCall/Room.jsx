@@ -270,14 +270,14 @@ function Room({ user }) {
                             )}
 
                             {user === 'user' && myStream && !callAccepted && (
-                                <button onClick={sendStream}>Join Stream</button>
+                                <button onClick={sendStream}>Share Stream</button>
                             )}
 
                             <div className="video-container">
                                 <div className="stream-container">
                                     {remoteStream && (
                                         <>
-                                            {/* <h5>Remote Stream</h5> */}
+                                           {/* Remote Stream */}
                                             <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={remoteStream} />
                                         </>
                                     )}
@@ -286,7 +286,7 @@ function Room({ user }) {
                                 <div className="stream-container">
                                     {myStream && (
                                         <>
-                                            {/* <h5>My Stream</h5> */}
+                                            {/* My Stream */}
                                             <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream} />
                                         </>
                                     )}

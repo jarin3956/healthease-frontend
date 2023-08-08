@@ -5,11 +5,16 @@ import AdminRoute from './Routes/AdminRoute';
 import DoctorRoute from './Routes/DoctorRoute';
 import { useState, useEffect } from 'react';
 import Loader from './Loader/Loader'
-
-
+import useGoogleAuth from './GoogleAuth/GoogleAuth';
 
 
 function App() {
+
+  const handleGoogleLogin = useGoogleAuth();
+
+  useEffect(() => {
+    handleGoogleLogin(); 
+  }, [handleGoogleLogin]);
 
   const [loading, setLoading] = useState(true)
 

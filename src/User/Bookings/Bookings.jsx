@@ -211,7 +211,7 @@ function Bookings() {
                                           stroke="#FFFFFF"
                                         />
                                       </svg>
-                                      <span className="label">Start</span>
+                                      <span className="label">Join</span>
                                     </button>
                                   </MDBCol>
                                 </>

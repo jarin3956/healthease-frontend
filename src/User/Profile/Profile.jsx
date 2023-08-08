@@ -237,7 +237,9 @@ function Profile() {
                             <div className="userpro-img">
                                 {user.image && (
                                     <img
-                                        src={`/UserImages/${user.image}`}
+                                         src={`/UserImages/${user.image}`}
+                                        // src={user.image}
+                                        
                                         alt="Profile"
                                         style={{ width: "100%", height: "100%", borderRadius: "100%" }}
                                     />
