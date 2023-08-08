@@ -56,7 +56,7 @@ function groupBookingData(data) {
         return acc;
     }, []);
 
-    console.log('groupedData of the doc :', groupedData);
+    // console.log('groupedData of the doc :', groupedData);
 
     return groupedData;
 }
@@ -80,7 +80,7 @@ function DocChart({ chartData }) {
 
                     const sortedData = response.data.bookingData.filter((a) => {
                         if (a.DocId === targetId) {
-                            console.log(a);
+                            // console.log(a);
                             return a;
                         }
                     });

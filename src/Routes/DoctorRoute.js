@@ -37,7 +37,7 @@ function DoctorRoute() {
                     <Route path="contactus" element={<Contactusp user={doctor} />} />
                     <Route path='edit-profile' element={<EditProfile/>} />
                     <Route path='video-call' element={<VideoCall/>}/>
-                    <Route path='room/:roomId'element={<Room/>} /> 
+                    <Route path='room/:roomId'element={<Room user={doctor} />} /> 
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

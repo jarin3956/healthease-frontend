@@ -33,7 +33,7 @@ function Dochome() {
             },
           });
           if (response.status === 200) {
-            console.log(response.data.schedule.doc_id, " this is doc id i need to pass to the chart");
+            // console.log(response.data.schedule.doc_id, " this is doc id i need to pass to the chart");
             setSchedule(response.data.schedule.schedule)
             setDocId(response.data.schedule.doc_id);
           }

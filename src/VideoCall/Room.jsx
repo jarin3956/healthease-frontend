@@ -2,14 +2,22 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSocket } from '../Context/SocketProvider';
 import ReactPlayer from 'react-player'
 import peer from '../Service/Peer'
+import { useNavigate } from 'react-router-dom';
 
-function Room() {
+import './Room.scss'
+
+
+function Room({ user }) {
 
     const socket = useSocket();
 
+    const navigate = useNavigate()
+
     const [remoteSocketId, setRemoteSocketId] = useState(null);
     const [myStream, setMyStream] = useState(null);
-    const [remoteStream, setRemoteStream] = useState(null)
+    const [remoteStream, setRemoteStream] = useState(null);
+    const [callAccepted, setCallAccepted] = useState(false);
+    const [callActive, setCallActive] = useState(false)
 
     const handleUserJoined = useCallback(({ email, id }) => {
         console.log(`Email ${email} joined room`);
@@ -23,11 +31,13 @@ function Room() {
         });
         const offer = await peer.getOffer()
         socket.emit('user:call', { to: remoteSocketId, offer })
-        setMyStream(stream)
+        setMyStream(stream);
+        setCallActive(true);
     }, [remoteSocketId, socket]);
 
     const handleIncommingCall = useCallback(async ({ from, offer }) => {
-        setRemoteSocketId(from)
+        setRemoteSocketId(from);
+        setCallActive(true);
         const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
             video: true,
@@ -40,22 +50,21 @@ function Room() {
     },
         [socket])
 
-    // const sendStream = () => {
-    //     for (const track of myStream.getTracks()) {
-    //         peer.peer.addTrack(track, myStream);
-    //     }
-    // } 
-    
+
+
     const sendStream = useCallback(() => {
+        setCallAccepted(true)
         for (const track of myStream.getTracks()) {
             peer.peer.addTrack(track, myStream);
         }
-    },[myStream]);
+        setCallActive(true);
+    }, [myStream]);
 
 
     const handleCallAccepted = useCallback(({ from, ans }) => {
         peer.setLocalDescription(ans);
         console.log('Call Accepted');
+        setCallActive(true);
         sendStream()
     }, [sendStream])
 
@@ -71,7 +80,7 @@ function Room() {
         }
     }, [handleNegoNeeded])
 
-    const handleNegoNeedIncomming = useCallback(async({ from, offer }) => {
+    const handleNegoNeedIncomming = useCallback(async ({ from, offer }) => {
         const ans = await peer.getAnswer(offer);
         socket.emit('peer:nego:done', { to: from, ans })
     }, [socket])
@@ -83,7 +92,7 @@ function Room() {
     useEffect(() => {
         peer.peer.addEventListener('track', async ev => {
             const remoteStream = ev.streams;
-            console.log('GOT TRACKS !!!');
+            console.log('Getting TRACK');
             setRemoteStream(remoteStream[0])
         })
     }, [])
@@ -95,6 +104,8 @@ function Room() {
         socket.on('call:accepted', handleCallAccepted);
         socket.on('peer:nego:needed', handleNegoNeedIncomming);
         socket.on('peer:nego:final', handleNegoNeedFinal);
+
+
         return () => {
             socket.off('user:joined', handleUserJoined);
             socket.off('incomming:call', handleIncommingCall);
@@ -102,31 +113,200 @@ function Room() {
             socket.off('peer:nego:needed', handleNegoNeedIncomming);
             socket.off('peer:nego:final', handleNegoNeedFinal);
         }
-    }, [socket, handleUserJoined, handleIncommingCall, handleCallAccepted, handleNegoNeedIncomming, handleNegoNeedFinal])
+    }, [socket, user, handleUserJoined, handleIncommingCall, handleCallAccepted, handleNegoNeedIncomming, handleNegoNeedFinal])
+
+
+    const leaveCall = () => {
+        // Step 1: Clean up event listeners
+        socket.off('user:joined', handleUserJoined);
+        socket.off('incomming:call', handleIncommingCall);
+        socket.off('call:accepted', handleCallAccepted);
+        socket.off('peer:nego:needed', handleNegoNeedIncomming);
+        socket.off('peer:nego:final', handleNegoNeedFinal);
+
+        // if (peer.peer) {
+        //     peer.peer.close();
+        // }
+
+        if (myStream) {
+            myStream.getTracks().forEach((track) => track.stop());
+        }
+        if (remoteStream) {
+            remoteStream.getTracks().forEach((track) => track.stop());
+        }
+
+        setMyStream(null);
+        setRemoteStream(null);
+        setRemoteSocketId(null);
+        setCallAccepted(false);
+        setCallActive(false);
+
+
+        if (user === 'user') {
+            navigate('/home');
+        } else if (user === 'doctor') {
+            navigate('/doctor/home');
+        }
+    };
+
+
+
+
+
     return (
         <>
-            <h1>Room</h1>
-            <h4>{remoteSocketId ? 'Connected' : 'No one in room'}</h4>
-            {remoteSocketId && (
-                <button onClick={handleCallUser} >Call</button>
-            )}
-            {myStream && (
-                <button onClick={sendStream} >Send Stream</button>
-            )}
-            {myStream && (
-                <>
-                    <h1>My Stream</h1>
-                    <ReactPlayer playing muted height='200px' width='400px' url={myStream} />
-                </>
+            {/* <h1>Health Ease</h1>
+            
+            {
+                user === 'user' ? (!remoteSocketId && 'Please wait for the doctor to start the call') : (
+                    !callActive && <h5>{remoteSocketId ? 'Patient online' : 'Waiting for the patient to join'}</h5>)
+            }
 
+
+            {user === 'doctor' && remoteSocketId && !callActive && (
+                <button onClick={handleCallUser}>Call</button>
             )}
+
+            {user === 'user' && myStream && !callAccepted && (
+                <button onClick={sendStream}>Join Stream</button>
+            )}
+
+
             {remoteStream && (
                 <>
-                    <h1>Remote Stream</h1>
+                    <h5>Remote Stream</h5>
                     <ReactPlayer playing muted height='200px' width='400px' url={remoteStream} />
                 </>
 
             )}
+
+            {myStream && (
+                <>
+                    <h5>My Stream</h5>
+                    <ReactPlayer playing muted height='200px' width='400px' url={myStream} />
+                </>
+
+            )}
+
+            {callActive && (
+                <button className='btn-danger' onClick={leaveCall} >Leave Call</button>
+            )} */}
+
+
+
+
+
+
+
+
+
+
+
+            {/* <div className="room-cookieCard ">
+                <div className="room-contentWrapper">
+                    <div className="room-sch-panel rounded-3 m-2">
+                        <div className='p-2' >
+
+                            <h1>Health Ease</h1>
+
+                            {
+                                user === 'user' ? (!remoteSocketId && 'Please wait for the doctor to start the call') : (
+                                    !callActive && <h5>{remoteSocketId ? 'Patient online' : 'Waiting for the patient to join'}</h5>)
+                            }
+
+
+                            {user === 'doctor' && remoteSocketId && !callActive && (
+                                <button onClick={handleCallUser}>Call</button>
+                            )}
+
+                            {user === 'user' && myStream && !callAccepted && (
+                                <button onClick={sendStream}>Join Stream</button>
+                            )}
+
+                            <div className="video-container">
+                                {remoteStream && (
+                                    <>
+                                        <h5>Remote Stream</h5>
+                                        <ReactPlayer className="react-player" playing muted height="200px" width="100%" url={remoteStream} />
+                                    </>
+                                )}
+
+                                {myStream && (
+                                    <>
+                                        <h5>My Stream</h5>
+                                        <ReactPlayer className="react-player" playing muted height="200px" width="100%" url={myStream} />
+                                    </>
+                                )}
+                            </div>
+
+                            {callActive && (
+                                <div className="buttons">
+                                    <button className="btn-danger" onClick={leaveCall}>Leave Call</button>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+                </div>
+            </div> */}
+
+
+
+
+            <div className="room-cookieCard">
+                <div className="room-contentWrapper">
+                    <div className="room-sch-panel rounded-3 m-2">
+                        <div className='p-2'>
+                           < h1 className='text-center'>Health Ease</h1>
+
+                            {
+                                user === 'user' ? (!remoteSocketId && 'Please wait for the doctor to start the call') : (
+                                    !callActive && <h5>{remoteSocketId ? 'Patient online' : 'Waiting for the patient to join'}</h5>)
+                            }
+
+
+                            {user === 'doctor' && remoteSocketId && !callActive && (
+                                <button onClick={handleCallUser}>Call</button>
+                            )}
+
+                            {user === 'user' && myStream && !callAccepted && (
+                                <button onClick={sendStream}>Join Stream</button>
+                            )}
+
+                            <div className="video-container">
+                                <div className="stream-container">
+                                    {remoteStream && (
+                                        <>
+                                            {/* <h5>Remote Stream</h5> */}
+                                            <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={remoteStream} />
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className="stream-container">
+                                    {myStream && (
+                                        <>
+                                            {/* <h5>My Stream</h5> */}
+                                            <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream} />
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {callActive && (
+                                <div className="buttons">
+                                    <button className="btn-danger" onClick={leaveCall}>Leave Call</button>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
 
         </>
     )

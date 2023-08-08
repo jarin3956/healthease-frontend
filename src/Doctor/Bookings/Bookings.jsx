@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     MDBCard,
     MDBCardBody,
@@ -10,9 +10,12 @@ import {
 
 import Swal from 'sweetalert2';
 
+import VideoCall from '../../VideoCall/VideoCall';
+
 function Bookings({ bookingData, handleCancelBooking }) {
 
-    //  bookingData.sort((a, b) => new Date(a.CreatedAt) - new Date(b.CreatedAt));
+    const [selectedBookingId, setSelectedBookingId] = useState(null);
+    const [selectedEmailId, setSelectedEmailId] = useState(null);
 
     const handleCancelBookingClick = async (bookingId) => {
         try {
@@ -26,15 +29,22 @@ function Bookings({ bookingData, handleCancelBooking }) {
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, cancel it!',
                 cancelButtonText: 'No, keep it'
-              });
-              if (result.isConfirmed) {
+            });
+            if (result.isConfirmed) {
                 await handleCancelBooking(bookingId);
                 Swal.fire('Cancelled!', 'Your booking has been cancelled.', 'success');
-              }
+            }
 
         } catch (error) {
             console.log(error);
         }
+    }
+
+    
+
+    const handleStartBookingClick = async (bookingId, email) => {
+        setSelectedBookingId(bookingId);
+        setSelectedEmailId(email);
     }
 
     return (
@@ -49,22 +59,22 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                     <MDBCard className="shadow border m-2">
                                         <MDBCardBody>
                                             <MDBRow>
-                                                <MDBCol md="2"className="d-flex justify-content-center" >
-                                                    { booking.userData ? (
+                                                <MDBCol md="2" className="d-flex justify-content-center" >
+                                                    {booking.userData ? (
                                                         <MDBCardImage
-                                                        src={`/UserImages/${booking.userData.image}`}
-                                                        className='rounded-5 '
-                                                        fluid
-                                                        alt="Phone"
-                                                        style={{
-                                                            height: '130px', 
-                                                            width: '130px', 
-                                                        }}
-                                                    />
+                                                            src={`/UserImages/${booking.userData.image}`}
+                                                            className='rounded-5 '
+                                                            fluid
+                                                            alt="Phone"
+                                                            style={{
+                                                                height: '130px',
+                                                                width: '130px',
+                                                            }}
+                                                        />
                                                     ) : (
                                                         <p>No image</p>
-                                                    ) }
-                                                    
+                                                    )}
+
                                                 </MDBCol>
                                                 {booking.bookingData.Status === "PENDING" ? (
                                                     <>
@@ -72,27 +82,20 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            { booking.userData ? (
+                                                            {booking.userData ? (
                                                                 <p className=" mb-0">{booking.userData.name}</p>
                                                             ) : (
                                                                 <p>No data</p>
-                                                            ) }
-                                                            
+                                                            )}
+
                                                         </MDBCol>
                                                         <MDBCol
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <p className=" mb-0 small">{booking.bookingData.Booked_date}</p>
+                                                            <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}</p>
                                                         </MDBCol>
-                                                        <MDBCol
-                                                            md="2"
-                                                            className="text-center d-flex justify-content-center align-items-center"
-                                                        >
-                                                            <p className=" mb-0 small">
-                                                                {booking.bookingData.Booked_day}
-                                                            </p>
-                                                        </MDBCol>
+
                                                         <MDBCol
                                                             md="3"
                                                             className="text-center d-flex justify-content-center align-items-center"
@@ -110,6 +113,18 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                                 Cancel
                                                             </button>
                                                         </MDBCol>
+                                                        <MDBCol
+                                                            md="2"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <button
+                                                                onClick={() => handleStartBookingClick(booking.bookingData._id, booking.userData.email)}
+                                                                className="btn btn-success btn-sm mb-0 "
+                                                            >
+                                                                Start
+                                                            </button>
+                                                        </MDBCol>
+
                                                     </>
                                                 ) : (
                                                     <>
@@ -147,6 +162,12 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                         </MDBCardBody>
                                     </MDBCard>
                                 ))}
+                                {selectedBookingId && selectedEmailId && (
+                                    <VideoCall
+                                        doctorEmail={selectedEmailId}
+                                        bookingId={selectedBookingId}
+                                    />
+                                )}
                             </MDBCardBody>
                         </MDBCard>
 

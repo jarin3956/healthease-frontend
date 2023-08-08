@@ -16,6 +16,7 @@ import Landingpage from '../User/LandingPage/Landingpage';
 import Navbar from '../Common/Navbar/Navbar';
 import Bookings from '../User/Bookings/Bookings';
 import Payment from '../User/Payment/Payment';
+import Room from '../VideoCall/Room';
 
 
 
@@ -41,6 +42,7 @@ function UserRoute() {
                     <Route path='viewDoctors'element={<Viewdoc/>} />
                     <Route path='view-Bookings' element={<Bookings/>} />
                     <Route path='payment' element={<Payment/>} />
+                    <Route path='room/:roomId'element={<Room user={user} />}/>
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
                
