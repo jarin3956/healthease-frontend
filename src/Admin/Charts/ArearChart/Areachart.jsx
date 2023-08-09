@@ -6,10 +6,17 @@ function Areachart() {
 
     const [revenueData, setRevenueData] = useState([]);
 
+    const admintoken = localStorage.getItem('admintoken')
+
+
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const response = await axiosinstance.get('admin/bookings');
+            const response = await axiosinstance.get('admin/bookings',{
+              headers: {
+                Authorization: `Bearer ${admintoken}`
+            }
+            });
             if (response.status === 200) {
               setRevenueData(response.data.bookingData);
             } else {

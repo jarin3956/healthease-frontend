@@ -53,7 +53,7 @@ function Bookings() {
 
   const CancelBooking = async (bookingId) => {
     try {
-      const response = await axiosinstance.put(`booking/cancel-booking/${bookingId}`);
+      const response = await axiosinstance.put(`booking/cancel-booking-user/${bookingId}`);
       if (response.status === 200) {
         fetchBooking()
         toast.success('Booking cancelled successfully!')

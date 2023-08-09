@@ -70,12 +70,16 @@ function DocChart({ chartData }) {
 
     const [revenueData, setRevenueData] = useState([]);
 
-
+    const doctortoken = localStorage.getItem('doctortoken')
 
     useEffect(() => {
         const bookingData = async () => {
             try {
-                const response = await axiosinstance.get(`admin/bookings`)
+                const response = await axiosinstance.get('doctor/load-all-bookings',{
+                    headers: {
+                        Authorization: `Bearer ${doctortoken}`
+                    }
+                })
                 if (response.status === 200) {
 
                     const sortedData = response.data.bookingData.filter((a) => {

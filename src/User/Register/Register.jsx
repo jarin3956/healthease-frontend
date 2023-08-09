@@ -24,41 +24,41 @@ function Register() {
             setShake(true);
             setLoading(false);
             return;
-          }
-      
-        
-          const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
-          if (!name.match(nameRegex)) {
+        }
+
+
+        const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
+        if (!name.match(nameRegex)) {
             setErrormsg('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
             setShake(true);
             setLoading(false);
             return;
-          }
-      
-          
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!email.match(emailRegex)) {
+        }
+
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.match(emailRegex)) {
             setErrormsg('Please enter a valid email address.');
             setShake(true);
             setLoading(false);
             return;
-          }
-      
-          
-          if (password.length < 6) {
+        }
+
+
+        if (password.length < 6) {
             setErrormsg('Password should be at least 6 characters long.');
             setShake(true);
             setLoading(false);
             return;
-          }
-      
-          
-          if (!image.type.includes('image')) {
+        }
+
+
+        if (!image.type.includes('image')) {
             setErrormsg('Please upload an image.');
             setShake(true);
             setLoading(false);
             return;
-          }
+        }
 
         try {
             const formData = new FormData();
@@ -68,23 +68,30 @@ function Register() {
             formData.append('repassword', repassword);
             formData.append('image', image);
             const response = await axiosinstance.post('register', formData);
-            console.log(response);
-            const data = response.data;
-            if (data.status === 'ok') {
+            
+            if (response.status === 200) {
+                const data = response.data
                 console.log('Registration successful');
                 navigate(`/verify?id=${data.id}&userType=user`);
-            } else if (data.status === 'error') {
-                setErrormsg(data.message)
-                setShake(true)
             } else {
-                setErrormsg(data.message)
+                setErrormsg('An error occurred. Please try again later')
+                setShake(true)
+            }
+            
+        } catch (error) {
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 500 || status === 401 || status === 409) {
+                    setErrormsg(error.response.data.message)
+                    setShake(true)
+                }
+
+            } else {
+                console.log(error);
+                setErrormsg('An error occurred. Please try again later')
                 setShake(true)
             }
 
-        } catch (error) {
-            console.log(error);
-            setErrormsg('An error occurred. Please try again later')
-            setShake(true)
         } finally {
             setLoading(false)
         }
@@ -113,7 +120,7 @@ function Register() {
                     </div>
                     <h1 className="register-title">Register</h1>
                     <p className="register-description">Please fill in the following details:</p>
-                    <input value={name} onChange={(e) => setName(e.target.value)} type="text" className="register-input" placeholder="Name"  required />
+                    <input value={name} onChange={(e) => setName(e.target.value)} type="text" className="register-input" placeholder="Name" required />
                     <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="register-input" placeholder="Email" required />
                     <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="register-input" placeholder="Password" required />
                     <input value={repassword} onChange={(e) => setRepassword(e.target.value)} type="password" className="register-input" placeholder="Confirm Password" required />

@@ -178,7 +178,8 @@ function Viewschedule() {
 
   const handleCancelBooking = async (bookingId) => {
     try {
-      const response = await axiosinstance.put(`booking/cancel-booking/${bookingId}`);
+      const response = await axiosinstance.put(`booking/cancel-booking-doctor/${bookingId}`,{
+      });
       if (response.status === 200) {
         fetchBookingData();
       }

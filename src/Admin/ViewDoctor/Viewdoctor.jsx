@@ -16,10 +16,16 @@ function Viewdoctor() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
+    const admintoken = localStorage.getItem('admintoken')
+
 
     const viewDoctorProfile = async (doctorId) => {
         try {
-            const response = await axiosinstance.get(`admin/view-doctor-profile/${doctorId}`);
+            const response = await axiosinstance.get(`admin/view-doctor-profile/${doctorId}`,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            });
             if (response.status === 200) {
                 setDoctor(response.data.doctorData);
             } else {

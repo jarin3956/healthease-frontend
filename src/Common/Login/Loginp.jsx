@@ -20,7 +20,7 @@ function Loginp({ user }) {
 
   const handleGoogleSignIn = () => {
     loginWithRedirect({
-      screen_hint: 'signup', // Show Google sign-up screen
+      screen_hint: 'signup', 
     });
   };
 
@@ -36,72 +36,91 @@ function Loginp({ user }) {
     navigate(registerRoutes[user]);
   };
 
-
-  async function loginUser(event) {
-    event.preventDefault();
-
-    try {
-
-      if (user === 'user') {
-        let userresponse = await axiosinstance.post('login', {
+  const loginUser = async (e) => {
+    e.preventDefault()
+    if (user === 'user') {
+      try {
+        let response = await axiosinstance.post('login', {
           email,
           password,
         });
-        const userdata = userresponse.data;
-        if (userdata.status === 'error') {
-          setErrorMessage(userdata.message);
-          setShake(true);
-        }
-        else if (userdata.user) {
-          localStorage.setItem('token', userdata.user);
+        if (response.status === 200) {
+          localStorage.setItem('token', response.data.user);
           navigate('/home');
-
-        }
-        else {
-          setErrorMessage('An error occurred. Please try again later');
+        } else {
+          setErrorMessage('Something went wrong, please try after sometime');
           setShake(true);
         }
-      } else if (user === 'doctor') {
-        let doctorresponse = await axiosinstance.post('doctor/login', {
+      } catch (error) {
+        if (error.response) {
+          const status = error.response.status
+          if (status === 403 || status === 401 || status === 404 || status === 500) {
+            setErrorMessage(error.response.data.message)
+            setShake(true)
+          } else {
+            console.log(error);
+            setErrorMessage('An error occurred. Please try again later')
+            setShake(true)
+          }
+        }
+      }
+    } else if (user === 'doctor') {
+      try {
+        let response = await axiosinstance.post('doctor/login', {
           email,
           password,
         });
-        const doctordata = doctorresponse.data;
-        if (doctordata.status === 'error') {
-          setErrorMessage(doctordata.message);
-          setShake(true);
-        }
-        else if (doctordata.doctor) {
-          localStorage.setItem('doctortoken', doctordata.doctor);
+        if (response.status === 200) {
+          localStorage.setItem('doctortoken', response.data.doctor);
           navigate('/doctor/home');
-
-        }
-        else {
-          setErrorMessage('An error occurred. Please try again later');
+        } else {
+          setErrorMessage('Something went wrong, please try after sometime');
           setShake(true);
         }
-      } else if (user === 'admin') {
-        let adminresponse = await axiosinstance.post('admin/login', {
+      } catch (error) {
+        if (error.response) {
+          const status = error.response.status
+          if (status === 403 || status === 401 || status === 404 || status === 500) {
+            setErrorMessage(error.response.data.message)
+            setShake(true)
+          }
+        } else {
+          console.log(error);
+          setErrorMessage('An error occurred. Please try again later')
+          setShake(true)
+        }
+
+      }
+    } else if (user === 'admin') {
+      try {
+        let response = await axiosinstance.post('admin/login', {
           email,
           password
         });
-        const admindata = adminresponse.data;
-        if (admindata.status === 'error') {
-          setErrorMessage(admindata.message)
-          setShake(true)
-        } else if (admindata.admin) {
-          localStorage.setItem('admintoken', admindata.admin);
+        if (response.status === 200) {
+          localStorage.setItem('admintoken', response.data.admin);
           navigate('/admin/dashboard')
+        } else{
+          setErrorMessage('Something went wrong, please try after sometime');
+          setShake(true);
+        }
+      } catch (error) {
+        if (error.response) {
+          const status = error.response.status
+          if (status === 401 || status === 404 || status === 500) {
+            setErrorMessage(error.response.data.message)
+            setShake(true)
+          }
         } else {
+          console.log(error);
           setErrorMessage('An error occurred. Please try again later')
           setShake(true)
         }
       }
-
-    } catch (error) {
-      console.log(error, 'errrrrrrrrrrrrrrrrrrrr');
     }
   }
+
+  
 
   function handleAnimationEnd() {
     setShake(false);
@@ -155,7 +174,7 @@ function Loginp({ user }) {
             <img src="/healtheaselogo.png" alt="Logo" className="doc-logo-image" />
           </div>
           <h3 className='text-center' >Login</h3>
-          {errorMessage && <h6 className="admin-login-error text-danger">{errorMessage}</h6>}
+          {errorMessage && <h6 className="admin-login-error text-danger text-center">{errorMessage}</h6>}
           <div className="flex-column">
             <label>Email </label></div>
           <div className="inputForm">
@@ -228,7 +247,7 @@ C318.115,0,375.068,22.126,419.404,58.936z"></path>
 
         </form>
       </div>
-      
+
     </>
 
   );

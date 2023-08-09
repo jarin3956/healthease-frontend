@@ -68,10 +68,17 @@ function Barchart() {
 
     const [bookingData, setBookingData] = useState([])
 
+    const admintoken = localStorage.getItem('admintoken')
+
+
     useEffect(() => {
         const bookingData = async () => {
             try {
-                const response = await axiosinstance.get('admin/bookings')
+                const response = await axiosinstance.get('admin/bookings',{
+                    headers: {
+                        Authorization: `Bearer ${admintoken}`
+                    }
+                })
                 if (response.status === 200) {
                     setBookingData(response.data.bookingData)
                 } else {

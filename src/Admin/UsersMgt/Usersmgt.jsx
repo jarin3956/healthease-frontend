@@ -32,10 +32,16 @@ function Usersmgt() {
 
     const [users, setUsersData] = useState([]);
 
+    const admintoken = localStorage.getItem('admintoken');
+
     useEffect(() => {
         const fetchUsersData = async () => {
             try {
-                const response = await axiosinstance.get('admin/users');
+                const response = await axiosinstance.get('admin/users',{
+                    headers: {
+                        Authorization: `Bearer ${admintoken}`
+                    }
+                });
                 const userdata = response.data.users;
                 setUsersData(userdata);
                 console.log(userdata, "this is the data");
@@ -65,11 +71,17 @@ function Usersmgt() {
     }
 
 
+    // const admintoken = localStorage.getItem('admintoken')
+
     const handleBlockUser = async (userId) => {
 
 
         try {
-            const response = await axiosinstance.put(`admin/change-user-status/${userId}`)
+            const response = await axiosinstance.put(`admin/change-user-status/${userId}`, null,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            });
             const updatedUser = response.data.user
             setUsersData((prevUsers) =>
                 prevUsers.map((user) => (user._id === updatedUser._id ? updatedUser : user))

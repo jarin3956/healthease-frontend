@@ -73,11 +73,26 @@ function EditProfile() {
 
     const fetchSpec = async () => {
         try {
-            const fetchspec = await axiosinstance.get('specialization')
-            let specDatas = fetchspec.data.spec
-            setSpec(specDatas)
+            const response = await axiosinstance.get('specialization/view');
+            if (response.status === 200) {
+                setSpec(response.data.spec)
+            }
+            else {
+                Swal.fire({ title: "Error", text:"Please Try again later."})
+            }
+            
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 404 || status === 500) {
+                    Swal.fire({ title: "Server Error", text: error.response.data.message})
+                }
+                
+            } else {
+                console.log(error);
+                Swal.fire({ title: "Server Error", text:"Please Try again later."})
+            }
+            
         }
     }
 

@@ -30,10 +30,17 @@ function Linechart() {
 
     const [chartData, setChartData] = useState([])
 
+    const admintoken = localStorage.getItem('admintoken')
+
+
     useEffect(() => {
         const chartData = async () => {
             try {
-                const response = await axiosinstance.get('admin/linechart-data');
+                const response = await axiosinstance.get('admin/linechart-data',{
+                    headers: {
+                        Authorization: `Bearer ${admintoken}`
+                    }
+                });
                 if (response.status === 200) {
                     const monthlyChartData = groupMonthlyData(response.data.chartData);
                     setChartData(monthlyChartData);

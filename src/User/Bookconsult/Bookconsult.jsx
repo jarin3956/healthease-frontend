@@ -51,14 +51,19 @@ function Bookconsult() {
                 const currentIndex = updatedSchedule.findIndex(day => day.day === weekDays[currentDay]);
 
                 // Rearrange the array to have the current day first, followed by the upcoming days
-                const rearrangedSchedule = [
-                    updatedSchedule[currentIndex],
-                    ...updatedSchedule.slice(0, currentIndex),
-                    ...updatedSchedule.slice(currentIndex + 1)
-                ];
+                // const rearrangedSchedule = [
+                //     updatedSchedule[currentIndex],
+                //     ...updatedSchedule.slice(0, currentIndex),
+                //     ...updatedSchedule.slice(currentIndex + 1)
+                // ];
 
-                // setDocSchedule(updatedSchedule);
-                setDocSchedule(rearrangedSchedule);
+                // setDocSchedule(rearrangedSchedule);
+                const sortedSchedule = updatedSchedule.sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateA - dateB;
+                });
+                setDocSchedule(sortedSchedule);
             } else {
                 console.log("error");
             }

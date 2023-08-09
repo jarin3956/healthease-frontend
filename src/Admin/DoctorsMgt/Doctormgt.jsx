@@ -29,12 +29,18 @@ function Doctormgt() {
 
     const [doctors, setDoctors] = useState([])
 
+    const admintoken = localStorage.getItem('admintoken')
+
     useEffect(() => {
 
         const fetchDoctorsData = async () => {
             try {
 
-                const response = await axiosinstance.get('admin/doctors');
+                const response = await axiosinstance.get('admin/doctors',{
+                    headers: {
+                        Authorization: `Bearer ${admintoken}`
+                    }
+                });
                 const doctorData = response.data.doctors
                 setDoctors(doctorData)
 
@@ -63,7 +69,11 @@ function Doctormgt() {
 
     const handleBlockDoctor = async (doctorId) => {
         try {
-            const response = await axiosinstance.put(`admin/change-doctor-blocking/${doctorId}`);
+            const response = await axiosinstance.put(`admin/change-doctor-blocking/${doctorId}`,null ,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            });
             const updatedDoctor = response.data.doctor;
 
             setDoctors((prevDoctors) =>
@@ -100,7 +110,11 @@ function Doctormgt() {
 
     const handleVerifyDoctor = async (doctorId) => {
         try {
-            const response = await axiosinstance.put(`admin/change-doctor-status/${doctorId}`);
+            const response = await axiosinstance.put(`admin/change-doctor-status/${doctorId}`,null ,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            });
             const updatedDoctor = response.data.doctor;
 
             setDoctors((prevDoctors) =>

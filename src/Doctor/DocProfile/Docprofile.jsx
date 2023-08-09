@@ -70,7 +70,7 @@ function Docprofile() {
     useEffect(() => {
         const fetchSpec = async () => {
             try {
-                const fetchspec = await axiosinstance.get('specialization')
+                const fetchspec = await axiosinstance.get('specialization/view')
                 let specDatas = fetchspec.data.spec
                 setSpec(specDatas)
             } catch (error) {

@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 import WalletTable from '../WalletTable/WalletTable';
 
+import Swal from 'sweetalert2';
+
 function Profile() {
     const navigate = useNavigate();
 
@@ -26,6 +28,8 @@ function Profile() {
     const [imagee, setImagee] = useState(null)
     const [main, setMain] = useState(true)
 
+    const [proImageUrl, setProImgUrl] = useState('')
+
 
     const token = localStorage.getItem('token');
 
@@ -40,16 +44,44 @@ function Profile() {
                             Authorization: `Bearer ${token}`
                         }
                     });
-                    setUserr(response.data);
-                    setImagee(response.data.image);
-                    setNamee(response.data.name);
-                    setAgee(response.data.age);
-                    setHeighte(response.data.height);
-                    setWeighte(response.data.weight);
-                    setGendere(response.data.gender);
+                    if (response.status === 200) {
+                        setUserr(response.data);
+                        setImagee(response.data.image);
+                        setNamee(response.data.name);
+                        setAgee(response.data.age);
+                        setHeighte(response.data.height);
+                        setWeighte(response.data.weight);
+                        setGendere(response.data.gender);
+                        setProImgUrl(response.data.image ? `/UserImages/${imagee}` : user.picture)
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'There was an error, Please try after sometime',
+                            confirmButtonText: 'OK',
+                        })
+                    }
 
                 } catch (error) {
-                    console.log(error);
+                    if (error.response) {
+                        const status = error.response.status;
+                        if (status === 404 || status === 500) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops!',
+                                text: error.response.data.message,
+                                confirmButtonText: 'OK',
+                            })
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'There was an error, Please try after sometime',
+                            confirmButtonText: 'OK',
+                        })
+                        console.log(error);
+                    }
                 }
             };
 
@@ -85,22 +117,26 @@ function Profile() {
         setErrorMessage('');
     }
 
+
+
     const handleeditsave = async (userId) => {
         try {
-            setMain(true)
+            setMain(true);
             let formData = new FormData();
             const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
+
             if (!namee.match(nameRegex)) {
                 setEditError('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
                 return;
             }
 
             formData.append('name', namee);
+
             if (imagee) {
                 formData.append("image", imagee);
             }
-            if (agee && heighte && weighte && gendere) {
 
+            if (agee && heighte && weighte && gendere) {
                 if (isNaN(agee) || agee < 10 || agee > 100) {
                     setEditError('Age must be a number between 10 and 100.');
                     return;
@@ -127,23 +163,32 @@ function Profile() {
                 formData.append('gender', gendere);
             }
 
-            const editresponse = await axiosinstance.post(`edit-user-profile/${userId}`, formData);
-            const { status, updateduser } = editresponse.data
+            let response = await axiosinstance.post(`edit-user-profile/${userId}`, formData);
 
-            if (status === 'ok') {
-                setShowEdit(false)
-                setUserr(updateduser)
-                setEditError('')
-                const walletBalance = calculateWalletBalance(updateduser.wallet);
-                setUserr({ ...user, wallet: walletBalance });
+            if (response.status === 200) {
+                setShowEdit(false);
+                setUserr(response.data.updateduser);
+                setEditError('');
+
+                const walletBalance = calculateWalletBalance(response.data.updateduser.wallet);
+                setUserr(prevUser => ({ ...prevUser, wallet: walletBalance }));
             } else {
-                setEditError('There was an error in saving data')
+                setEditError('There was an error in saving data');
             }
 
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 404 || status === 500) {
+                    setEditError(error.response.data.message);
+                }
+            } else {
+                setEditError('There was an error in saving data');
+                console.log(error);
+            }
         }
-    }
+    };
+
 
     const handleSave = async (userId) => {
 
@@ -182,26 +227,39 @@ function Profile() {
                 height,
                 weight,
             };
-            const addMore = await axiosinstance.post(`add-more-info/${userId}`, dataNeeded);
-            const { status, user } = addMore.data;
-            if (status === 'ok') {
-                const updatedUser = addMore.data.user;
+            const response = await axiosinstance.post(`add-more-info/${userId}`, dataNeeded);
+            // const { status, user } = addMore.data;
+            if (response.status === 200) {
+                const updatedUser = response.data.user;
                 const walletBalance = calculateWalletBalance(updatedUser.wallet);
-                setUserr({ ...user, wallet: walletBalance });
+                setUserr({ ...response.data.user, wallet: walletBalance });
                 setShowDetails(false);
-                setUserr(user);
+                setUserr(response.data.user);
                 setErrorMessage('');
 
             } else {
                 setErrorMessage('Error occurred while saving details.');
             }
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 404 || status === 500) {
+                    setErrorMessage(error.response.data.message);
+                }
+            } else {
+                setErrorMessage('Error occurred while saving details.');
+                console.log(error);
+            }
+
         }
     };
 
 
     const calculateWalletBalance = (walletTransactions) => {
+        if (!Array.isArray(walletTransactions)) {
+            console.error('walletTransactions is not an array');
+            return 0; // Return some default value or handle the error as needed
+        }
         let balance = 0;
         for (const transaction of walletTransactions) {
             if (transaction.type === 'C') {
@@ -235,15 +293,12 @@ function Profile() {
                         <p className="pr-cookieHeading mt-3">Profile</p>
                         {main && !isPopupOpen && (<>
                             <div className="userpro-img">
-                                {user.image && (
-                                    <img
-                                         src={`/UserImages/${user.image}`}
-                                        // src={user.image}
-                                        
-                                        alt="Profile"
-                                        style={{ width: "100%", height: "100%", borderRadius: "100%" }}
-                                    />
-                                )}
+
+                                <img
+                                    src={user.image ? `/UserImages/${user.image}` : user.picture}
+                                    alt="Profile"
+                                    style={{ width: "100%", height: "100%", borderRadius: "100%" }}
+                                />
                             </div>
                             <span className='pr-user-sp'>{user.name}</span>
                             <h6 className="userprocarddet">{user.email}</h6>
@@ -298,17 +353,22 @@ function Profile() {
                                     onChange={(e) => setNamee(e.target.value)}
                                     placeholder="Name"
                                 />
-                                {imagee && (
-                                    <img
-                                        src={`/UserImages/${imagee}`}
-                                        alt=""
-                                        style={{ width: '100px', height: '100px' }}
-                                        className='more-img-input p-2 rounded-3'
-                                    />
-                                )}
+                                
+
+                                <img
+                                    src={proImageUrl}
+                                    alt="profile image"
+                                    style={{ width: '100px', height: '100px' }}
+                                    className='more-img-input p-2 rounded-3'
+                                />
                                 <input
                                     type="file"
-                                    onChange={(e) => setImagee(e.target.files.item(0))}
+                                    // onChange={(e) => setImagee(e.target.files.item(0))}
+                                    onChange={(e) => {
+                                        const file = e.target.files.item(0);
+                                        setImagee(file)
+                                        setProImgUrl(URL.createObjectURL(file));
+                                    }}
                                     accept="image/*"
                                     className="more-input bg-white" />
                                 {user.age && user.gender && user.weight && user.height ? (<>

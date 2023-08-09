@@ -28,9 +28,15 @@ function Bookingsmgt() {
 
   const navigate = useNavigate()
 
+  const admintoken = localStorage.getItem('admintoken')
+
   const fetchBookingData = async () => {
     try {
-      const response = await axiosinstance.get('admin/bookings');
+      const response = await axiosinstance.get('admin/bookings',{
+        headers: {
+          Authorization: `Bearer ${admintoken}`
+      }
+      });
       if (response.status === 200) {
         const sortedData = response.data.bookingData.sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
         setBookings(sortedData);

@@ -13,9 +13,15 @@ function ViewUser() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
+    const admintoken = localStorage.getItem('admintoken')
+
     const viewUserProfile = async (userId) => {
         try {
-            const response = await axiosinstance.get(`admin/view-user-profile/${userId}`);
+            const response = await axiosinstance.get(`admin/view-user-profile/${userId}`,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            });
             if (response.status === 200) {
                 setUser(response.data.userData);
             } else {
@@ -53,7 +59,7 @@ function ViewUser() {
                                             <MDBRow className="g-0">
                                                 <MDBCol md="4" className="gradient-custom-adtble text-center text-white"
                                                     style={{ borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem' }}>
-                                                    <MDBCardImage src={`/UserImages/${user.image}`}
+                                                    <MDBCardImage src={user.image ? `/UserImages/${user.image}`: user.picture}
                                                         alt="Avatar" className=" rounded-3 my-5" style={{ width: '80px' }} fluid />
                                                     <MDBTypography tag="h5"  className='text-black' >{user.name}</MDBTypography>
                                                     <MDBCardText>Id:</MDBCardText>
