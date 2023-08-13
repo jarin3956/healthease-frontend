@@ -60,10 +60,19 @@ function Viewschedule() {
         toast.success('Successfully saved schedule');
         setViewSchedule(response.data.schedule.schedule);
       } else {
-        toast.error(response.data.message);
+        toast.error('Something went wrong, Please try after sometime');
       }
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        const status = error.response.status
+        if (status === 500 || status === 400) {
+          toast.error(error.response.data.message + ' Please try after sometime');
+        }
+      } else {
+        toast.error('Something went wrong, Please try after sometime');
+        console.log(error);
+      }
+      
     }
     console.log('Selected Time Slots:', selectedTimeSlotsByDay, 'and', selectedDays);
   };
@@ -130,16 +139,27 @@ function Viewschedule() {
 
   const fetchBookingData = async () => {
     try {
-      const bookingsData = await axiosinstance.get('booking/load-doc-bookings', {
+      const response = await axiosinstance.get('booking/load-doc-bookings', {
         headers: {
           Authorization: `Bearer ${doctortoken}`,
         },
       });
-      if (bookingsData.status === 200) {
-        setBooking(bookingsData.data.bookingData)
+      if (response.status === 200) {
+        setBooking(response.data.bookingData)
+      } else {
+        toast.error('Something went wrong, Please try after sometime.');
       }
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        const status = error.response.status
+        if (status === 404 || status === 500) {
+          toast.error(error.response.data.message)
+        }
+      } else {
+        toast.error('Something went wrong, Please try after sometime.');
+        console.log(error);
+      }
+      
     }
   }
 
@@ -149,26 +169,30 @@ function Viewschedule() {
 
     const getSchedules = async () => {
       try {
-        const scheduleData = await axiosinstance.get('doctor/schedule-data', {
+        const response = await axiosinstance.get('doctor/schedule-data', {
           headers: {
             Authorization: `Bearer ${doctortoken}`,
           },
         });
-        if (scheduleData.status === 200) {
-          setViewSchedule(scheduleData.data.schedule.schedule);
-          dispatch(addSchedule(scheduleData.data.schedule));
+        if (response.status === 200) {
+          setViewSchedule(response.data.schedule.schedule);
+          dispatch(addSchedule(response.data.schedule));
+        } else {
+          toast.error('Something went wrong, Please try after sometime.')
         }
       } catch (error) {
+        if (error.response) {
+          const status = error.response.status
+          if (status === 500 || status === 404) {
+            toast.error(error.response.data.message + 'Please try after sometime.')
+          }
+        } else {
+          toast.error('Something went wrong, Please try after sometime.')
+        }
         console.log(error);
       }
     };
 
-
-    // if (selector) {
-    //   setViewSchedule(selector.schedule);
-    // } else {
-      
-    // }
 
     getSchedules();
 
@@ -178,14 +202,28 @@ function Viewschedule() {
 
   const handleCancelBooking = async (bookingId) => {
     try {
-      const response = await axiosinstance.put(`booking/cancel-booking-doctor/${bookingId}`,{
+      const response = await axiosinstance.put(`booking/cancel-booking-doctor/${bookingId}`, null , {
+        headers: {
+          Authorization: `Bearer ${doctortoken}`,
+        },
       });
       if (response.status === 200) {
         fetchBookingData();
+      } else {
+        toast.error('Something went wrong, Please try after sometime')
       }
 
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        const status = error.response.status
+        if (status === 500 || status === 404 || status === 400) {
+          toast.error(error.response.data.message)
+        }
+      } else {
+        toast.error('Something went wrong, Please try after sometime')
+        console.log(error);
+      }
+      
     }
   };
 

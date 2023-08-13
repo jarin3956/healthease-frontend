@@ -8,8 +8,6 @@ function DocLinechart({docRevenueData}) {
             <h2 className='p-3 text-center'>Monthly Revenue</h2>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart
-                    width={500}
-                    height={300}
                     data={docRevenueData}
                     margin={{
                         top: 5,

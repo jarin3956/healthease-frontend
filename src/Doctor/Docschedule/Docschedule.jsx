@@ -17,16 +17,21 @@ function Docschedule({ data }) {
     const viewHandleDayClick = (day) => {
         setViewSelectedDay(day)
     }
+
+    const sortedData = [...data].sort((a, b) => {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return days.indexOf(a.day) - days.indexOf(b.day);
+    });
     return (
         <>
             <MDBContainer className="py-5 h-100">
                 <MDBCol lg="12" xl="12">
-                    <MDBCard style={{ borderRadius: "10px"}}  >
+                    <MDBCard style={{ borderRadius: "10px" }}  >
                         <MDBCardBody className="p-4">
                             <MDBCard className="shadow-0 border-0 m-4">
                                 <h3 className="text-center the-first-text">Selected Dates</h3>
                                 <div className="view-day-slot-container">
-                                    {data.map((day) => (
+                                    {sortedData.map((day) => (
                                         <div className={`view-day-box ${viewSelectedDay === day.day ? 'selected' : ''}`}
                                             key={day.day}
                                             onClick={() => viewHandleDayClick(day.day)}

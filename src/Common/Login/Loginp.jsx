@@ -54,7 +54,7 @@ function Loginp({ user }) {
       } catch (error) {
         if (error.response) {
           const status = error.response.status
-          if (status === 403 || status === 401 || status === 404 || status === 500) {
+          if (status === 403 || status === 401 || status === 404 || status === 500 || status === 400) {
             setErrorMessage(error.response.data.message)
             setShake(true)
           } else {

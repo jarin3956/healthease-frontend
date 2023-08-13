@@ -17,9 +17,12 @@ import {
   MDBContainer,
   MDBRow,
 } from "mdb-react-ui-kit";
+import { useNavigate } from 'react-router-dom';
 
 
 function Bookings() {
+
+  const navigate = useNavigate()
 
   const [bookings, setBooking] = useState(null)
 
@@ -53,14 +56,29 @@ function Bookings() {
 
   const CancelBooking = async (bookingId) => {
     try {
-      const response = await axiosinstance.put(`booking/cancel-booking-user/${bookingId}`);
+      const response = await axiosinstance.put(`booking/cancel-booking-user/${bookingId}`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if (response.status === 200) {
         fetchBooking()
         toast.success('Booking cancelled successfully!')
+      } else {
+        toast.error('Something went wrong, Please try after sometime')
       }
 
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        const status = error.response.status
+        if (status === 404 || status === 500 || status === 400) {
+          toast.error(error.response.data.message)
+        }
+      } else {
+        toast.error('Something went wrong, Please try after sometime')
+        console.log(error);
+      }
+
     }
   }
 
@@ -150,12 +168,20 @@ function Bookings() {
                                   className="text-center d-flex justify-content-center align-items-center"
                                 >
                                   {booking.bookingData.Status === 'CANCELLED' ? (
-                                    <p className=" mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                    <p className="mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
                                   ) : (
-                                    <p className=" mb-0 small">{booking.bookingData.Status}</p>
+                                    <>
+                                      {booking.bookingData.Status === 'COMPLETED' ? (
+                                        
+                                          <button className='btn btn-success' onClick={() => navigate(`/view-prescription/${booking.bookingData._id}`)} >
+                                            View Prescription
+                                          </button>
+                                        
+                                      ) : (
+                                        <p className="mb-0 small">{booking.bookingData.Status}</p>
+                                      )}
+                                    </>
                                   )}
-
-
                                 </MDBCol>
 
                               </>
@@ -217,11 +243,12 @@ function Bookings() {
                                 </>
                               )
                               }
+                              
                             </MDBRow>
                           </MDBCardBody>
                         </MDBCard>
                       ))}
-                      {selectedBookingId && selectedEmailId &&(
+                      {selectedBookingId && selectedEmailId && (
                         <>
                           <VideoCall
                             userEmail={selectedEmailId}

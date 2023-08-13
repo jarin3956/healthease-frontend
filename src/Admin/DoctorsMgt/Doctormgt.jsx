@@ -170,7 +170,7 @@ function Doctormgt() {
             <ToastContainer />
 
 
-            <div className="card p-3 py-4 mb-5  rounded-0 vh-100" style={{ backgroundColor: 'rgb(70, 166, 210)' }}>
+            <div className="card p-3 py-4   rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)',minHeight: '100vh' }}>
                 <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
                     <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Doctor Management</p>
                 </div>
@@ -215,7 +215,7 @@ function Doctormgt() {
                                             key={doctor.name}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                         >
-                                            <TableCell component="th" scope="row">
+                                            <TableCell component="th" scope="row" align="center">
                                                 {doctor.name}
                                             </TableCell>
                                             <TableCell align="center">{doctor.regno}</TableCell>
@@ -223,9 +223,9 @@ function Doctormgt() {
                                             <TableCell align="center">{doctor.age}</TableCell>
                                             <TableCell align="center">{doctor.gender}</TableCell>
                                             <TableCell align="center">{doctor.specialization}</TableCell>
-                                            <TableCell align="center">{doctor.experience} Years</TableCell>
-                                            <TableCell align="center">{doctor.fare} Rupees</TableCell>
-                                            <TableCell align="center">{doctor.final_fare} Rupees</TableCell>
+                                            <TableCell align="center">{doctor.experience} Yrs</TableCell>
+                                            <TableCell align="center">₹ {doctor.fare}</TableCell>
+                                            <TableCell align="center">₹ {doctor.final_fare}</TableCell>
                                             <TableCell align="center">{doctor.isBlocked === true ? "Blocked" : "Active"}</TableCell>
                                             <TableCell align="center">
                                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>

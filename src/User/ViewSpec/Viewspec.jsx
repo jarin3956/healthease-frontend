@@ -52,7 +52,6 @@ function Viewspec({ spec }) {
                     </CardActions>
                 </Card>
             </animated.div>
-
         </div>
     )
 }

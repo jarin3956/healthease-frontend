@@ -27,37 +27,41 @@ function Bookconsult() {
 
     const navigate = useNavigate()
 
+    const token = localStorage.getItem('token')
+
     const showSlots = async (docId) => {
         try {
-            const response = await axiosinstance.get(`view-doctor-slots/${docId}`);
+            const response = await axiosinstance.get(`view-doctor-slots/${docId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             if (response.status === 200) {
+
                 const currentDate = new Date();
                 const currentDay = currentDate.getDay();
                 const currentWeekStart = addDays(currentDate, -currentDay);
-                const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',];
+                const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
                 const scheduleArray = Object.values(response.data.schedule);
 
-                const updatedSchedule = scheduleArray.map((dayObj, index) => {
+                const updatedSchedule = [];
+                for (let index = 0; index < 7; index++) {
                     const dayDate = addDays(currentWeekStart, index);
                     const upcomingDate = addDays(dayDate, dayDate < currentDate ? 7 : 0);
-                    return {
-                        ...dayObj,
-                        day: weekDays[dayDate.getDay()],
-                        date: format(upcomingDate, 'MMM d, yyyy'),
-                    };
-                });
+                    const dayName = weekDays[dayDate.getDay()];
 
-                const currentIndex = updatedSchedule.findIndex(day => day.day === weekDays[currentDay]);
+                    // Check if the day is available in the scheduleArray
+                    const dayObj = scheduleArray.find(scheduleDay => scheduleDay.day === dayName);
+                    if (dayObj) {
+                        updatedSchedule.push({
+                            ...dayObj,
+                            day: dayName,
+                            date: format(upcomingDate, 'MMM d, yyyy'),
+                        });
+                    }
+                }
 
-                // Rearrange the array to have the current day first, followed by the upcoming days
-                // const rearrangedSchedule = [
-                //     updatedSchedule[currentIndex],
-                //     ...updatedSchedule.slice(0, currentIndex),
-                //     ...updatedSchedule.slice(currentIndex + 1)
-                // ];
-
-                // setDocSchedule(rearrangedSchedule);
                 const sortedSchedule = updatedSchedule.sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);
@@ -65,9 +69,17 @@ function Bookconsult() {
                 });
                 setDocSchedule(sortedSchedule);
             } else {
-                console.log("error");
+                toast.error('Something went wrong, Please try after sometime.')
             }
         } catch (error) {
+            if (error.response) {
+                const status = error.response.status
+                if (status === 404 || status === 500) {
+                    toast.error(error.response.data.message + 'Please try after sometime.')
+                }
+            } else {
+                toast.error('Something went wrong, Please try after sometime.')
+            }
             console.log(error);
         }
     };
@@ -88,8 +100,6 @@ function Bookconsult() {
         setSelectedTimeSlot(timeslot)
     }
 
-
-    const token = localStorage.getItem('token')
 
     const bookTheSlot = async () => {
 
@@ -125,60 +135,60 @@ function Bookconsult() {
             <ToastContainer />
 
             <div className="book-cookieCard ">
-                
-                    <div className="home-sch-panel rounded-3 m-2">
-                        {docSchedule ? (
-                            <>
-                                <h3 className="text-center the-first-text-bk">Available Days</h3>
-                                <div className="view-day-slot-container">
-                                    {docSchedule.map((day) => (
-                                        <div
-                                            className={`view-day-box ${selectedDay === day.day ? 'selected' : ''}`}
-                                            key={day.day}
-                                            onClick={() => handleDayClick(day.day)}
-                                        >
-                                            <h6>{day.day}</h6>
-                                            <h6 style={{color:'#8fb6c4'}} >{`${day.date}`}</h6>
+
+                <div className="home-sch-panel rounded-3 m-2">
+                    {docSchedule ? (
+                        <>
+                            <h3 className="text-center the-first-text-bk">Available Days</h3>
+                            <div className="view-day-slot-container">
+                                {docSchedule.map((day) => (
+                                    <div
+                                        className={`view-day-box ${selectedDay === day.day ? 'selected' : ''}`}
+                                        key={day.day}
+                                        onClick={() => handleDayClick(day.day)}
+                                    >
+                                        <h6>{day.day}</h6>
+                                        <h6 style={{ color: '#8fb6c4' }} >{`${day.date}`}</h6>
+                                    </div>
+                                ))}
+                            </div>
+
+
+                            {selectedDay && (
+                                <>
+                                    <h3 className="text-center the-second-text-bk">Time Slots for {selectedDay}</h3>
+                                    {docSchedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
+                                        <div className="view-time-slot-container">
+                                            {docSchedule.find((day) => day.day === selectedDay)
+                                                .time.filter((time) => time.isAvailable)
+                                                .map((time) => (
+                                                    <div
+                                                        className={`view-time-box ${selectedTime === time.timeslot ? 'selected' : ''}`}
+                                                        key={time.timeslot}
+                                                        onClick={() => handleTimeSlot(time.timeslot)}
+                                                    >
+                                                        <h6>{time.timeslot}</h6>
+                                                    </div>
+                                                ))}
                                         </div>
-                                    ))}
-                                </div>
+                                    ) : (
+                                        <p className="text-center">No Time Slots Available for {selectedDay}</p>
+                                    )}
 
+                                    <div className="time-set-butt">
+                                        <button className="time-submit-button" onClick={() => bookTheSlot()}>
+                                            Book Slot
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <h1>No Data Available</h1>
+                    )}
 
-                                {selectedDay && (
-                                    <>
-                                        <h3 className="text-center the-second-text-bk">Time Slots for {selectedDay}</h3>
-                                        {docSchedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
-                                            <div className="view-time-slot-container">
-                                                {docSchedule.find((day) => day.day === selectedDay)
-                                                    .time.filter((time) => time.isAvailable)
-                                                    .map((time) => (
-                                                        <div
-                                                            className={`view-time-box ${selectedTime === time.timeslot ? 'selected' : ''}`}
-                                                            key={time.timeslot}
-                                                            onClick={() => handleTimeSlot(time.timeslot)}
-                                                        >
-                                                            <h6>{time.timeslot}</h6>
-                                                        </div>
-                                                    ))}
-                                            </div>
-                                        ) : (
-                                            <p className="text-center">No Time Slots Available for {selectedDay}</p>
-                                        )}
+                </div>
 
-                                        <div className="time-set-butt">
-                                            <button className="time-submit-button" onClick={() => bookTheSlot()}>
-                                                Book Slot
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
-                            </>
-                        ) : (
-                            <h1>No Data Available</h1>
-                        )}
-
-                    </div>
-                
             </div>
 
         </>

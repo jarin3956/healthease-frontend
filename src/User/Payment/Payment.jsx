@@ -8,8 +8,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Card, CardMedia, CardContent, Typography, CardActions, Button } from '@mui/material';
 import { styled } from '@mui/system';
 
-
-
 import Swal from 'sweetalert2';
 
 import { useDispatch } from 'react-redux'
@@ -52,14 +50,27 @@ function Payment() {
             if (selector !== undefined && selector !== null) {
                 let docId = selector.docId;
                 try {
-                    const response = await axiosinstance.get(`booking/load-doctors/${docId}`);
+                    const response = await axiosinstance.get(`booking/load-doctors/${docId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
                     if (response.status === 200) {
                         setDoctor(response.data.doctorData)
                     } else {
-                        toast.error(response.data.message);
+                        toast.error('Cannot process now, Please try after sometime');
                     }
                 } catch (error) {
-                    console.log(error);
+                    if (error.response) {
+                        const status = error.response.status
+                        if (status === 404 || status === 500) {
+                            toast.error(error.response.data.message)
+                        }
+                    } else {
+                        toast.error('Cannot process now, Please try after sometime');
+                        console.log(error);
+                    }
+                    
                 }
             }
         };
@@ -82,8 +93,12 @@ function Payment() {
 
 
         try {
-            const response = await axiosinstance.post('/booking/check-doc-availability', {
+            const response = await axiosinstance.post('booking/check-doc-availability', {
                 verifyData
+            },{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             if (response.status === 200) {
@@ -94,13 +109,22 @@ function Payment() {
                 }
             }
             else {
-                toast.error(response.data.message);
+                toast.error('Cannot process the request now, Please try after sometime.');
             }
         } catch (error) {
-            console.error('Error verifying slot availability:', error);
-            Swal.fire('Oops!', 'The selected time slot is already booked.', 'error').then(() => {
-                window.location.href = '/home';
-            });
+            if (error.response) {
+                const status = error.response.status
+                if (status === 409 || status === 404 || status === 500) {
+                    Swal.fire('Oops!',   error.response.data.message , 'error').then(() => {
+                        window.location.href = '/home';
+                    });
+                }
+            } else {
+                Swal.fire('Oops!', 'Caannot process the request now, Please try after sometime.', 'error').then(() => {
+                    window.location.href = '/home';
+                });
+                console.error('Error verifying slot availability:', error);
+            }
         }
     }
 
@@ -154,19 +178,34 @@ function Payment() {
                 });
             }
             else {
-                toast.error(response.data.message)
+                toast.error('Cannot process the request now, Please try after sometime.')
             }
 
         } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops!',
-                text: 'The selected time slot is already booked. If money was debited, it will be refunded within 2-3 business days.',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                window.location.href = '/home';
-            });
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status
+                if (status === 500 || status === 409 || status === 400) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops!',
+                        text: error.response.data.message +' If money was debited, it will be refunded within 2-3 business days.',
+                        confirmButtonText: 'OK',
+                    }).then(() => {
+                        window.location.href = '/home';
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'There was an error in processing the request. If money was debited, it will be refunded within 2-3 business days.',
+                    confirmButtonText: 'OK',
+                }).then(() => {
+                    window.location.href = '/home';
+                });
+                console.log(error);
+            }
+            
         }
     }
 
@@ -270,17 +309,32 @@ function Payment() {
                                         });
                                     }
                                     else {
-                                        toast.error(response.data.message)
+                                        toast.error('Cannot process the reques now, Please try after sometime')
                                     }
                                 } catch (error) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops!',
-                                        text: 'The selected time slot is already booked. If money was debited, it will be refunded within 2-3 business days.',
-                                        confirmButtonText: 'OK',
-                                    }).then(() => {
-                                        window.location.href = '/home';
-                                    });
+                                    if (error.response) {
+                                        const status = error.response.status
+                                        if (status === 500 || status === 409 || status === 400 ) {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops!',
+                                                text: error.response.data.message +' If money was debited, it will be refunded within 2-3 business days.',
+                                                confirmButtonText: 'OK',
+                                            }).then(() => {
+                                                window.location.href = '/home';
+                                            });
+                                        }
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops!',
+                                            text: 'There was an error in processing the request. If money was debited, it will be refunded within 2-3 business days.',
+                                            confirmButtonText: 'OK',
+                                        }).then(() => {
+                                            window.location.href = '/home';
+                                        });
+                                    }
+                                    
                                 }
 
                             } else {
@@ -304,31 +358,47 @@ function Payment() {
 
     const checkWallet = async () => {
         try {
-            const checkWallet = await axiosinstance.get('booking/check-wallet', {
+            const response = await axiosinstance.get('booking/check-wallet', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            if (checkWallet.status === 200) {
+            if (response.status === 200) {
                 setUserWallet(true)
-                const formattedBalance = checkWallet.data.wallet.toFixed(2);
+                const formattedBalance = response.data.wallet.toFixed(2);
                 setWalletBalance(formattedBalance)
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops!',
-                    text: 'Failed to fetch your wallet, please try after sometime',
+                    text: 'Something went wrong, please try after sometime',
                     confirmButtonText: 'OK',
                 })
             }
         } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops!',
-                text: 'Internal server error, Please try after sometime.',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                window.location.href = '/home';
-            });
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status
+                if (status === 404 || status === 500) {
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops!',
+                        text: error.response.data.message +  ' Please try after sometime.',
+                        confirmButtonText: 'OK',
+                    }).then(() => {
+                        window.location.href = '/home';
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Something went wrong, Please try after sometime.',
+                    confirmButtonText: 'OK',
+                }).then(() => {
+                    window.location.href = '/home';
+                });
+                console.log(error);
+            }
+           
         }
     }
 

@@ -4,7 +4,17 @@ import ReactPlayer from 'react-player'
 import peer from '../Service/Peer'
 import { useNavigate } from 'react-router-dom';
 
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+
 import './Room.scss'
+import axiosinstance from '../Axios/Axios';
+
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import Swal from 'sweetalert2';
+
 
 
 function Room({ user }) {
@@ -117,16 +127,13 @@ function Room({ user }) {
 
 
     const leaveCall = () => {
-        // Step 1: Clean up event listeners
+
         socket.off('user:joined', handleUserJoined);
         socket.off('incomming:call', handleIncommingCall);
         socket.off('call:accepted', handleCallAccepted);
         socket.off('peer:nego:needed', handleNegoNeedIncomming);
         socket.off('peer:nego:final', handleNegoNeedFinal);
 
-        // if (peer.peer) {
-        //     peer.peer.close();
-        // }
 
         if (myStream) {
             myStream.getTracks().forEach((track) => track.stop());
@@ -141,12 +148,43 @@ function Room({ user }) {
         setCallAccepted(false);
         setCallActive(false);
 
+        const url = new URL(window.location.href);
+        const bookingConfirmId = url.pathname.split('/').pop(); 
+        console.log(bookingConfirmId,"this is the confirm id for booking");
 
-        if (user === 'user') {
-            navigate('/home');
-        } else if (user === 'doctor') {
-            navigate('/doctor/home');
+
+
+        const updateBooking = async () => {
+            try {
+                const response = await axiosinstance.post(`booking/completed-booking/${bookingConfirmId}`);
+                if (response.status === 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Successfully completed your bookings',
+                        confirmButtonText: 'OK',
+                    })
+                    if (user === 'user') {
+                        navigate(`/feed-back/${bookingConfirmId}`);
+                    } else if (user === 'doctor') {
+                        navigate(`/doctor/add-prescription/${bookingConfirmId}`);
+                    }
+                }
+
+            } catch (error) {
+                if (error.response) {
+                    const status = error.response.status
+                    if (status === 404 || status === 400 || status === 500) {
+                        toast.error(error.response.data.message)
+                    }
+                } else {
+                    toast.error('Something went wrong, Please try after sometime')
+                }
+                console.log(error);
+            }
         }
+        
+        updateBooking() 
     };
 
 
@@ -155,159 +193,105 @@ function Room({ user }) {
 
     return (
         <>
-            {/* <h1>Health Ease</h1>
-            
-            {
-                user === 'user' ? (!remoteSocketId && 'Please wait for the doctor to start the call') : (
-                    !callActive && <h5>{remoteSocketId ? 'Patient online' : 'Waiting for the patient to join'}</h5>)
-            }
-
-
-            {user === 'doctor' && remoteSocketId && !callActive && (
-                <button onClick={handleCallUser}>Call</button>
-            )}
-
-            {user === 'user' && myStream && !callAccepted && (
-                <button onClick={sendStream}>Join Stream</button>
-            )}
-
-
-            {remoteStream && (
-                <>
-                    <h5>Remote Stream</h5>
-                    <ReactPlayer playing muted height='200px' width='400px' url={remoteStream} />
-                </>
-
-            )}
-
-            {myStream && (
-                <>
-                    <h5>My Stream</h5>
-                    <ReactPlayer playing muted height='200px' width='400px' url={myStream} />
-                </>
-
-            )}
-
-            {callActive && (
-                <button className='btn-danger' onClick={leaveCall} >Leave Call</button>
-            )} */}
-
-
-
-
-
-
-
-
-
-
-
-            {/* <div className="room-cookieCard ">
-                <div className="room-contentWrapper">
-                    <div className="room-sch-panel rounded-3 m-2">
-                        <div className='p-2' >
-
-                            <h1>Health Ease</h1>
-
-                            {
-                                user === 'user' ? (!remoteSocketId && 'Please wait for the doctor to start the call') : (
-                                    !callActive && <h5>{remoteSocketId ? 'Patient online' : 'Waiting for the patient to join'}</h5>)
-                            }
-
-
-                            {user === 'doctor' && remoteSocketId && !callActive && (
-                                <button onClick={handleCallUser}>Call</button>
-                            )}
-
-                            {user === 'user' && myStream && !callAccepted && (
-                                <button onClick={sendStream}>Join Stream</button>
-                            )}
-
-                            <div className="video-container">
-                                {remoteStream && (
-                                    <>
-                                        <h5>Remote Stream</h5>
-                                        <ReactPlayer className="react-player" playing muted height="200px" width="100%" url={remoteStream} />
-                                    </>
-                                )}
-
-                                {myStream && (
-                                    <>
-                                        <h5>My Stream</h5>
-                                        <ReactPlayer className="react-player" playing muted height="200px" width="100%" url={myStream} />
-                                    </>
-                                )}
-                            </div>
-
-                            {callActive && (
-                                <div className="buttons">
-                                    <button className="btn-danger" onClick={leaveCall}>Leave Call</button>
-                                </div>
-                            )}
-
+        <ToastContainer />
+            <div className="video-callCard">
+                <div className='videocall-esse my-4'>
+                    <h3 className='text-center'>HealthEase</h3>
+                    {
+                        user === 'user' ? (!remoteSocketId && 'Please wait for the doctor to start the call') : (
+                            !callActive && <h5 className='text-center'>{remoteSocketId ? 'Patient online' : 'Waiting for the patient to join'}</h5>)
+                    }
+                    {user === 'doctor' && remoteSocketId && !callActive && (
+                        <div className='call-butt-cont'>
+                            <button onClick={handleCallUser} className="signupBtn">
+                                CALL NOW
+                                <span className="arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="rgb(183, 128, 255)">
+                                        <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"></path>
+                                    </svg>
+                                </span>
+                            </button>
                         </div>
-                    </div>
+                    )}
+
+                    {user === 'user' && myStream && !callAccepted && (
+
+                        <div className='call-butt-cont'>
+                            <button onClick={sendStream} className="signupBtn">
+                                SHARE STREAM
+                                <span className="arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="rgb(183, 128, 255)">
+                                        <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                    )}
+
                 </div>
-            </div> */}
+                {!myStream && !remoteStream ? (
+                    <div className='responsive-video-imagecont'>
+                        <img src="/video-call.png" alt="VideoCall" className="responsive-video-image" />
+                    </div>
 
+                ) : (
+                    <div className='videocall-container row row-cols-1 row-cols-md-2 row-cols-lg-2 g-3'  >
+                        <Card sx={{ maxWidth: 750 }}>
+                            {remoteStream ? (
+                                <CardMedia
+                                    component="div"
+                                    height="350"
+                                >
+                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={remoteStream} />
+                                </CardMedia>
 
+                            ) : (
+                                <CardMedia
+                                    component="img"
+                                    alt="specialization"
+                                    height="350"
+                                    src="/healtheaselogo.png"
+                                />
+                            )}
+                        </Card>
+                        <Card sx={{ maxWidth: 750 }}>
+                            {myStream ? (
+                                <CardMedia
+                                    component="div"
+                                    height="350"
+                                >
+                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream} />
 
+                                </CardMedia>
 
-            <div className="room-cookieCard">
-                <div className="room-contentWrapper">
-                    <div className="room-sch-panel rounded-3 m-2">
-                        <div className='p-2'>
-                           < h1 className='text-center'>Health Ease</h1>
-
-                            {
-                                user === 'user' ? (!remoteSocketId && 'Please wait for the doctor to start the call') : (
-                                    !callActive && <h5>{remoteSocketId ? 'Patient online' : 'Waiting for the patient to join'}</h5>)
-                            }
-
-
-                            {user === 'doctor' && remoteSocketId && !callActive && (
-                                <button onClick={handleCallUser}>Call</button>
+                            ) : (
+                                <CardMedia
+                                    component="img"
+                                    alt="specialization"
+                                    height="350"
+                                    src="/healtheaselogo.png"
+                                />
                             )}
 
-                            {user === 'user' && myStream && !callAccepted && (
-                                <button onClick={sendStream}>Share Stream</button>
-                            )}
+                        </Card>
+                    </div>
+                )}
 
-                            <div className="video-container">
-                                <div className="stream-container">
-                                    {remoteStream && (
-                                        <>
-                                           {/* Remote Stream */}
-                                            <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={remoteStream} />
-                                        </>
-                                    )}
-                                </div>
-
-                                <div className="stream-container">
-                                    {myStream && (
-                                        <>
-                                            {/* My Stream */}
-                                            <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream} />
-                                        </>
-                                    )}
+                {callActive && (
+                    <div className='videocall-esse mt-3'>
+                        <div className="call-end-butt">
+                            <div onClick={leaveCall} className="btn btn--huge">
+                                <div className="btn--huge__text">
+                                    <div>
+                                        Leave Call
+                                        <span>Leave Call</span>
+                                    </div>
                                 </div>
                             </div>
-
-                            {callActive && (
-                                <div className="buttons">
-                                    <button className="btn-danger" onClick={leaveCall}>Leave Call</button>
-                                </div>
-                            )}
-
                         </div>
                     </div>
-                </div>
+                )}
             </div>
-
-
-
-
-
         </>
     )
 }

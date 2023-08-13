@@ -11,6 +11,9 @@ import {
 import DocBarchart from '../Charts/DocBarchart/DocBarchart';
 import DocLinechart from '../Charts/DocLinechart/DocLinechart';
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function getMonthName(monthNum) {
     const months = [
         "January",
@@ -92,9 +95,17 @@ function DocChart({ chartData }) {
                     setBookingData(sortedData);
                     setRevenueData(sortedData)
                 } else {
-                    console.log('error');
+                    toast.error('Something went wrong, Please try after sometime.')
                 }
             } catch (error) {
+                if (error.response) {
+                    const status = error.response.status
+                    if (status === 404 || status === 500) {
+                        toast.error(error.response.data.message + 'Please try after sometime.')
+                    }
+                } else {
+                    toast.error('Something went wrong, Please try after sometime.')
+                }
                 console.log(error);
             }
         }
@@ -140,6 +151,7 @@ function DocChart({ chartData }) {
 
 
         <>
+         <ToastContainer />
             <MDBContainer className="py-5">
                 <MDBCard style={{ borderRadius: "10px" }}>
                     <MDBCardBody className="p-4">

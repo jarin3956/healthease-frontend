@@ -42,8 +42,8 @@ function Home() {
                                 .then(() => {
                                     navigate('/login')
                                 });
-                        } else {
-                            Swal.fire('Oops!', 'Error when loading user data', 'error')
+                        } else if(status === 404 || status === 500) {
+                            Swal.fire('Oops!', error.response.data.message, 'error');
 
                         }
                     } else {

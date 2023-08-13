@@ -73,15 +73,7 @@ function Profile() {
                                 confirmButtonText: 'OK',
                             })
                         }
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops!',
-                            text: 'There was an error, Please try after sometime',
-                            confirmButtonText: 'OK',
-                        })
-                        console.log(error);
-                    }
+                    } 
                 }
             };
 
@@ -163,7 +155,9 @@ function Profile() {
                 formData.append('gender', gendere);
             }
 
-            let response = await axiosinstance.post(`edit-user-profile/${userId}`, formData);
+            let response = await axiosinstance.post('edit-user-profile', formData , {
+                headers : {'Authorization': `Bearer ${token}`}
+            });
 
             if (response.status === 200) {
                 setShowEdit(false);
@@ -179,7 +173,7 @@ function Profile() {
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
-                if (status === 404 || status === 500) {
+                if (status === 404 || status === 500 || status === 400) {
                     setEditError(error.response.data.message);
                 }
             } else {
@@ -227,7 +221,9 @@ function Profile() {
                 height,
                 weight,
             };
-            const response = await axiosinstance.post(`add-more-info/${userId}`, dataNeeded);
+            const response = await axiosinstance.post('add-more-info', dataNeeded , {
+                headers : {'Authorization': `Bearer ${token}`}
+            });
             // const { status, user } = addMore.data;
             if (response.status === 200) {
                 const updatedUser = response.data.user;

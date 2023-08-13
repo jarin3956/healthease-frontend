@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
+
 import {
     MDBCol,
     MDBContainer,
@@ -70,11 +71,25 @@ function Docprofile() {
     useEffect(() => {
         const fetchSpec = async () => {
             try {
-                const fetchspec = await axiosinstance.get('specialization/view')
-                let specDatas = fetchspec.data.spec
-                setSpec(specDatas)
+                const response = await axiosinstance.get('specialization/view');
+
+                if (response.status === 200) {
+                    setSpec(response.data.spec)
+                } else {
+                    toast.error('Could not process now, Please try after sometime');
+                }
+                
             } catch (error) {
-                console.log(error);
+                if (error.response) {
+                    const status = error.response.status
+                    if (status === 404 || status === 500) {
+                        toast.error(error.response.data.message)
+                    }
+                } else {
+                    toast.error('Could not process now, Please try after sometime');
+                    console.log(error);
+                }
+                
             }
         }
         fetchSpec()
@@ -157,7 +172,11 @@ function Docprofile() {
             formData.append('fare', fare)
             formData.append('experience', experience);
             formData.append('certificate', certificate);
-            const response = await axiosinstance.post('doctor/start-journey', formData);
+            const response = await axiosinstance.post('doctor/start-journey', formData ,{
+                headers: {
+                    Authorization: `Bearer ${doctortoken}`
+                }
+            } );
             if (response.status === 200) {
                 setDoctor(response.data.doctor);
 
@@ -170,11 +189,20 @@ function Docprofile() {
                 }
 
             } else {
-                toast.error('Verification failed: ' + response.data.message);
+                toast.error('Something went wrong, Please try after sometime.');
             }
 
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status
+                if (status === 404 || status === 500) {
+                    toast.error(error.response.data.message + 'Please try after sometime.');
+                }
+            } else {
+                toast.error('Something went wrong, Please try after sometime.');
+                console.log(error);
+            }
+            
         }
     }
 

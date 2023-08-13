@@ -18,7 +18,6 @@ import { useNavigate } from 'react-router-dom';
 
 import Swal from 'sweetalert2';
 
-
 import './Specmgt.scss'
 
 import { toast, ToastContainer } from 'react-toastify';
@@ -52,19 +51,23 @@ function Specmgt() {
             showCancelButton: true,
             confirmButtonText: 'Yes, sure it!',
             cancelButtonText: 'No, keep it',
-            confirmButtonColor: '#FF0000', 
-            cancelButtonColor: '#333333', 
-          }).then((result) => {
+            confirmButtonColor: '#FF0000',
+            cancelButtonColor: '#333333',
+        }).then((result) => {
             if (result.isConfirmed) {
-      
+
                 handleBlock(specId);
             }
-          });
+        });
     }
 
     const handleBlock = async (specId) => {
         try {
-            const response = await axiosinstance.put(`specialization/control-specialization/${specId}`);
+            const response = await axiosinstance.put(`specialization/control-specialization/${specId}`, null ,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            });
             const updatedSpec = response.data.spec
             setSpecialization((prevSpec) =>
                 prevSpec.map((spec) => (spec._id === updatedSpec._id ? updatedSpec : spec))
@@ -73,12 +76,19 @@ function Specmgt() {
             if (response.status === 200) {
                 toast.success(response.data.message);
             } else {
-                toast.error(response.data.message);
+                toast.error('Cannot process now, Please try after sometime');
             }
 
         } catch (error) {
-            console.log(error);
-            toast.error('Error changing status');
+            if (error.response) {
+                const status = error.response.status
+                if (status === 404 || status === 500) {
+                    toast.error(error.response.data.message)
+                }
+            } else {
+                console.log(error);
+                toast.error('Error changing status, Please try after sometime');
+            }
         }
     }
 
@@ -90,27 +100,39 @@ function Specmgt() {
             showCancelButton: true,
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, keep it',
-            confirmButtonColor: '#FF0000', 
-            cancelButtonColor: '#333333', 
-          }).then((result) => {
+            confirmButtonColor: '#FF0000',
+            cancelButtonColor: '#333333',
+        }).then((result) => {
             if (result.isConfirmed) {
-      
+
                 deleteSpec(specId);
             }
-          });
+        });
     }
 
     const deleteSpec = async (specId) => {
         try {
-            const response = await axiosinstance.delete(`specialization/delete-specialization/${specId}`);
+            const response = await axiosinstance.delete(`specialization/delete-specialization/${specId}`,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            });
             if (response.status === 200) {
                 toast.success(response.data.message);
             } else {
-                toast.error(response.data.message);
+                toast.error('Could not process now, Please try after sometime');
             }
         } catch (error) {
-            console.log(error);
-            toast.error('Error deleting the specialization');
+            if (error.response) {
+                const status = error.response.status
+                if (status === 404 || status === 500) {
+                    toast.error(error.response.data.message);
+                }
+            } else {
+                console.log(error);
+                toast.error('Error deleting the specialization, Please try after sometime');
+            }
+
         }
     }
 
@@ -150,31 +172,60 @@ function Specmgt() {
             if (image) {
                 formData.append('image', image)
             }
-            const editresponse = await axiosinstance.post('specialization/edit-spec', formData)
+            const response = await axiosinstance.post('specialization/edit-spec', formData , {
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                }
+            })
 
-            if (editresponse.status === 200) {
-                toast.success(editresponse.data.message);
+            if (response.status === 200) {
+                toast.success(response.data.message);
+                setSpecialization(response.data.spec)
             } else {
-                toast.error(editresponse.data.message);
+                toast.error('Could not complete now, Please try after sometime');
             }
-
-            setSpecialization(editresponse.data.spec)
-
             setShowEdit(false);
         } catch (error) {
-            toast.error('Cannot proceed at this moment');
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status
+                if (status === 404 || status === 500) {
+                    toast.error(error.response.data.message)
+                }
+            } else {
+                toast.error('Cannot proceed at this moment, Please try after sometime');
+                console.log(error);
+            }
+
         }
     };
+
+    const admintoken = localStorage.getItem('admintoken')
+
 
     useEffect(() => {
         const fetchSpecData = async () => {
             try {
-                const response = await axiosinstance.get('specialization/admin-view')
-                const specData = response.data.spec;
-                setSpecialization(specData)
+                const response = await axiosinstance.get('specialization/admin-view', {
+                    headers: {
+                        Authorization: `Bearer ${admintoken}`
+                    }
+                })
+                if (response.status === 200) {
+                    const specData = response.data.spec;
+                    setSpecialization(specData)
+                } else {
+                    toast.error('Could not find data now, Please try after sometime');
+                }
             } catch (error) {
-                console.log(error);
+                if (error.response) {
+                    const status = error.response.status
+                    if (status === 404 || status === 500) {
+                        toast.error(error.response.data.message);
+                    }
+                } else {
+                    toast.error('Could not find data now, Please try after sometime');
+                    console.log(error);
+                }
             }
         }
         fetchSpecData();
@@ -209,7 +260,7 @@ function Specmgt() {
     return (
         <>
             <ToastContainer />
-            <div className="card p-3 py-4 mb-5  rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)', minHeight: '100vh' }}>
+            <div className="card p-3 py-4  rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)', minHeight: '100vh' }}>
                 <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
                     <p className="text-center text-white pt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Specialization Management</p>
                     {!showEdit && (
@@ -291,7 +342,7 @@ function Specmgt() {
                                                 key={spec.name}
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
-                                                <TableCell component="th" scope="row">
+                                                <TableCell component="th" scope="row"  align="center" >
                                                     {spec.name}
                                                 </TableCell>
                                                 <TableCell align="center"><img src={`/SpecializationImages/${spec.image}`} alt={spec.name} style={{ width: '100px' }} /></TableCell>
@@ -302,36 +353,36 @@ function Specmgt() {
                                                         <Button variant="contained" color="secondary" onClick={() => blockSpec(spec._id)}
                                                             sx={{
                                                                 backgroundColor: 'rgb(23, 116, 197)',
-                                                                color: '#fff', 
+                                                                color: '#fff',
                                                                 '&:hover': {
-                                                                    backgroundColor: '#094593', 
-                                                                    
+                                                                    backgroundColor: '#094593',
+
                                                                 },
                                                             }} >
                                                             {spec.status ? 'Block' : 'Unblock'}
                                                         </Button>
                                                         <Button variant="contained" color="secondary" onClick={() => viewEdit(spec._id)}
-                                                        sx={{
-                                                            backgroundColor: 'rgb(23, 116, 197)',
-                                                            color: '#fff', 
-                                                            '&:hover': {
-                                                                backgroundColor: '#094593', 
-                                                                
-                                                            },
-                                                        }}
-                                                         >
+                                                            sx={{
+                                                                backgroundColor: 'rgb(23, 116, 197)',
+                                                                color: '#fff',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#094593',
+
+                                                                },
+                                                            }}
+                                                        >
                                                             Edit
                                                         </Button>
                                                         <Button variant="contained" color="secondary" onClick={() => deleteConfirm(spec._id)}
-                                                        sx={{
-                                                            backgroundColor: '#D41D1D',
-                                                            color: '#fff', 
-                                                            '&:hover': {
-                                                                backgroundColor: '#B40F0F', 
-                                                                
-                                                            },
-                                                        }}
-                                                          >
+                                                            sx={{
+                                                                backgroundColor: '#D41D1D',
+                                                                color: '#fff',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#B40F0F',
+
+                                                                },
+                                                            }}
+                                                        >
                                                             Delete
                                                         </Button>
                                                     </div>

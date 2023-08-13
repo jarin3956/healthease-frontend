@@ -129,7 +129,7 @@ function Usersmgt() {
         <>
             <ToastContainer />
 
-            <div className="card p-3 py-4 mb-5  rounded-0 vh-100" style={{ backgroundColor: 'rgb(70, 166, 210)' }}>
+            <div className="card p-3 py-4   rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)',minHeight: '100vh' }}>
                 <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
                     <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>User Management</p>
                 </div>
@@ -156,6 +156,7 @@ function Usersmgt() {
                                 <TableHead sx={{ backgroundColor: 'lightgrey' }} >
                                     <TableRow>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center" >Name</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Image</TableCell>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Email</TableCell>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Age</TableCell>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Gender</TableCell>
@@ -169,9 +170,10 @@ function Usersmgt() {
                                             key={user.name}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                         >
-                                            <TableCell component="th" scope="row">
+                                            <TableCell component="th" scope="row" align="center" >
                                                 {user.name}
                                             </TableCell>
+                                            <TableCell align="center"><img src={user.image ? `/UserImages/${user.image}` : user.picture} alt={user.name} style={{ width: '60px',height: '60px',borderRadius: '15px' }} /></TableCell>
                                             <TableCell align="center">{user.email}</TableCell>
                                             <TableCell align="center">{user.age ? user.age : 'No data updated'}</TableCell>
                                             <TableCell align="center">{user.gender ? user.gender : 'No data updated'}</TableCell>

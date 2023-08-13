@@ -19,7 +19,7 @@ const useGoogleAuth = () => {
       } catch (error) {
         if (error.response) {
           const status = error.response.status;
-          if (status === 403 || status === 500) {
+          if (status === 403 || status === 500 || status === 400) {
             Swal.fire('Oops!', error.response.data.message, 'error');
           }
         }

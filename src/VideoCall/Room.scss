@@ -1,108 +1,201 @@
-.room-cookieCard {
+.video-callCard {
+
     background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
-    display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 20px;
     position: relative;
     overflow: hidden;
-    min-height: 90vh;
 
-    .room-contentWrapper {
-        position: relative;
-        height: 100%;
+    .videocall-container {
+        background-color: rgb(230, 237, 239);
+        padding: 30px;
+    }
 
-        .room-sch-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #e8f1f1;
+    .responsive-video-imagecont {
+        display: flex;
+        justify-content: center;
+
+        .responsive-video-image {
             max-width: 100%;
-            margin: 0 auto;
-            padding: 40px;
+            height: auto;
+        }
+    }
 
-            h1 {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
 
-            h5 {
-                font-size: 18px;
-                margin-bottom: 10px;
-            }
+    .videocall-esse {
+        background-color: rgb(230, 237, 239);
+        ;
+        padding: 30px;
+        border-radius: 15px;
 
-            .video-container {
+        .call-butt-cont {
+            display: flex;
+            justify-content: center;
+
+            .signupBtn {
+                width: 170px;
+                height: 40px;
+                border-radius: 30px;
+                border: none;
                 display: flex;
-                justify-content: space-between;
-                margin-top: 20px;
+                align-items: center;
+                justify-content: flex-start;
+                padding-left: 20px;
+                gap: 9px;
+                color: white;
+                background: linear-gradient(to right, rgb(101, 182, 248), rgb(128, 198, 255));
+                position: relative;
+                cursor: pointer;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.212);
 
-                .stream-container {
-                    width: calc(50% - 10px); /* Half width with margin */
-                    margin-bottom: 20px;
+                &:hover .arrow {
+                    animation: slide-in-left 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+                }
+            }
 
-                    .react-player {
+            .arrow {
+                position: absolute;
+                right: 7.5px;
+                background-color: rgb(255, 255, 255);
+                width: 25px;
+                height: 25px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+            }
+
+            @keyframes slide-in-left {
+                0% {
+                    transform: translateX(-10px);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+        }
+
+        .call-end-butt {
+            display: flex;
+            justify-content: center;
+
+            .btn {
+                &--huge {
+                    cursor: pointer;
+                    position: relative;
+                    height: 45px;
+                    background-color: #ff4e33;
+                    text-transform: uppercase;
+                    display: inline-block;
+                    color: #fff;
+                    font-family: Arial;
+                    font-weight: 800;
+                    font-size: 12px;
+                    letter-spacing: 1px;
+                    padding: 0 20px 0 50px;
+                    white-space: nowrap;
+
+                    &:before {
+                        transition: all 0.5s cubic-bezier(0.785, 0.15, 0.15, 0.86);
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 30px;
+                        height: 100%;
+                        background-color: #d6d4d3;
+                    }
+
+                    &:after {
+                        transition: all 0.5s cubic-bezier(0.785, 0.15, 0.15, 0.86);
+                        content: '→';
+                        font-size: 14px;
+                        line-height: 1;
+                        color: #d6d4d3;
+                        position: absolute;
+                        left: 20px;
+                        top: 50%;
+                        width: 22px;
+                        height: 22px;
+                        margin-top: -11px;
+                        background: #f14328;
+                        z-index: 2;
+                        border-radius: 50%;
+                        border: 1px solid #d6d4d3;
+                    }
+
+                    &__text {
+                        position: relative;
+                        top: -1px;
+                        transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+
+                        div {
+                            position: relative;
+                            color: #fff;
+
+                            span {
+                                transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+                                overflow: hidden;
+                                position: absolute;
+                                white-space: nowrap;
+                                top: 0;
+                                left: 0;
+                                color: #000;
+                                width: 0;
+                            }
+                        }
+                    }
+
+                    &:hover:after {
+                        transform: translateX(-30px);
+                    }
+
+                    &:hover:before {
+                        width: 0;
+                    }
+
+                    &:hover .btn--huge__text span {
                         width: 100%;
-                        height: 500px;
                     }
                 }
             }
 
-            .buttons {
-                display: flex;
-                justify-content: center;
-                margin-top: 20px;
-
-                button {
-                    padding: 10px 20px;
-                    font-size: 16px;
-                    margin: 0 10px;
-                }
-
-                .btn-danger {
-                    background-color: #e74c3c;
-                    color: white;
-                    border: none;
-                }
-            }
         }
+
+
     }
 
-    @media screen and (max-width: 1024px) {
-        .room-contentWrapper .video-container {
-            flex-direction: column;
+}
 
-            .stream-container {
-                .react-player {
-                    margin-top: 10px;
-                }
-            }
+
+@media (max-width: 768px) {
+    .video-callCard {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0;
+
+        .videocall-container {
+            background-color: rgb(210, 218, 220);
+            padding: 15px;
+
         }
+
+        .videocall-esse {
+            background-color: rgb(230, 237, 239);
+            ;
+            padding: 15px;
+            border-radius: 0;
+        }
+
     }
 
-    @media screen and (max-width: 768px) {
-        .room-contentWrapper {
-            padding: 10px;
-
-            h1 {
-                font-size: 20px;
-            }
-
-            h5 {
-                font-size: 16px;
-            }
-
-            .buttons {
-                button {
-                    font-size: 14px;
-                }
-            }
-        }
-
-        .room-contentWrapper .video-container .stream-container {
-            .react-player {
-                margin-top: 10px;
-            }
-        }
-    }
 }

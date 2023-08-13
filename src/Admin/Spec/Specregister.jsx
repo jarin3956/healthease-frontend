@@ -12,6 +12,8 @@ function Specregister() {
 
     const navigate = useNavigate()
 
+    const admintoken = localStorage.getItem('admintoken')
+
     const registerSpec = async (e) => {
         e.preventDefault();
         if (!name || !description || !image) {
@@ -41,14 +43,27 @@ function Specregister() {
             formData.append('name', name)
             formData.append('description', description)
             formData.append('image', image)
-            const response = await axiosinstance.post('specialization/register', formData)
+            const response = await axiosinstance.post('specialization/register', formData ,{
+                headers: {
+                    Authorization: `Bearer ${admintoken}`
+                  }
+            } )
             if (response.status === 200) {
                 navigate('/admin/specialization')
             } else {
-                setError(response.data.message)
+                setError("Could not process now, Try after sometime")
             }
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 500 || status === 409 || status === 400 ) {
+                    setError(error.response.data.message);
+                }
+            } else {
+                setError("Could not process now, Try after sometime");
+                console.log(error);
+            }
+            
         }
     }
 

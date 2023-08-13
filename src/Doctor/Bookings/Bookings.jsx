@@ -12,6 +12,8 @@ import Swal from 'sweetalert2';
 
 import VideoCall from '../../VideoCall/VideoCall';
 
+import './Bookings.scss'
+
 function Bookings({ bookingData, handleCancelBooking }) {
 
     const [selectedBookingId, setSelectedBookingId] = useState(null);
@@ -40,7 +42,7 @@ function Bookings({ bookingData, handleCancelBooking }) {
         }
     }
 
-    
+
 
     const handleStartBookingClick = async (bookingId, email) => {
         setSelectedBookingId(bookingId);
@@ -63,7 +65,7 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                     {booking.userData ? (
                                                         <MDBCardImage
                                                             // src={`/UserImages/${booking.userData.image}`}
-                                                            src={booking.userData.image ? `/UserImages/${booking.userData.image}`:  booking.userData.picture}
+                                                            src={booking.userData.image ? `/UserImages/${booking.userData.image}` : booking.userData.picture}
                                                             className='rounded-5 '
                                                             fluid
                                                             alt="Phone"
@@ -98,18 +100,18 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                         </MDBCol>
 
                                                         <MDBCol
-                                                            md="3"
+                                                            md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
                                                             <p className=" mb-0 small">{booking.bookingData.Booked_timeSlot}</p>
                                                         </MDBCol>
                                                         <MDBCol
-                                                            md="1"
+                                                            md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
                                                             <button
                                                                 onClick={() => handleCancelBookingClick(booking.bookingData._id)}
-                                                                className="btn btn-danger btn-sm mb-0 "
+                                                                className="doc-vdo-cancelbutt"
                                                             >
                                                                 Cancel
                                                             </button>
@@ -118,10 +120,14 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <button
+                                                            {/* <button
                                                                 onClick={() => handleStartBookingClick(booking.bookingData._id, booking.userData.email)}
                                                                 className="btn btn-success btn-sm mb-0 "
                                                             >
+                                                                Start
+                                                            </button> */}
+
+                                                            <button onClick={() => handleStartBookingClick(booking.bookingData._id, booking.userData.email)} className='doc-vdo-startbutt' >
                                                                 Start
                                                             </button>
                                                         </MDBCol>

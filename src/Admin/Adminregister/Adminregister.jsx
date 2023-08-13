@@ -14,6 +14,7 @@ function Adminregister() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
+
     const registerAdmin = async (e) => {
         e.preventDefault();
 

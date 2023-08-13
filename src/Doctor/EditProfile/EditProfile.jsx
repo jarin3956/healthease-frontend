@@ -57,12 +57,8 @@ function EditProfile() {
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
-                if (status === 404) {
-                    Swal.fire('Not Found', 'Doctor data not found.', 'error')
-
-                } else if (status === 500) {
-                    Swal.fire('Internal server error', 'Please try after some time.', 'error')
-
+                if (status === 404 || status === 500) {
+                    Swal.fire(error.response.data.message, 'Please try after some time.', 'error')
                 }
             } else {
                 console.log(error);
@@ -183,22 +179,20 @@ function EditProfile() {
 
             if (response.status === 200) {
                 navigate('/doctor/profile')
+            } else {
+                Swal.fire('Error', 'Something went wrong, Please try after sometime', 'error')
             }
 
             console.log(response);
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
-                if (status === 404) {
-                    Swal.fire('Not Found', 'Doctor data not found.', 'error')
-
-                } else if (status === 500) {
-                    Swal.fire('Internal server error', 'Please try after some time.', 'error')
-
-                }
+                if (status === 404 || status === 500 || status === 400) {
+                    Swal.fire('Error', error.response.data.message, 'error')
+                } 
             } else {
                 console.log(error);
-                Swal.fire('Oops!', 'Error when saving doctor data', 'error');
+                Swal.fire('Oops!', 'Something went wrong, Please try after sometime', 'error');
             }
             console.log(error);
         }

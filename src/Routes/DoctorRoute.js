@@ -16,6 +16,7 @@ import EditSchedule from '../Doctor/EditSchedule/Editschedule';
 import EditProfile from '../Doctor/EditProfile/EditProfile';
 import VideoCall from '../VideoCall/VideoCall';
 import Room from '../VideoCall/Room';
+import AddPrescription from '../Doctor/AddPrescription/AddPrescription';
 
 function DoctorRoute() {
     const doctor = 'doctor'
@@ -37,7 +38,8 @@ function DoctorRoute() {
                     <Route path="contactus" element={<Contactusp user={doctor} />} />
                     <Route path='edit-profile' element={<EditProfile/>} />
                     <Route path='video-call' element={<VideoCall/>}/>
-                    <Route path='room/:roomId'element={<Room user={doctor} />} /> 
+                    <Route path='room/:roomId'element={<Room user={doctor} />} />
+                    <Route path='add-prescription/:bookingConfirmId' element={<AddPrescription/>} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

@@ -17,6 +17,8 @@ import Navbar from '../Common/Navbar/Navbar';
 import Bookings from '../User/Bookings/Bookings';
 import Payment from '../User/Payment/Payment';
 import Room from '../VideoCall/Room';
+import FeedbackPage from '../User/FeedbackPage/FeedbackPage';
+import ViewPrescription from '../User/ViewPrescription/ViewPrescription';
 
 
 
@@ -43,6 +45,9 @@ function UserRoute() {
                     <Route path='view-Bookings' element={<Bookings/>} />
                     <Route path='payment' element={<Payment/>} />
                     <Route path='room/:roomId'element={<Room user={user} />}/>
+                    <Route path='feed-back/:bookingConfirmId' element={<FeedbackPage/>} />
+                    <Route path='view-prescription/:bookingId' element={<ViewPrescription/>}/>
+                    
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
                

@@ -36,7 +36,7 @@ function Dochome() {
             // console.log(response.data.schedule.doc_id, " this is doc id i need to pass to the chart");
             setSchedule(response.data.schedule.schedule)
             setDocId(response.data.schedule.doc_id);
-          }
+          } 
           
 
         } catch (error) {

@@ -32,10 +32,10 @@ function Bookingsmgt() {
 
   const fetchBookingData = async () => {
     try {
-      const response = await axiosinstance.get('admin/bookings',{
+      const response = await axiosinstance.get('admin/bookings', {
         headers: {
           Authorization: `Bearer ${admintoken}`
-      }
+        }
       });
       if (response.status === 200) {
         const sortedData = response.data.bookingData.sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
@@ -97,7 +97,7 @@ function Bookingsmgt() {
   return (
     <>
 
-      <div className="card p-3 py-4 mb-5  rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)', minHeight: '100vh' }}>
+      <div className="card p-3 py-4   rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)', minHeight: '100vh' }}>
         <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
           <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Bookings Management</p>
         </div>

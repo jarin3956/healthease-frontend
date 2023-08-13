@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector , useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import ScheduleForm from '../ScheduleForm/ScheduleForm';
 import axiosinstance from '../../Axios/Axios';
 import { addSchedule } from '../../Redux- toolkit/authslice'
@@ -42,7 +42,7 @@ function Editschedule() {
         timeSlotsByDay[item.day] = timeSlots;
       } else {
         //  where there are no time slots for the day
-        timeSlotsByDay[item.day] = []; 
+        timeSlotsByDay[item.day] = [];
       }
 
     });
@@ -84,13 +84,21 @@ function Editschedule() {
         toast.success(response.data.message);
         dispatch(addSchedule(response.data.schedule))
         navigate('/doctor/view-schedule')
-      }else{
-        toast.error(response.data.message)
+      } else {
+        toast.error('Something went wrong, Please try after sometime')
       }
 
     } catch (error) {
-      console.log(error);
-      toast.error('Error updating schedule')
+      if (error.response) {
+        const status = error.response.status
+        if (status === 404 || status === 500) {
+          toast.error(error.response.data.message + ' Please try after sometime')
+        }
+      } else {
+        console.log(error);
+        toast.error('Something went wrong, Please try after sometime.')
+      }
+
     }
 
   }

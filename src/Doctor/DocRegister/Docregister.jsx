@@ -21,7 +21,7 @@ function Docregister() {
         setError('');
 
 
-        if (!name ||!email || !password || !repassword || !profileimg ) {
+        if (!name || !email || !password || !repassword || !profileimg) {
             setError('Please fill in all fields.');
             setShake(true);
             setLoading(false);
@@ -38,7 +38,7 @@ function Docregister() {
             return;
         }
 
-       
+
 
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,24 +75,26 @@ function Docregister() {
             formData.append('repassword', repassword);
             formData.append('profileimg', profileimg);
             const response = await axiosinstance.post('doctor/register', formData);
-            
+
             const data = response.data
             if (response.status === 200) {
                 console.log('Registration successful');
                 navigate(`/doctor/verify?id=${data.id}&userType=doctor`);
+            }
 
-            } else if (data.status === 500) {
-                setError(data.message)
-                setShake(true)
+        } catch (error) {
+            if (error.response) {
+                const status = error.response.status
+                if (status === 500 || status === 400 || status === 401 || status === 409) {
+                    setError( error.response.data.message + 'Please try again later')
+                    setShake(true)
+                }
             } else {
                 setError('An error occurred. Please try again later')
                 setShake(true)
             }
-
-        } catch (error) {
             console.log(error);
-            setError('An error occurred. Please try again later')
-            setShake(true)
+
         } finally {
             setLoading(false)
         }
@@ -115,7 +117,7 @@ function Docregister() {
     return (
         <div className="DocRegApp p-5">
             <div className={`doc-register-container ${shake ? 'shake' : ''}`}>
-                <form onSubmit={ registerDoctor} encType="multipart/form-data" className="register-form" onAnimationEnd={handleAnimationEnd} >
+                <form onSubmit={registerDoctor} encType="multipart/form-data" className="register-form" onAnimationEnd={handleAnimationEnd} >
                     <div className="doc-logo-container">
                         <img src="/healtheaselogo.png" alt="Logo" className="doc-logo-image" />
                     </div>
