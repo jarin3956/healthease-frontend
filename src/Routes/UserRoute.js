@@ -19,6 +19,7 @@ import Payment from '../User/Payment/Payment';
 import Room from '../VideoCall/Room';
 import FeedbackPage from '../User/FeedbackPage/FeedbackPage';
 import ViewPrescription from '../User/ViewPrescription/ViewPrescription';
+import Chat from '../Chat/Chat';
 
 
 
@@ -47,6 +48,7 @@ function UserRoute() {
                     <Route path='room/:roomId'element={<Room user={user} />}/>
                     <Route path='feed-back/:bookingConfirmId' element={<FeedbackPage/>} />
                     <Route path='view-prescription/:bookingId' element={<ViewPrescription/>}/>
+                    <Route path='chat' element={<Chat/>} />
                     
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />

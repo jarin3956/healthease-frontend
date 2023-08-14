@@ -39,6 +39,7 @@ function AdminRoute() {
                     <Route path='specialization' element={<Specmgt />} />
                     <Route path='viewDoctorProfile' element={<Viewdoctor/>} />
                     <Route path='viewUserProfile' element={<ViewUser/>} />
+                    
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

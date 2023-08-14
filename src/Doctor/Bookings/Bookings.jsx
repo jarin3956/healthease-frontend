@@ -13,11 +13,14 @@ import Swal from 'sweetalert2';
 import VideoCall from '../../VideoCall/VideoCall';
 
 import './Bookings.scss'
+import { useNavigate } from 'react-router-dom';
 
 function Bookings({ bookingData, handleCancelBooking }) {
 
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [selectedEmailId, setSelectedEmailId] = useState(null);
+
+    const navigate = useNavigate()
 
     const handleCancelBookingClick = async (bookingId) => {
         try {
@@ -79,10 +82,12 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                     )}
 
                                                 </MDBCol>
-                                                {booking.bookingData.Status === "PENDING" ? (
+
+
+                                                {booking.bookingData.Status === "PENDING" && (
                                                     <>
                                                         <MDBCol
-                                                            md="2"
+                                                            md="1"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
                                                             {booking.userData ? (
@@ -96,14 +101,14 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}</p>
+                                                            <p className=" mb-0 small">{booking.bookingData.Booked_date}</p>
                                                         </MDBCol>
 
                                                         <MDBCol
-                                                            md="2"
+                                                            md="3"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <p className=" mb-0 small">{booking.bookingData.Booked_timeSlot}</p>
+                                                            <p className=" mb-0 small">{booking.bookingData.Booked_day}, {booking.bookingData.Booked_timeSlot}</p>
                                                         </MDBCol>
                                                         <MDBCol
                                                             md="2"
@@ -120,12 +125,7 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            {/* <button
-                                                                onClick={() => handleStartBookingClick(booking.bookingData._id, booking.userData.email)}
-                                                                className="btn btn-success btn-sm mb-0 "
-                                                            >
-                                                                Start
-                                                            </button> */}
+
 
                                                             <button onClick={() => handleStartBookingClick(booking.bookingData._id, booking.userData.email)} className='doc-vdo-startbutt' >
                                                                 Start
@@ -133,7 +133,9 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                         </MDBCol>
 
                                                     </>
-                                                ) : (
+                                                )}
+
+                                                {booking.bookingData.Status === "CANCELLED" && (
                                                     <>
                                                         <MDBCol
                                                             md="3"
@@ -163,8 +165,45 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                         </MDBCol>
 
                                                     </>
-                                                )
-                                                }
+                                                )}
+
+                                                {booking.bookingData.Status === "COMPLETED" && (
+                                                    <>
+                                                        <MDBCol
+                                                            md="2"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <p className=" mb-0">{booking.userData.name}</p>
+                                                        </MDBCol>
+
+                                                        <MDBCol
+                                                            md="2"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <p className=" mb-0 small">
+                                                                {booking.bookingData.Booked_date}
+                                                            </p>
+                                                        </MDBCol>
+                                                        <MDBCol
+                                                            md="3"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <p className=" mb-0 small">
+                                                                {booking.bookingData.Booked_day} , {booking.bookingData.Booked_timeSlot}
+                                                            </p>
+                                                        </MDBCol>
+                                                        <MDBCol
+                                                            md="3"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <button onClick={() => navigate('/doctor/chat') } className='doc-vdo-startbutt'>
+                                                                Chat
+                                                            </button>
+                                                        </MDBCol>
+
+                                                    </>
+                                                )}
+
                                             </MDBRow>
                                         </MDBCardBody>
                                     </MDBCard>

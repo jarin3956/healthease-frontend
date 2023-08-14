@@ -16,6 +16,7 @@
     "date-fns": "^2.30.0",
     "font-awesome": "^4.7.0",
     "gsap": "^3.12.2",
+    "html2pdf.js": "^0.10.1",
     "mdb-react-ui-kit": "^6.1.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",

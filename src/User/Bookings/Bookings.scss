@@ -1,40 +1,166 @@
-.cancel-book-user-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 6px 12px;
-    gap: 8px;
-    height: 36px;
-    width: 120px;
-    border: none;
-    background: rgb(58, 134, 143);
-    border-radius: 20px;
-    cursor: pointer;
+
+
+
+
+
+  .user-vdo-startbutt {
+    width: fit-content;
+    height: 45px;
+    background: #ffffff0d;
+    border-radius: 8px;
+    border: 2px solid#007BFF;
+    font-size: 15px;
+    font-weight: bold;
+    color:#007BFF;
+    transition: 0.5s all ease;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 25px;
+    z-index: 1;
   
-    .label {
-      line-height: 20px;
-      font-size: 17px;
-      color: white;
-      font-family: sans-serif;
-      letter-spacing: 1px;
+    &:before {
+      width: 50%;
+      height: 100%;
+      content: "";
+      margin: auto;
+      position: absolute;
+      top: 0%;
+      left: -50%;
+      background: #007BFF;
+      transition: all 0.5s ease;
+      z-index: -1;
+    }
+  
+    &:after {
+      width: 50%;
+      height: 100%;
+      content: "";
+      margin: auto;
+      position: absolute;
+      top: 0%;
+      left: 100%;
+      background: #007BFF;
+      transition: all 0.5s ease;
+      z-index: -1;
     }
   
     &:hover {
-      background: rgb(214, 32, 32);
+      color: white;
+      cursor: pointer;
+  
+      &:before {
+        top: 0;
+        left: 0;
+      }
+  
+      &:after {
+        top: 0;
+        left: 50%;
+      }
+    }
+  }
+
+  .user-vdo-cancelbutt {
+    width: fit-content;
+    height: 45px;
+    background: #ffffff0d;
+    border-radius: 8px;
+    border: 2px solid #e02323;
+    font-size: 15px;
+    font-weight: bold;
+    color:  #e02323;
+    transition: 0.5s all ease;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 25px;
+    z-index: 1;
+  
+    &:before {
+      width: 50%;
+      height: 100%;
+      content: "";
+      margin: auto;
+      position: absolute;
+      top: 0%;
+      left: -50%;
+      background:  #e02323;
+      transition: all 0.5s ease;
+      z-index: -1;
     }
   
-    &:hover .svg-icon {
-      animation: spin 2s linear infinite;
+    &:after {
+      width: 50%;
+      height: 100%;
+      content: "";
+      margin: auto;
+      position: absolute;
+      top: 0%;
+      left: 100%;
+      background:  #e02323;
+      transition: all 0.5s ease;
+      z-index: -1;
+    }
+  
+    &:hover {
+      color: white;
+      cursor: pointer;
+  
+      &:before {
+        top: 0;
+        left: 0;
+      }
+  
+      &:after {
+        top: 0;
+        left: 50%;
+      }
+    }
+  }
+
+  .chatBtn {
+    width: 47px;
+    height: 47px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    background-color:#007BFF;
+    background-image: linear-gradient(147deg, #3bdeff, #007BFF, #3bdeff);
+    cursor: pointer;
+    padding-top: 3px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.164);
+    position: relative;
+    background-size: 300%;
+    background-position: left;
+    transition-duration: 1s;
+  
+    .tooltip {
+      position: absolute;
+      top: -40px;
+      opacity: 0;
+      background-color: #007BFF;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition-duration: 0.5s;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+    }
+  
+    &:hover .tooltip {
+      opacity: 1;
+      transition-duration: 0.5s;
+    }
+  
+    &:hover {
+      background-position: right;
+      transition-duration: 1s;
     }
   }
   
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
   
-    100% {
-      transform: rotate(360deg);
-    }
-  }
   

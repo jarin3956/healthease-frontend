@@ -17,6 +17,7 @@ import EditProfile from '../Doctor/EditProfile/EditProfile';
 import VideoCall from '../VideoCall/VideoCall';
 import Room from '../VideoCall/Room';
 import AddPrescription from '../Doctor/AddPrescription/AddPrescription';
+import Chat from '../Chat/Chat';
 
 function DoctorRoute() {
     const doctor = 'doctor'
@@ -40,6 +41,7 @@ function DoctorRoute() {
                     <Route path='video-call' element={<VideoCall/>}/>
                     <Route path='room/:roomId'element={<Room user={doctor} />} />
                     <Route path='add-prescription/:bookingConfirmId' element={<AddPrescription/>} />
+                    <Route path='chat' element={<Chat/>} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

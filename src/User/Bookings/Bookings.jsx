@@ -112,16 +112,15 @@ function Bookings() {
     <>
       <ToastContainer />
       <div className="ho-cookieCard " style={{ minHeight: '100vh' }}>
-        <div className="ho-contentWrapper">
-          <p className="ho-cookieHeading mt-3">Bookings</p>
-          {bookings && bookings.length > 0 ? (
+        {bookings && bookings.length > 0 ? (
+          <>
             <MDBContainer className="py-5 h-100">
               <MDBRow className="justify-content-center align-items-center h-100">
                 <MDBCol lg="12" xl="12">
                   <MDBCard style={{ borderRadius: "10px" }}>
+                    <p className="text-center mt-5" style={{ fontWeight: '700', fontSize: '25px' }}>Bookings</p>
                     <MDBCardBody className="p-4">
                       {bookings.map((booking) => (
-
                         <MDBCard className="shadow border m-2">
                           <MDBCardBody>
                             <MDBRow>
@@ -140,12 +139,12 @@ function Bookings() {
                                 ) : (
                                   <p>No image</p>
                                 )}
-
                               </MDBCol>
 
                               <>
+
                                 <MDBCol
-                                  md="2"
+                                  md="1"
                                   className="text-center d-flex justify-content-center align-items-center"
                                 >
                                   {booking.doctorData ? (
@@ -153,37 +152,31 @@ function Bookings() {
                                   ) : (
                                     <p>No data</p>
                                   )}
-
                                 </MDBCol>
                                 <MDBCol
-                                  md="3"
+                                  md="4"
                                   className="text-center d-flex justify-content-center align-items-center"
                                 >
                                   <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}, {booking.bookingData.Booked_timeSlot}</p>
                                 </MDBCol>
 
-
                                 <MDBCol
                                   md="1"
                                   className="text-center d-flex justify-content-center align-items-center"
                                 >
-                                  {booking.bookingData.Status === 'CANCELLED' ? (
-                                    <p className="mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
-                                  ) : (
-                                    <>
-                                      {booking.bookingData.Status === 'COMPLETED' ? (
-                                        
-                                          <button className='btn btn-success' onClick={() => navigate(`/view-prescription/${booking.bookingData._id}`)} >
-                                            View Prescription
-                                          </button>
-                                        
-                                      ) : (
-                                        <p className="mb-0 small">{booking.bookingData.Status}</p>
-                                      )}
-                                    </>
+                                  {booking.bookingData.Status === 'CANCELLED' && (
+                                    <p className=" mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                  )}
+                                  {booking.bookingData.Status === 'COMPLETED' && (
+                                    <p className=" mb-0 small text-success" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                  )}
+                                  {booking.bookingData.Status === 'FAILED' && (
+                                    <p className=" mb-0 small text-warning" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                  )}
+                                  {booking.bookingData.Status === 'PENDING' && (
+                                    <p className=" mb-0 small text-primary" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
                                   )}
                                 </MDBCol>
-
                               </>
 
                               {booking.bookingData.Status === "PENDING" && (
@@ -192,58 +185,52 @@ function Bookings() {
                                     md="2"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-
-                                    <button className="cancel-book-user-button" onClick={() => handleCancelBooking(booking.bookingData._id)} >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        viewBox="0 0 20 20"
-                                        height="20"
-                                        fill="none"
-                                        stroke="#FFFFFF"
-                                        className="svg-icon"
-                                      >
-                                        <circle cx="10" cy="10" r="2.5" />
-                                        <path
-                                          fillRule="evenodd"
-                                          clipRule="evenodd"
-                                          d="M8.39079 2.80235c.53842-1.51424 2.67991-1.51424 3.21831 0 .3392.95358 1.4284 1.40477 2.3425.97027 1.4514-.68995 2.9657.82427 2.2758 2.27575-.4345.91407.0166 2.00334.9702 2.34248 1.5143.53842 1.5143 2.67996 0 3.21836-.9536.3391-1.4047 1.4284-.9702 2.3425.6899 1.4514-.8244 2.9656-2.2758 2.2757-.9141-.4345-2.0033.0167-2.3425.9703-.5384 1.5142-2.67989 1.5142-3.21831 0-.33914-.9536-1.4284-1.4048-2.34247-.9703-1.45148.6899-2.96571-.8243-2.27575-2.2757.43449-.9141-.01669-2.0034-.97028-2.3425-1.51422-.5384-1.51422-2.67994.00001-3.21836.95358-.33914 1.40476-1.42841.97027-2.34248-.68996-1.45148.82427-2.9657 2.27575-2.27575.91407.4345 2.00333-.01669 2.34247-.97026z"
-                                          stroke="#FFFFFF"
-                                        />
-                                      </svg>
-                                      <span className="label">Cancel</span>
+                                    <button
+                                      onClick={() => handleCancelBooking(booking.bookingData._id)}
+                                      className="user-vdo-cancelbutt"
+                                    >
+                                      Cancel
                                     </button>
-
                                   </MDBCol>
                                   <MDBCol
                                     md="2"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-                                    <button className="cancel-book-user-button" onClick={() => handleStartBooking(booking.bookingData._id, booking.doctorData.email)} >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        viewBox="0 0 20 20"
-                                        height="20"
-                                        fill="none"
-                                        stroke="#FFFFFF"
-                                        className="svg-icon"
-                                      >
-                                        <circle cx="10" cy="10" r="2.5" />
-                                        <path
-                                          fillRule="evenodd"
-                                          clipRule="evenodd"
-                                          d="M8.39079 2.80235c.53842-1.51424 2.67991-1.51424 3.21831 0 .3392.95358 1.4284 1.40477 2.3425.97027 1.4514-.68995 2.9657.82427 2.2758 2.27575-.4345.91407.0166 2.00334.9702 2.34248 1.5143.53842 1.5143 2.67996 0 3.21836-.9536.3391-1.4047 1.4284-.9702 2.3425.6899 1.4514-.8244 2.9656-2.2758 2.2757-.9141-.4345-2.0033.0167-2.3425.9703-.5384 1.5142-2.67989 1.5142-3.21831 0-.33914-.9536-1.4284-1.4048-2.34247-.9703-1.45148.6899-2.96571-.8243-2.27575-2.2757.43449-.9141-.01669-2.0034-.97028-2.3425-1.51422-.5384-1.51422-2.67994.00001-3.21836.95358-.33914 1.40476-1.42841.97027-2.34248-.68996-1.45148.82427-2.9657 2.27575-2.27575.91407.4345 2.00333-.01669 2.34247-.97026z"
-                                          stroke="#FFFFFF"
-                                        />
-                                      </svg>
-                                      <span className="label">Join</span>
+                                    <button
+                                      onClick={() => handleStartBooking(booking.bookingData._id, booking.doctorData.email)}
+                                      className="user-vdo-startbutt"
+                                    >
+                                      Join
                                     </button>
                                   </MDBCol>
                                 </>
-                              )
-                              }
-                              
+                              )}
+                              {booking.bookingData.Status === "COMPLETED" && (
+                                <>
+                                  <MDBCol
+                                    md="2"
+                                    className="text-center d-flex justify-content-center align-items-center"
+                                  >
+                                    <button
+                                      onClick={() => navigate(`/view-prescription/${booking.bookingData._id}`)}
+                                      className="user-vdo-startbutt"
+                                    >
+                                      ViewRx
+                                    </button>
+                                  </MDBCol>
+                                  <MDBCol
+                                    md="2"
+                                    className="text-center d-flex justify-content-center align-items-center"
+                                  >
+                                    <button className="chatBtn" onClick={() => navigate('/chat')}>
+                                      <svg height="1.6em" fill="white" xmlSpace="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
+                                        <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
+                                      </svg>
+                                      <span className="tooltip">Chat</span>
+                                    </button>
+                                  </MDBCol>
+                                </>
+                              )}
                             </MDBRow>
                           </MDBCardBody>
                         </MDBCard>
@@ -261,11 +248,13 @@ function Bookings() {
                 </MDBCol>
               </MDBRow>
             </MDBContainer>
-          ) : (
-            <h6> NO bookings for you</h6>
-          )}
+          </>
 
-        </div>
+        ) : (
+          <h6> NO bookings for you</h6>
+        )}
+
+
       </div>
     </>
 

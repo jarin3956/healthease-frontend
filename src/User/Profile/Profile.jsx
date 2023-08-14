@@ -7,6 +7,9 @@ import WalletTable from '../WalletTable/WalletTable';
 
 import Swal from 'sweetalert2';
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function Profile() {
     const navigate = useNavigate();
 
@@ -22,8 +25,6 @@ function Profile() {
     const [weighte, setWeighte] = useState('');
     const [agee, setAgee] = useState('');
     const [gendere, setGendere] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [editError, setEditError] = useState('')
     const [namee, setNamee] = useState('')
     const [imagee, setImagee] = useState(null)
     const [main, setMain] = useState(true)
@@ -73,7 +74,7 @@ function Profile() {
                                 confirmButtonText: 'OK',
                             })
                         }
-                    } 
+                    }
                 }
             };
 
@@ -86,11 +87,9 @@ function Profile() {
         setShowEdit(true)
         setShowDetails(false);
         setMain(false)
-
     }
     const closeEdit = () => {
         setShowEdit(false)
-        setEditError('')
         setMain(true)
 
     }
@@ -106,19 +105,21 @@ function Profile() {
         setGender('');
         setHeight('');
         setWeight('');
-        setErrorMessage('');
     }
 
 
 
     const handleeditsave = async (userId) => {
+
         try {
             setMain(true);
             let formData = new FormData();
             const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
 
             if (!namee.match(nameRegex)) {
-                setEditError('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
+                toast.error('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
+                setShowEdit(true);
+                setMain(false);
                 return;
             }
 
@@ -130,22 +131,30 @@ function Profile() {
 
             if (agee && heighte && weighte && gendere) {
                 if (isNaN(agee) || agee < 10 || agee > 100) {
-                    setEditError('Age must be a number between 10 and 100.');
+                    toast.error('Age must be a number between 10 and 100.');
+                    setShowEdit(true);
+                    setMain(false);
                     return;
                 }
 
                 if (isNaN(weighte) || weighte < 10 || weighte > 300) {
-                    setEditError('Weight must be a number between 10 and 300.');
+                    toast.error('Weight must be a number between 10 and 300.');
+                    setShowEdit(true);
+                    setMain(false);
                     return;
                 }
 
                 if (isNaN(heighte) || heighte < 50 || heighte > 300) {
-                    setEditError('Height must be a number between 50 and 300.');
+                    toast.error('Height must be a number between 50 and 300.');
+                    setShowEdit(true);
+                    setMain(false);
                     return;
                 }
 
                 if (!gendere) {
-                    setEditError('Please select a gender.');
+                    toast.error('Please select a gender.');
+                    setShowEdit(true);
+                    setMain(false);
                     return;
                 }
 
@@ -155,29 +164,36 @@ function Profile() {
                 formData.append('gender', gendere);
             }
 
-            let response = await axiosinstance.post('edit-user-profile', formData , {
-                headers : {'Authorization': `Bearer ${token}`}
+            let response = await axiosinstance.post('edit-user-profile', formData, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.status === 200) {
                 setShowEdit(false);
                 setUserr(response.data.updateduser);
-                setEditError('');
+                toast.success(response.data.message)
 
                 const walletBalance = calculateWalletBalance(response.data.updateduser.wallet);
                 setUserr(prevUser => ({ ...prevUser, wallet: walletBalance }));
             } else {
-                setEditError('There was an error in saving data');
+                toast.error('There was an error in saving data');
+                setShowEdit(true);
+                setMain(false);
+
             }
 
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
                 if (status === 404 || status === 500 || status === 400) {
-                    setEditError(error.response.data.message);
+                    toast.error(error.response.data.message);
+                    setShowEdit(true);
+                    setMain(false);
                 }
             } else {
-                setEditError('There was an error in saving data');
+                toast.error('There was an error in saving data');
+                setShowEdit(true);
+                setMain(false);
                 console.log(error);
             }
         }
@@ -190,27 +206,38 @@ function Profile() {
             setMain(true)
 
             if (!age || !height || !weight || !gender) {
-                setErrorMessage('Please fill in all fields.');
+                toast.error('Please fill in all fields.');
+                setShowDetails(true);
+                setMain(false);
                 return
             }
 
             if (isNaN(age) || age < 10 || age > 100) {
-                setErrorMessage('Age must be a number between 10 and 100.');
+                toast.error('Age must be a number between 10 and 100.');
+                setShowDetails(true);
+                setMain(false);
+
                 return;
             }
 
             if (isNaN(weight) || weight < 50 || weight > 300) {
-                setErrorMessage('Weight must be a number between 50 and 300.');
+                toast.error('Weight must be a number between 50 and 300.');
+                setShowDetails(true);
+                setMain(false);
                 return;
             }
 
             if (isNaN(height) || height < 50 || height > 300) {
-                setErrorMessage('Height must be a number between 50 and 300.');
+                toast.error('Height must be a number between 50 and 300.');
+                setShowDetails(true);
+                setMain(false);
                 return;
             }
 
             if (!gender) {
-                setErrorMessage('Please select a gender.');
+                toast.error('Please select a gender.');
+                setShowDetails(true);
+                setMain(false);
                 return;
             }
 
@@ -221,29 +248,35 @@ function Profile() {
                 height,
                 weight,
             };
-            const response = await axiosinstance.post('add-more-info', dataNeeded , {
-                headers : {'Authorization': `Bearer ${token}`}
+            const response = await axiosinstance.post('add-more-info', dataNeeded, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-            // const { status, user } = addMore.data;
+
             if (response.status === 200) {
                 const updatedUser = response.data.user;
                 const walletBalance = calculateWalletBalance(updatedUser.wallet);
                 setUserr({ ...response.data.user, wallet: walletBalance });
                 setShowDetails(false);
                 setUserr(response.data.user);
-                setErrorMessage('');
+                toast.success(response.data.message)
 
             } else {
-                setErrorMessage('Error occurred while saving details.');
+                toast.error('Error occurred while saving details.');
+                setShowDetails(true);
+                setMain(false);
             }
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
                 if (status === 404 || status === 500) {
-                    setErrorMessage(error.response.data.message);
+                    toast.error(error.response.data.message);
+                    setShowDetails(true);
+                    setMain(false);
                 }
             } else {
-                setErrorMessage('Error occurred while saving details.');
+                toast.error('Error occurred while saving details.');
+                setShowDetails(true);
+                setMain(false);
                 console.log(error);
             }
 
@@ -254,14 +287,14 @@ function Profile() {
     const calculateWalletBalance = (walletTransactions) => {
         if (!Array.isArray(walletTransactions)) {
             console.error('walletTransactions is not an array');
-            return 0; // Return some default value or handle the error as needed
+            return 0;
         }
         let balance = 0;
         for (const transaction of walletTransactions) {
             if (transaction.type === 'C') {
-                balance += transaction.amount; // Credit
+                balance += transaction.amount;
             } else if (transaction.type === 'D') {
-                balance -= transaction.amount; // Debit
+                balance -= transaction.amount;
             }
         }
         return balance;
@@ -281,15 +314,13 @@ function Profile() {
     const walletBalance = user && user.wallet ? calculateWalletBalance(user.wallet) : 0;
     return (
         <>
-
-
+            <ToastContainer />
             <div className='pr-cookieCard'>
                 {user && (
                     <div className="pr-userprocard ">
                         <p className="pr-cookieHeading mt-3">Profile</p>
                         {main && !isPopupOpen && (<>
                             <div className="userpro-img">
-
                                 <img
                                     src={user.image ? `/UserImages/${user.image}` : user.picture}
                                     alt="Profile"
@@ -298,7 +329,6 @@ function Profile() {
                             </div>
                             <span className='pr-user-sp'>{user.name}</span>
                             <h6 className="userprocarddet">{user.email}</h6>
-                            {/* <h6 className="userprocarddet">Wallet Balance : ₹{calculateWalletBalance(user.wallet)}</h6> */}
                             {user.age && <h6 className="userprocarddet">Age : {user.age}</h6>}
                             {user.gender && <h6 className="userprocarddet">Gender : {user.gender}</h6>}
                             {user.height && <h6 className="userprocarddet">Height : {user.height}cms</h6>}
@@ -310,7 +340,6 @@ function Profile() {
                                 )}
                                 <button className="userprocardbutt ms-2" onClick={openPopup} >Wallet</button>
                             </div>
-
                         </>)}
                         {isPopupOpen && (
                             <div className="popup-overlay">
@@ -335,12 +364,11 @@ function Profile() {
                                     {user.wallet.length > 0 && (
                                         <WalletTable userwallet={user.wallet} />
                                     )}
-
                                 </div>
                             </div>
                         )}
                         {showEdit && (<>
-                            <h3 className='text-white' >Edit Profile</h3>
+                            <h3 style={{ color: '#3D4102' }} >Edit Profile</h3>
                             <div className='p-3 theedit-pan rounded-3 mb-3'>
                                 <input
                                     type="text"
@@ -349,8 +377,6 @@ function Profile() {
                                     onChange={(e) => setNamee(e.target.value)}
                                     placeholder="Name"
                                 />
-                                
-
                                 <img
                                     src={proImageUrl}
                                     alt="profile image"
@@ -359,7 +385,6 @@ function Profile() {
                                 />
                                 <input
                                     type="file"
-                                    // onChange={(e) => setImagee(e.target.files.item(0))}
                                     onChange={(e) => {
                                         const file = e.target.files.item(0);
                                         setImagee(file)
@@ -423,9 +448,6 @@ function Profile() {
                                             Others
                                         </label>
                                     </div></>) : null}
-                                {editError && <p className="text-center text-danger">{editError}</p>}
-
-
                                 <div className='d-flex ' >
                                     <button className="userprocardbutt" onClick={() => handleeditsave(user._id)} >
                                         Save
@@ -435,11 +457,10 @@ function Profile() {
                                     </button>
                                 </div>
                             </div>
-
                         </>)}
                         {showDetails && (
                             <>
-                                <h3 className='text-white' >Add More Details</h3>
+                                <h3 style={{ color: '#3D4102' }} >Add More Details</h3>
                                 <div className='p-3 theedit-pan rounded-3 m-3'>
                                     <input
                                         type="text"
@@ -496,8 +517,6 @@ function Profile() {
                                             Others
                                         </label>
                                     </div>
-                                    {errorMessage && <p className="text-center text-danger">{errorMessage}</p>}
-
                                     <div className='d-flex ' >
                                         <button className="userprocardbutt" onClick={() => handleSave(user._id)} >
                                             Save
@@ -512,7 +531,6 @@ function Profile() {
                     </div>
                 )}
             </div>
-
         </>
     )
 }
