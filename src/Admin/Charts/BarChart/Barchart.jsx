@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend , ResponsiveContainer } from 'recharts';
-import axiosinstance from '../../../Axios/Axios';
+import { createInstance } from '../../../Axios/Axios';
 
 import './Barchart.scss'
 
@@ -52,8 +52,6 @@ function groupBookingData(data) {
         return acc;
     }, []);
 
-    // console.log('groupedData:', groupedData);
-
     return groupedData;
 }
 
@@ -64,26 +62,25 @@ function groupBookingData(data) {
 
 function Barchart() {
 
-
-
     const [bookingData, setBookingData] = useState([])
 
     const admintoken = localStorage.getItem('admintoken')
 
-
     useEffect(() => {
         const bookingData = async () => {
+
             try {
-                const response = await axiosinstance.get('admin/bookings',{
-                    headers: {
-                        Authorization: `Bearer ${admintoken}`
-                    }
-                })
+
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.get('admin/bookings')
+
                 if (response.status === 200) {
                     setBookingData(response.data.bookingData)
                 } else {
                     console.log('error');
                 }
+                
             } catch (error) {
                 console.log(error);
             }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './Viewschedule.scss'
-import axiosinstance from '../../Axios/Axios'
+import { createInstance } from '../../Axios/Axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { addSchedule } from '../../Redux- toolkit/authslice'
 import { toast, ToastContainer } from 'react-toastify';
@@ -18,19 +18,12 @@ function Viewschedule() {
   const [completed, setCompleted] = useState(false)
   const [upcomming, setUpcomming] = useState(false)
   const [cancelled, setCancelled] = useState(false)
-
   const [docSchedule, setViewSchedule] = useState(null);
-
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedTimeSlotsByDay, setSelectedTimeSlotsByDay] = useState({});
-
-  const [booking, setBooking] = useState(null)
-
-
+  const [booking, setBooking] = useState(null);
   const doctortoken = localStorage.getItem('doctortoken')
-
-
-
+  const [doctorData, setDoctorData] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,20 +34,29 @@ function Viewschedule() {
     }
 
     try {
-      const response = await axiosinstance.post(
-        'doctor/set-schedule',
-        {
-          schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
-            day,
-            time: timeSlots.map((timeslot) => ({ timeslot })),
-          })),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${doctortoken}`,
-          },
-        }
-      );
+      // const response = await axiosinstance.post(
+      //   'doctor/set-schedule',
+      //   {
+      //     schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
+      //       day,
+      //       time: timeSlots.map((timeslot) => ({ timeslot })),
+      //     })),
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${doctortoken}`,
+      //     },
+      //   }
+      // );
+
+      const axiosInstance = createInstance(doctortoken)
+
+      const response = await axiosInstance.post('doctor/set-schedule',{
+        schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
+          day,
+          time: timeSlots.map((timeslot) => ({ timeslot })),
+        })),
+      })
 
       if (response.status === 200) {
         toast.success('Successfully saved schedule');
@@ -63,25 +65,11 @@ function Viewschedule() {
         toast.error('Something went wrong, Please try after sometime');
       }
     } catch (error) {
-      if (error.response) {
-        const status = error.response.status
-        if (status === 500 || status === 400) {
-          toast.error(error.response.data.message + ' Please try after sometime');
-        }
-      } else {
-        toast.error('Something went wrong, Please try after sometime');
-        console.log(error);
-      }
+      console.log(error);
       
     }
     console.log('Selected Time Slots:', selectedTimeSlotsByDay, 'and', selectedDays);
   };
-
-
-
-
-  
-
 
 
   const handleTimeSlotClick = (timeSlot, daySlot) => {
@@ -139,41 +127,33 @@ function Viewschedule() {
 
   const fetchBookingData = async () => {
     try {
-      const response = await axiosinstance.get('booking/load-doc-bookings', {
-        headers: {
-          Authorization: `Bearer ${doctortoken}`,
-        },
-      });
+      
+      const axiosInstance = createInstance(doctortoken)
+
+      const response = await axiosInstance.get('booking/load-doc-bookings')
+
       if (response.status === 200) {
-        setBooking(response.data.bookingData)
+        setBooking(response.data.bookingData);
+        setDoctorData(response.data.doctor);
       } else {
         toast.error('Something went wrong, Please try after sometime.');
       }
     } catch (error) {
-      if (error.response) {
-        const status = error.response.status
-        if (status === 404 || status === 500) {
-          toast.error(error.response.data.message)
-        }
-      } else {
-        toast.error('Something went wrong, Please try after sometime.');
-        console.log(error);
-      }
-      
+      console.log(error);
     }
   }
 
 
   useEffect(() => {
 
-
     const getSchedules = async () => {
+
       try {
-        const response = await axiosinstance.get('doctor/schedule-data', {
-          headers: {
-            Authorization: `Bearer ${doctortoken}`,
-          },
-        });
+
+        const axiosInstance = createInstance(doctortoken)
+
+        const response = await axiosInstance.get('doctor/schedule-data')
+
         if (response.status === 200) {
           setViewSchedule(response.data.schedule.schedule);
           dispatch(addSchedule(response.data.schedule));
@@ -181,18 +161,9 @@ function Viewschedule() {
           toast.error('Something went wrong, Please try after sometime.')
         }
       } catch (error) {
-        if (error.response) {
-          const status = error.response.status
-          if (status === 500 || status === 404) {
-            toast.error(error.response.data.message + 'Please try after sometime.')
-          }
-        } else {
-          toast.error('Something went wrong, Please try after sometime.')
-        }
         console.log(error);
       }
     };
-
 
     getSchedules();
 
@@ -201,12 +172,13 @@ function Viewschedule() {
   }, []);
 
   const handleCancelBooking = async (bookingId) => {
+
     try {
-      const response = await axiosinstance.put(`booking/cancel-booking-doctor/${bookingId}`, null , {
-        headers: {
-          Authorization: `Bearer ${doctortoken}`,
-        },
-      });
+
+      const axiosInstance = createInstance(doctortoken)
+
+      const response = await axiosInstance.put(`booking/cancel-booking-doctor/${bookingId}`)
+
       if (response.status === 200) {
         fetchBookingData();
       } else {
@@ -214,26 +186,9 @@ function Viewschedule() {
       }
 
     } catch (error) {
-      if (error.response) {
-        const status = error.response.status
-        if (status === 500 || status === 404 || status === 400) {
-          toast.error(error.response.data.message)
-        }
-      } else {
-        toast.error('Something went wrong, Please try after sometime')
-        console.log(error);
-      }
-      
+      console.log(error);      
     }
   };
-
-
-
-  
-
-
-
-
 
   return (
     <>
@@ -324,7 +279,7 @@ function Viewschedule() {
           {completed && (
             <>
               {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED').length > 0 ? (
-                <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED')} />
+                <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED')} doctorData={doctorData}/>
               ) : (
                 <NotFound/>
                 

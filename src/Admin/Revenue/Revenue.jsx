@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import {
   TableContainer,
   Table,
@@ -20,25 +20,24 @@ import { useNavigate } from 'react-router-dom';
 import NotFound from '../../Common/NotFound/NotFound';
 
 function Revenue() {
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const [bookings, setBookings] = useState([])
-
   const [searchQuery, setSearchQuery] = useState('');
 
   const navigate = useNavigate()
 
   const admintoken = localStorage.getItem('admintoken')
 
-
   const fetchBookingData = async () => {
+
     try {
-      const response = await axiosinstance.get('admin/bookings',{
-        headers: {
-          Authorization: `Bearer ${admintoken}`
-      }
-      });
+
+      const axiosInstance = createInstance(admintoken)
+
+      const response = await axiosInstance.get('admin/bookings')
+
       if (response.status === 200) {
         const sortedData = response.data.bookingData.sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
         const filteredData = sortedData.filter((item) => item.Status === 'COMPLETED')

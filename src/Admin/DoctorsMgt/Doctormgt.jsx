@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import {
     TableContainer,
     Table,
@@ -14,11 +14,8 @@ import {
 } from '@mui/material';
 
 import Swal from 'sweetalert2';
-
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import NotFound from '../../Common/NotFound/NotFound'
 
 function Doctormgt() {
@@ -36,13 +33,18 @@ function Doctormgt() {
         const fetchDoctorsData = async () => {
             try {
 
-                const response = await axiosinstance.get('admin/doctors',{
-                    headers: {
-                        Authorization: `Bearer ${admintoken}`
-                    }
-                });
-                const doctorData = response.data.doctors
-                setDoctors(doctorData)
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.get('admin/doctors')
+
+                if (response.status === 200) {
+                    const sortedDoctors = response.data.doctors.slice(); // Create a copy of the array
+                    sortedDoctors.sort((a, b) => {
+                        // Compare createdAt dates for sorting in reverse order
+                        return new Date(b.createdAt) - new Date(a.createdAt);
+                    });
+                    setDoctors(sortedDoctors);
+                }
 
             } catch (error) {
                 console.log(error);
@@ -61,27 +63,25 @@ function Doctormgt() {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, sure!',
             cancelButtonText: 'No, keep it'
-          });
-          if (result.isConfirmed) {
+        });
+        if (result.isConfirmed) {
             handleBlockDoctor(doctorId);
-          }
+        }
     }
 
     const handleBlockDoctor = async (doctorId) => {
-        try {
-            const response = await axiosinstance.put(`admin/change-doctor-blocking/${doctorId}`,null ,{
-                headers: {
-                    Authorization: `Bearer ${admintoken}`
-                }
-            });
-            const updatedDoctor = response.data.doctor;
 
-            setDoctors((prevDoctors) =>
-                prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
-            );
+        try {
+
+            const axiosInstance = createInstance(admintoken)
+            const response = await axiosInstance.put(`admin/change-doctor-blocking/${doctorId}`)
 
             if (response.status === 200) {
                 toast.success(response.data.message);
+                const updatedDoctor = response.data.doctor;
+                setDoctors((prevDoctors) =>
+                    prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
+                );
             } else {
                 toast.error(response.data.message);
             }
@@ -102,34 +102,32 @@ function Doctormgt() {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, sure!',
             cancelButtonText: 'No, keep it'
-          });
-          if (result.isConfirmed) {
+        });
+        if (result.isConfirmed) {
             handleVerifyDoctor(doctorId);
-          }
+        }
     }
 
     const handleVerifyDoctor = async (doctorId) => {
         try {
-            const response = await axiosinstance.put(`admin/change-doctor-status/${doctorId}`,null ,{
-                headers: {
-                    Authorization: `Bearer ${admintoken}`
-                }
-            });
-            const updatedDoctor = response.data.doctor;
 
-            setDoctors((prevDoctors) =>
-                prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
-            );
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.put(`admin/change-doctor-status/${doctorId}`)
 
             if (response.status === 200) {
                 toast.success(response.data.message);
+                const updatedDoctor = response.data.doctor;
+                setDoctors((prevDoctors) =>
+                    prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
+                );
             } else {
                 toast.error(response.data.message);
             }
 
         } catch (error) {
             console.log(error);
-            toast.error('An error occurred. Please try again.');
+            // toast.error('An error occurred. Please try again.');
         }
     };
 
@@ -159,18 +157,12 @@ function Doctormgt() {
 
     });
 
-
     const isDataFound = filteredDoctors.length > 0;
-
-
-
 
     return (
         <>
             <ToastContainer />
-
-
-            <div className="card p-3 py-4   rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)',minHeight: '100vh' }}>
+            <div className="card p-3 py-4   rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)', minHeight: '100vh' }}>
                 <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
                     <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Doctor Management</p>
                 </div>
@@ -228,42 +220,42 @@ function Doctormgt() {
                                             <TableCell align="center">₹ {doctor.final_fare}</TableCell>
                                             <TableCell align="center">{doctor.isBlocked === true ? "Blocked" : "Active"}</TableCell>
                                             <TableCell align="center">
-                                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                            {doctor.approval === false && (
-                                                <Button
-                                                variant="contained"
-                                                color="secondary"
-                                                onClick={() => verifyDoctor(doctor._id)}
-                                                sx={{
-                                                    backgroundColor: '#0AC726',
-                                                    color: '#fff', 
-                                                    '&:hover': {
-                                                        backgroundColor: '#018916', 
-                                                        
-                                                    },
-                                                }}
-                                            >
-                                                Verify
-                                            </Button>
-                                            )}
-                                            
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    onClick={() => BlockDoctor(doctor._id)}
-                                                    sx={{
-                                                        backgroundColor: '#D41D1D',
-                                                        color: '#fff', 
-                                                        '&:hover': {
-                                                            backgroundColor: '#B40F0F', 
-                                                            
-                                                        },
-                                                    }}
-                                                >
-                                                    {doctor.isBlocked === false ? 'Block' : 'Unblock'}
-                                                </Button>
-                                            </div>
-                                                
+                                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                                    {doctor.approval === false && (
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            onClick={() => verifyDoctor(doctor._id)}
+                                                            sx={{
+                                                                backgroundColor: '#0AC726',
+                                                                color: '#fff',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#018916',
+
+                                                                },
+                                                            }}
+                                                        >
+                                                            Verify
+                                                        </Button>
+                                                    )}
+
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        onClick={() => BlockDoctor(doctor._id)}
+                                                        sx={{
+                                                            backgroundColor: '#D41D1D',
+                                                            color: '#fff',
+                                                            '&:hover': {
+                                                                backgroundColor: '#B40F0F',
+
+                                                            },
+                                                        }}
+                                                    >
+                                                        {doctor.isBlocked === false ? 'Block' : 'Unblock'}
+                                                    </Button>
+                                                </div>
+
                                             </TableCell>
                                         </TableRow>
                                     ))}

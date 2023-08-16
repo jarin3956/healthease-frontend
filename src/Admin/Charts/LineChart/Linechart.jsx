@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import axiosinstance from '../../../Axios/Axios';
+import { createInstance } from '../../../Axios/Axios';
 function groupMonthlyData(data) {
     const monthlyCounts = {};
 
@@ -36,16 +36,14 @@ function Linechart() {
     useEffect(() => {
         const chartData = async () => {
             try {
-                const response = await axiosinstance.get('admin/linechart-data',{
-                    headers: {
-                        Authorization: `Bearer ${admintoken}`
-                    }
-                });
+
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.get('admin/linechart-data')
+
                 if (response.status === 200) {
                     const monthlyChartData = groupMonthlyData(response.data.chartData);
                     setChartData(monthlyChartData);
-                } else {
-                    console.log('error');
                 }
             } catch (error) {
                 console.log(error);

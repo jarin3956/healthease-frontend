@@ -14,8 +14,11 @@ import VideoCall from '../../VideoCall/VideoCall';
 
 import './Bookings.scss'
 import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../../Context/SocketProvider'
 
-function Bookings({ bookingData, handleCancelBooking }) {
+function Bookings({ bookingData, handleCancelBooking, doctorData }) {
+
+    const socket = useSocket()
 
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [selectedEmailId, setSelectedEmailId] = useState(null);
@@ -51,6 +54,22 @@ function Bookings({ bookingData, handleCancelBooking }) {
         setSelectedBookingId(bookingId);
         setSelectedEmailId(email);
     }
+
+    // const handleChat = (roomId,userId) => {
+    //     if (doctorData && bookingData && userId) {
+    //         socket.emit('setup', doctorData);
+    //         socket.emit('join-chat', roomId,doctorData);
+
+    //         const handleRoomJoin = () => {
+    //             navigate(`/doctor/chat/${userId}`)
+    //         }
+    //         socket.on('chat-connected', handleRoomJoin);
+
+    //         return () => {
+    //             socket.off('chat-connected', handleRoomJoin);
+    //         }
+    //     }
+    // }
 
     return (
         <>
@@ -196,9 +215,12 @@ function Bookings({ bookingData, handleCancelBooking }) {
                                                             md="3"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <button onClick={() => navigate('/doctor/chat') } className='doc-vdo-startbutt'>
+                                                            {/* <button onClick={() => navigate('/doctor/chat') } className='doc-vdo-startbutt'>
                                                                 Chat
-                                                            </button>
+                                                            </button> */}
+                                                            {/* <button onClick={() => handleChat(booking.bookingData._id,booking.userData._id)} className='doc-vdo-startbutt' >
+                                                                Chat
+                                                            </button> */}
                                                         </MDBCol>
 
                                                     </>

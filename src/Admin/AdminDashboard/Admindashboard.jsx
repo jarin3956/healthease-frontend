@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosinstance from '../../Axios/Axios';
-import { useNavigate } from 'react-router-dom';
+import { createInstance } from '../../Axios/Axios';
 import './Admindashboard.scss'
 import Swal from 'sweetalert2';
 
@@ -10,53 +9,30 @@ import Piechart from '../Charts/PieChart/Piechart';
 import Linechart from '../Charts/LineChart/Linechart';
 
 function Admindashboard() {
-    const navigate = useNavigate()
+
     const [admin, setAdmin] = useState(null)
     const admintoken = localStorage.getItem('admintoken')
     useEffect(() => {
 
         const adminData = async () => {
             try {
-                const response = await axiosinstance.get('admin/dashboard', {
-                    headers: {
-                        Authorization: `Bearer ${admintoken}`
-                    }
-                })
+
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.get('admin/dashboard')
+
                 if (response.status === 200) {
                     setAdmin(response.data.dashData);
                 } else {
                     Swal.fire('Oops!', 'Error when loading admin data', 'error')
                 }
             } catch (error) {
-                if (error.response) {
-                    const status = error.response.status;
-                    if (status === 401) {
-                        localStorage.removeItem('admintoken');
-                        Swal.fire('Unauthorized', 'You are not authorized to access this resource.', 'error')
-                        .then(() => {
-                            window.location = '/admin/login'; 
-                        });
-                    } else if (status === 403) {
-                        localStorage.removeItem('admintoken');
-
-                        Swal.fire('Forbidden', 'You do not have permission to access this resource.', 'error')
-                            .then(() => {
-                                window.location = '/admin/login'; 
-                            });
-                    } else {
-                        Swal.fire('Oops!', 'Error when loading admin data', 'error');
-                    }
-                } else {
-                    console.log(error);
-                    Swal.fire('Oops!', 'Error when loading admin data', 'error');
-                }
+                console.log(error);
             }
         }
         adminData()
 
     }, [])
-
-
 
 
     return (

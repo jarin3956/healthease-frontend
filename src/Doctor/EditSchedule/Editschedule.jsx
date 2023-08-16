@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import ScheduleForm from '../ScheduleForm/ScheduleForm';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import { addSchedule } from '../../Redux- toolkit/authslice'
-
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +39,6 @@ function Editschedule() {
         const timeSlots = item.time.map((slot) => slot.timeslot);
         timeSlotsByDay[item.day] = timeSlots;
       } else {
-        //  where there are no time slots for the day
         timeSlotsByDay[item.day] = [];
       }
 
@@ -56,7 +53,6 @@ function Editschedule() {
 
   const dispatch = useDispatch()
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (selectedDays.length === 0 || Object.keys(selectedTimeSlotsByDay).length === 0) {
@@ -65,20 +61,15 @@ function Editschedule() {
     }
 
     try {
-      const response = await axiosinstance.put(
-        'doctor/update-schedule',
-        {
-          schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
-            day,
-            time: timeSlots.map((timeslot) => ({ timeslot })),
-          })),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${doctortoken}`,
-          },
-        }
-      );
+
+      const axiosInstance = createInstance(doctortoken)
+
+      const response = await axiosInstance.put('doctor/update-schedule',{
+        schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
+          day,
+          time: timeSlots.map((timeslot) => ({ timeslot })),
+        })),
+      })
 
       if (response.status === 200) {
         toast.success(response.data.message);
@@ -89,16 +80,7 @@ function Editschedule() {
       }
 
     } catch (error) {
-      if (error.response) {
-        const status = error.response.status
-        if (status === 404 || status === 500) {
-          toast.error(error.response.data.message + ' Please try after sometime')
-        }
-      } else {
-        console.log(error);
-        toast.error('Something went wrong, Please try after sometime.')
-      }
-
+      console.log(error);
     }
 
   }

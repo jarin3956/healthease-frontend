@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import axiosinstance from '../../Axios/Axios';
+import { createInstance, axiosinstance } from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
 import './Docprofile.scss'
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
-
 
 import {
     MDBCol,
@@ -40,13 +36,7 @@ function Docprofile() {
     const [certificate, setCertificate] = useState(null)
     const [spec, setSpec] = useState([]);
 
-    // const [docEdit, setDocEdit] = useState(false)
-
-
     const [theMain, setTheMain] = useState(true)
-
-
-
 
 
     const doctortoken = localStorage.getItem('doctortoken')
@@ -54,16 +44,21 @@ function Docprofile() {
         if (!doctortoken) {
             navigate('/doctor/login')
         } else {
-            axiosinstance.get('doctor/profile', {
-                headers: {
-                    Authorization: `Bearer ${doctortoken}`
+
+            const getProfile = async () => {
+                try {
+                    const axiosInstance = createInstance(doctortoken)
+
+                    const response = await axiosInstance.get('doctor/profile')
+                    if (response.status === 200) {
+                        setDoctor(response.data.doctor);
+                    }
+
+                } catch (error) {
+                    console.log(error);
                 }
-            }).then((res) => {
-                setDoctor(res.data.doctor);
-            }).catch((error) => {
-                Swal.fire('Oops!', 'Error when loading schedule data', 'error');
-                console.log(error);
-            })
+            }
+            getProfile();
         }
     }, []);
 
@@ -78,18 +73,9 @@ function Docprofile() {
                 } else {
                     toast.error('Could not process now, Please try after sometime');
                 }
-                
+
             } catch (error) {
-                if (error.response) {
-                    const status = error.response.status
-                    if (status === 404 || status === 500) {
-                        toast.error(error.response.data.message)
-                    }
-                } else {
-                    toast.error('Could not process now, Please try after sometime');
-                    console.log(error);
-                }
-                
+                console.log(error);
             }
         }
         fetchSpec()
@@ -118,7 +104,6 @@ function Docprofile() {
             return;
         }
 
-
         const ageNum = parseInt(age);
         if (isNaN(ageNum) || ageNum < 23 || ageNum > 80) {
             toast.error('Age should be a number between 23 to 80.');
@@ -132,12 +117,10 @@ function Docprofile() {
 
         }
 
-
         if (!gender) {
             toast.error('Please select a gender.');
             return;
         }
-
 
         const regnoRegex = /^[A-Z0-9]{6,12}$/;
         if (!regno.match(regnoRegex)) {
@@ -145,12 +128,10 @@ function Docprofile() {
             return;
         }
 
-
         if (!specialization) {
             toast.error('Please select a specialization.');
             return;
         }
-
 
         const experienceNum = parseInt(experience);
         if (isNaN(experienceNum) || experienceNum < 0 || experienceNum > 40) {
@@ -172,11 +153,15 @@ function Docprofile() {
             formData.append('fare', fare)
             formData.append('experience', experience);
             formData.append('certificate', certificate);
-            const response = await axiosinstance.post('doctor/start-journey', formData ,{
+
+            const axiosInstance = createInstance(doctortoken)
+
+            const response = await axiosInstance.post('doctor/start-journey', formData, {
                 headers: {
-                    Authorization: `Bearer ${doctortoken}`
+                    'Content-Type': 'multipart/form-data'
                 }
-            } );
+            })
+
             if (response.status === 200) {
                 setDoctor(response.data.doctor);
 
@@ -202,7 +187,7 @@ function Docprofile() {
                 toast.error('Something went wrong, Please try after sometime.');
                 console.log(error);
             }
-            
+
         }
     }
 
@@ -214,22 +199,19 @@ function Docprofile() {
             showCancelButton: true,
             confirmButtonText: 'Yes, edit profile!',
             cancelButtonText: 'No, keep it',
-            confirmButtonColor: '#FF0000', 
-            cancelButtonColor: '#333333', 
-          }).then((result) => {
+            confirmButtonColor: '#FF0000',
+            cancelButtonColor: '#333333',
+        }).then((result) => {
             if (result.isConfirmed) {
-      
                 handleedit(e)
             }
-          });
+        });
     }
 
     const handleedit = (e) => {
         e.preventDefault()
         navigate('/doctor/edit-profile')
     }
-
-
 
 
     return (
@@ -239,14 +221,12 @@ function Docprofile() {
             <div >
                 {doctor && (
                     <>
-
                         {doctor.age && (
                             <section className=' doc-profile-page' >
                                 <MDBContainer className="py-5">
                                     <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Profile</p>
                                     <MDBRow>
                                         <MDBCol lg="4">
-
                                             <MDBCard className="mb-4">
                                                 <MDBCardBody className="text-center">
                                                     <MDBCardImage
@@ -257,7 +237,6 @@ function Docprofile() {
                                                         fluid
                                                     />
                                                     <p className="text-muted mb-1 mt-1">Dr.{doctor.name}</p>
-
                                                     <p className="text-muted mb-4">{doctor.email}</p>
                                                     <div className="d-flex justify-content-center mb-2">
                                                         <button className='edit-doc-butt' onClick={(e) => editDoc(e)}>Edit</button>
@@ -369,14 +348,6 @@ function Docprofile() {
                             </section>
                         )}
 
-
-
-                        {/* {docEdit && (
-                            <>
-                                <EditProfile handleSaveEdit={handleSaveEdit} spec={spec} />
-
-                            </>
-                        )} */}
                         {!doctor.age && (
                             <section className=' doc-profile-page' style={{ minHeight: '100vh' }} >
                                 <MDBContainer className="py-5">
@@ -474,128 +445,14 @@ function Docprofile() {
                                                     </div>
                                                 </>
                                             )}
-
-
                                         </MDBCol>
                                     </MDBRow>
                                 </MDBContainer>
                             </section>
                         )}
-
                     </>
                 )}
-
             </div>
-
-            {/* <div className="mx-4 mt-5">
-                {doctor && (
-                    <div className="row justify-content-center">
-                        <div className="col-md-12" >
-                            <div className="card p-3 py-4 mb-5">
-                                <br />
-
-                                <div className="userprocard">
-                                    <p className="cookieHeading mt-3">Profile</p>
-                                    {errorMessage && <h6 className="text-center text-danger">{errorMessage}</h6>}
-                                    {successmsg && <h6 className="text-center text-success">Successful, {successmsg}</h6>}
-                                    <div className="userprocard-border-top"></div>
-                                    <div className="img">
-                                        {doctor.profileimg && (
-                                            <img
-                                                src={`/DocImages/${doctor.profileimg}`}
-                                                alt="Profile"
-                                                style={{ width: "100%", height: "100%", borderRadius: "100%" }}
-                                            />
-                                        )}
-                                    </div>
-                                    <span>{doctor.name}</span>
-                                    <h6 className="userprocarddet">{doctor.email}</h6>
-                                    {doctor.age && <h6 className="userprocarddet">Age : {doctor.age}</h6>}
-                                    {doctor.gender && <h6 className="userprocarddet">Gender : {doctor.gender}</h6>}
-                                    {doctor.regno && <h6 className="userprocarddet">Reg.No : {doctor.regno}</h6>}
-                                    {doctor.specialization && <h6 className="userprocarddet">Specilization : {doctor.specialization}</h6>}
-                                    {doctor.experience && <h6 className="userprocarddet">Experience : {doctor.experience}years</h6>}
-                                    {doctor.certificate && <h6 className="userprocarddet">Certificate :</h6>}
-                                    {doctor.certificate && <div className="img">
-                                        <img
-                                            src={`/DocImages/${doctor.certificate}`}
-                                            alt="Profile"
-                                            style={{ width: "100%", height: "100%", borderRadius: "15%" }}
-                                        />
-                                    </div>}
-                                    <div className='d-flex '>
-                                        {!doctor.age && <button className="userprocardbutt" onClick={startJorney} >Start </button>}
-                                        <button className="userprocardbutt  " onClick={handleedit} >Edit</button>
-                                    </div>
-                                    {showMore && (
-                                        <>
-                                            <form encType="multipart/form-data" >
-                                                <h3 className='text-white' >Start Your Journey</h3>
-                                                <input value={age} onChange={(e) => setAge(e.target.value)} type="text" className="register-input" placeholder="Age" required />
-                                                <p className="gender-title">Gender</p>
-                                                <div className="gender-selection">
-                                                    <br />
-                                                    <label className="gender-label">
-                                                        <input
-                                                            type="radio"
-                                                            name="gender"
-                                                            value="male"
-                                                            checked={gender === "male"}
-                                                            onChange={(e) => setGender(e.target.value)}
-                                                        />
-                                                        Male
-                                                    </label>
-                                                    <label className="gender-label">
-                                                        <input
-                                                            type="radio"
-                                                            name="gender"
-                                                            value="female"
-                                                            checked={gender === "female"}
-                                                            onChange={(e) => setGender(e.target.value)}
-                                                        />
-                                                        Female
-                                                    </label>
-                                                    <label className="gender-label">
-                                                        <input
-                                                            type="radio"
-                                                            name="gender"
-                                                            value="others"
-                                                            checked={gender === "others"}
-                                                            onChange={(e) => setGender(e.target.value)}
-                                                        />
-                                                        Others
-                                                    </label>
-                                                </div>
-                                                <input value={regno} onChange={(e) => setRegno(e.target.value)} type="text" className="register-input" placeholder="Register.No" required />
-                                                <div>
-                                                    <label>Specialization:</label>
-                                                    <select className='docselect' value={specialization} onChange={(e) => setSpecialization(e.target.value)} required>
-                                                        <option className='docoption' value="">Select Specialization</option>
-                                                        {spec.map((spec, index) => (
-                                                            <option key={index} className='docoption' value={spec._id}>{spec.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <input value={experience} onChange={(e) => setExperience(e.target.value)} type="text" className="register-input" placeholder="Experience" required />
-                                                <p className="gender-title">Upload Certificates</p>
-                                                <input type="file" onChange={(e) => setCertificate(e.target.files.item(0))} accept="image/*" className="custom-file-upload" required />
-                                                <div className='d-flex ' >
-                                                    <button className="userprocardbutt" onClick={() => handlesave(doctor._id)} >
-                                                        Save
-                                                    </button>
-                                                    <button className="userprocardbutt ms-2" onClick={closeStart} >
-                                                        Close
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div> */}
         </>
     )
 }

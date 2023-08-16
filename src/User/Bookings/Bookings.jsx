@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import './Bookings.scss'
-import axiosinstance from '../../Axios/Axios';
-
+import { createInstance } from '../../Axios/Axios';
 import Swal from 'sweetalert2';
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import VideoCall from '../../VideoCall/VideoCall';
+import { useSocket } from '../../Context/SocketProvider';
 
 import {
   MDBCard,
@@ -17,32 +15,35 @@ import {
   MDBContainer,
   MDBRow,
 } from "mdb-react-ui-kit";
+
 import { useNavigate } from 'react-router-dom';
 
 
 function Bookings() {
 
+  const socket = useSocket()
+  const token = localStorage.getItem('token');
   const navigate = useNavigate()
 
   const [bookings, setBooking] = useState(null)
-
-  const token = localStorage.getItem('token');
-
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [selectedEmailId, setSelectedEmailId] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   const fetchBooking = async () => {
     try {
-      const response = await axiosinstance.get('booking/load-user-bookings', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
+      
+      const axiosInstance = createInstance(token)
+
+      const response = await axiosInstance.get('booking/load-user-bookings')
 
       if (response.status === 200) {
-        setBooking(response.data.bookingData)
+        setBooking(response.data.bookingData);
+        setUserData(response.data.user)
       }
 
     } catch (error) {
-      toast.error('Error when loading , please try after sometime')
+      console.log(error);
     }
   }
 
@@ -56,29 +57,22 @@ function Bookings() {
 
   const CancelBooking = async (bookingId) => {
     try {
-      const response = await axiosinstance.put(`booking/cancel-booking-user/${bookingId}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+
+      const axiosInstance = createInstance(token)
+
+      const response = await axiosInstance.put(`booking/cancel-booking-user/${bookingId}`)
+
       if (response.status === 200) {
+
         fetchBooking()
         toast.success('Booking cancelled successfully!')
+
       } else {
         toast.error('Something went wrong, Please try after sometime')
       }
 
     } catch (error) {
-      if (error.response) {
-        const status = error.response.status
-        if (status === 404 || status === 500 || status === 400) {
-          toast.error(error.response.data.message)
-        }
-      } else {
-        toast.error('Something went wrong, Please try after sometime')
-        console.log(error);
-      }
-
+      console.log(error);
     }
   }
 
@@ -103,8 +97,26 @@ function Bookings() {
   const handleStartBooking = (bookingId, email) => {
     setSelectedBookingId(bookingId)
     setSelectedEmailId(email)
-    // console.log(bookingId,'bookingid');
-    // console.log(email,'emailid'); 
+  }
+
+  
+
+  const handleChat = (roomId,docterId) => {
+
+    if (userData && bookings && docterId) {
+      socket.emit('setup', userData);
+      socket.emit('join-chat',roomId,userData,docterId);
+
+      const handleRoomJoin = () => {
+        navigate(`/chat/${docterId}`)
+      }
+
+      socket.on('chat-connected', handleRoomJoin);
+
+      return () => {
+        socket.off('chat-connected', handleRoomJoin);
+      }
+    }
   }
 
   return (
@@ -222,12 +234,18 @@ function Bookings() {
                                     md="2"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-                                    <button className="chatBtn" onClick={() => navigate('/chat')}>
+                                    <button className="chatBtn" onClick={() => handleChat(booking.bookingData._id,booking.doctorData._id)}>
                                       <svg height="1.6em" fill="white" xmlSpace="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
                                         <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
                                       </svg>
                                       <span className="tooltip">Chat</span>
                                     </button>
+                                    {/* <button className="chatBtn" onClick={() => navigate(`/chat/${booking.bookingData._id}`)}>
+                                      <svg height="1.6em" fill="white" xmlSpace="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
+                                        <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
+                                      </svg>
+                                      <span className="tooltip">Chat</span>
+                                    </button> */}
                                   </MDBCol>
                                 </>
                               )}

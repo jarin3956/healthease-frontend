@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import './Bookconsult.scss'
 import { useLocation, useNavigate } from 'react-router-dom';
-import axiosinstance from '../../Axios/Axios';
-
+import { createInstance } from '../../Axios/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { addBooking } from '../../Redux- toolkit/bookingsSlice';
 import { useDispatch } from 'react-redux';
-
-
 import { addDays, format, getDay } from 'date-fns';
 
 
@@ -30,12 +27,13 @@ function Bookconsult() {
     const token = localStorage.getItem('token')
 
     const showSlots = async (docId) => {
+
         try {
-            const response = await axiosinstance.get(`view-doctor-slots/${docId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.get(`view-doctor-slots/${docId}`)
+
             if (response.status === 200) {
 
                 const currentDate = new Date();
@@ -51,7 +49,6 @@ function Bookconsult() {
                     const upcomingDate = addDays(dayDate, dayDate < currentDate ? 7 : 0);
                     const dayName = weekDays[dayDate.getDay()];
 
-                    // Check if the day is available in the scheduleArray
                     const dayObj = scheduleArray.find(scheduleDay => scheduleDay.day === dayName);
                     if (dayObj) {
                         updatedSchedule.push({
@@ -72,18 +69,9 @@ function Bookconsult() {
                 toast.error('Something went wrong, Please try after sometime.')
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    toast.error(error.response.data.message + 'Please try after sometime.')
-                }
-            } else {
-                toast.error('Something went wrong, Please try after sometime.')
-            }
             console.log(error);
         }
     };
-
 
     useEffect(() => {
         if (docId) {
@@ -123,7 +111,6 @@ function Bookconsult() {
 
             }
 
-
         } catch (error) {
             console.log(error);
         }
@@ -131,11 +118,9 @@ function Bookconsult() {
 
     return (
         <>
-
             <ToastContainer />
 
             <div className="book-cookieCard ">
-
                 <div className="home-sch-panel rounded-3 m-2">
                     {docSchedule ? (
                         <>
@@ -152,7 +137,6 @@ function Bookconsult() {
                                     </div>
                                 ))}
                             </div>
-
 
                             {selectedDay && (
                                 <>
@@ -188,9 +172,7 @@ function Bookconsult() {
                     )}
 
                 </div>
-
             </div>
-
         </>
     )
 }

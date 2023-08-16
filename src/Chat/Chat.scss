@@ -32,7 +32,7 @@
             }
 
             &.outgoing {
-                background-color: #f2f2f2;
+                background-color: #c5d6db;
                 text-align: right;
             }
 
@@ -140,3 +140,60 @@
         }
     }
 }
+
+.chat-end-butt {
+    width: fit-content;
+    height: 45px;
+    background: #ffffff0d;
+    border-radius: 8px;
+    border: 2px solid #0490DB;
+    font-size: 15px;
+    font-weight: bold;
+    color: #0490DB;
+    transition: 0.5s all ease;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 25px;
+    z-index: 1;
+  
+    &:before {
+      width: 50%;
+      height: 100%;
+      content: "";
+      margin: auto;
+      position: absolute;
+      top: 0%;
+      left: -50%;
+      background: #0490DB;
+      transition: all 0.5s ease;
+      z-index: -1;
+    }
+  
+    &:after {
+      width: 50%;
+      height: 100%;
+      content: "";
+      margin: auto;
+      position: absolute;
+      top: 0%;
+      left: 100%;
+      background:  #0490DB;
+      transition: all 0.5s ease;
+      z-index: -1;
+    }
+  
+    &:hover {
+      color: white;
+      cursor: pointer;
+  
+      &:before {
+        top: 0;
+        left: 0;
+      }
+  
+      &:after {
+        top: 0;
+        left: 50%;
+      }
+    }
+  }

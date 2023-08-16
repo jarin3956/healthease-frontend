@@ -1,17 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import axiosinstance from '../../Axios/Axios'
+import { createInstance } from '../../Axios/Axios'
 import './Payment.scss'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { Card, CardMedia, CardContent, Typography, CardActions, Button } from '@mui/material';
 import { styled } from '@mui/system';
-
 import Swal from 'sweetalert2';
-
 import { useDispatch } from 'react-redux'
 import { removeBooking } from '../../Redux- toolkit/bookingsSlice'
+import { useNavigate } from 'react-router-dom';
 
 const CenteredButton = styled(Button)({
     display: 'block',
@@ -28,19 +26,20 @@ const CenteredButton = styled(Button)({
 });
 
 function Payment() {
+
+    const navigate = useNavigate()
+
     const selector = useSelector((state) => state.bookings.booking)
 
     const [doctor, setDoctor] = useState(null)
     const [view, setView] = useState(false)
     const [userWallet, setUserWallet] = useState(false)
     const [walletBalance, setWalletBalance] = useState(null)
-
     const [selectedPayment, setSelectedPayment] = useState('paypal');
 
     const handlePaymentChange = (event) => {
         setSelectedPayment(event.target.value);
     };
-
 
     const dispatch = useDispatch()
 
@@ -49,28 +48,20 @@ function Payment() {
         const fetchData = async () => {
             if (selector !== undefined && selector !== null) {
                 let docId = selector.docId;
+                
                 try {
-                    const response = await axiosinstance.get(`booking/load-doctors/${docId}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
+
+                    const axiosInstance = createInstance(token)
+
+                    const response = await axiosInstance.get(`booking/load-doctors/${docId}`)
+
                     if (response.status === 200) {
                         setDoctor(response.data.doctorData)
                     } else {
                         toast.error('Cannot process now, Please try after sometime');
                     }
                 } catch (error) {
-                    if (error.response) {
-                        const status = error.response.status
-                        if (status === 404 || status === 500) {
-                            toast.error(error.response.data.message)
-                        }
-                    } else {
-                        toast.error('Cannot process now, Please try after sometime');
-                        console.log(error);
-                    }
-                    
+                    console.log(error);
                 }
             }
         };
@@ -81,7 +72,7 @@ function Payment() {
     }, [selector]);
 
 
-    async function verifySlotAvailability(paymentType) {
+    const verifySlotAvailability = async (paymentType) => {
 
         const verifyData = {
             selectedDay: selector.selectedDay,
@@ -93,12 +84,11 @@ function Payment() {
 
 
         try {
-            const response = await axiosinstance.post('booking/check-doc-availability', {
+
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.post('booking/check-doc-availability', {
                 verifyData
-            },{
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
             });
 
             if (response.status === 200) {
@@ -112,19 +102,7 @@ function Payment() {
                 toast.error('Cannot process the request now, Please try after sometime.');
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 409 || status === 404 || status === 500) {
-                    Swal.fire('Oops!',   error.response.data.message , 'error').then(() => {
-                        window.location.href = '/home';
-                    });
-                }
-            } else {
-                Swal.fire('Oops!', 'Caannot process the request now, Please try after sometime.', 'error').then(() => {
-                    window.location.href = '/home';
-                });
-                console.error('Error verifying slot availability:', error);
-            }
+            console.log(error);
         }
     }
 
@@ -137,16 +115,14 @@ function Payment() {
             final_fare: doctor.final_fare
         }
         try {
-            const response = await axiosinstance.post('booking/wallet-booking-data', {
-                bookingData
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            if (response.status === 200) {
 
-                // dispatch(removeBooking())
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.post('booking/wallet-booking-data' , {
+                bookingData
+            });
+
+            if (response.status === 200) {
 
                 const { Booked_date, Booked_day, Booked_timeSlot, Fare, Payment_id, _id } = response.data.bookingData;
                 const alertMessage = `<div style="text-align: left;">
@@ -157,8 +133,6 @@ function Payment() {
                                         <strong>Booked Day:</strong> ${Booked_day}<br>
                                         <strong>Time Slot:</strong> ${Booked_timeSlot}
                                       </div>`;
-
-
 
 
                 Swal.fire({
@@ -174,7 +148,7 @@ function Payment() {
                         confirmButton: 'my-swal-confirm-button',
                     },
                 }).then(() => {
-                    window.location.href = '/home';
+                    navigate('/home') ;
                 });
             }
             else {
@@ -182,38 +156,14 @@ function Payment() {
             }
 
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 500 || status === 409 || status === 400) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops!',
-                        text: error.response.data.message +' If money was debited, it will be refunded within 2-3 business days.',
-                        confirmButtonText: 'OK',
-                    }).then(() => {
-                        window.location.href = '/home';
-                    });
-                }
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops!',
-                    text: 'There was an error in processing the request. If money was debited, it will be refunded within 2-3 business days.',
-                    confirmButtonText: 'OK',
-                }).then(() => {
-                    window.location.href = '/home';
-                });
-                console.log(error);
-            }
-            
+            console.log(error);
         }
     }
-
-
 
     const openPayment = () => {
         verifySlotAvailability('paypal')
     }
+
     const openWalletPayment = () => {
         verifySlotAvailability('wallet')
     }
@@ -267,17 +217,16 @@ function Payment() {
                                 };
 
                                 try {
-                                    const response = await axiosinstance.post('booking/bookings-data', {
+
+                                    const axiosInstance = createInstance(token)
+
+                                    const response = await axiosInstance.post('booking/bookings-data', {
                                         paymentData
-                                    }, {
-                                        headers: {
-                                            Authorization: `Bearer ${token}`
-                                        }
                                     });
+
                                     if (response.status === 200) {
 
                                         dispatch(removeBooking())
-
 
                                         const { Booked_date, Booked_day, Booked_timeSlot, Fare, Payment_id, _id } = response.data.bookingData;
                                         const alertMessage = `<div style="text-align: left;">
@@ -305,36 +254,14 @@ function Payment() {
                                                 confirmButton: 'my-swal-confirm-button',
                                             },
                                         }).then(() => {
-                                            window.location.href = '/home';
+                                            navigate('/home');
                                         });
                                     }
                                     else {
                                         toast.error('Cannot process the reques now, Please try after sometime')
                                     }
                                 } catch (error) {
-                                    if (error.response) {
-                                        const status = error.response.status
-                                        if (status === 500 || status === 409 || status === 400 ) {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Oops!',
-                                                text: error.response.data.message +' If money was debited, it will be refunded within 2-3 business days.',
-                                                confirmButtonText: 'OK',
-                                            }).then(() => {
-                                                window.location.href = '/home';
-                                            });
-                                        }
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Oops!',
-                                            text: 'There was an error in processing the request. If money was debited, it will be refunded within 2-3 business days.',
-                                            confirmButtonText: 'OK',
-                                        }).then(() => {
-                                            window.location.href = '/home';
-                                        });
-                                    }
-                                    
+                                    console.log(error);
                                 }
 
                             } else {
@@ -357,10 +284,13 @@ function Payment() {
     }, [view, doctor]);
 
     const checkWallet = async () => {
+
         try {
-            const response = await axiosinstance.get('booking/check-wallet', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.get('booking/check-wallet')
+
             if (response.status === 200) {
                 setUserWallet(true)
                 const formattedBalance = response.data.wallet.toFixed(2);
@@ -374,31 +304,7 @@ function Payment() {
                 })
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops!',
-                        text: error.response.data.message +  ' Please try after sometime.',
-                        confirmButtonText: 'OK',
-                    }).then(() => {
-                        window.location.href = '/home';
-                    });
-                }
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops!',
-                    text: 'Something went wrong, Please try after sometime.',
-                    confirmButtonText: 'OK',
-                }).then(() => {
-                    window.location.href = '/home';
-                });
-                console.log(error);
-            }
-           
+           console.log(error);
         }
     }
 
@@ -440,13 +346,6 @@ function Payment() {
                                             </Typography>
 
                                         </CardContent>
-
-                                        {/* <CardActions>
-                                            <CenteredButton size="small" onClick={openPayment} >PAY ₹ {doctor.final_fare} using PayPal </CenteredButton>
-                                        </CardActions>
-                                        <CardActions>
-                                            <CenteredButton size="small" onClick={checkWallet} >PAY ₹ {doctor.final_fare} using Wallet </CenteredButton>
-                                        </CardActions> */}
 
                                         <CardActions>
                                             <div>
@@ -494,8 +393,6 @@ function Payment() {
                                                 )}
 
                                             </>
-
-
 
                                         )}
                                     </Card>

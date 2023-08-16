@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import {
   TableContainer,
   Table,
@@ -31,18 +31,18 @@ function Bookingsmgt() {
   const admintoken = localStorage.getItem('admintoken')
 
   const fetchBookingData = async () => {
+
     try {
-      const response = await axiosinstance.get('admin/bookings', {
-        headers: {
-          Authorization: `Bearer ${admintoken}`
-        }
-      });
+
+      const axiosInstance = createInstance(admintoken)
+
+      const response = await axiosInstance.get('admin/bookings')
+
       if (response.status === 200) {
         const sortedData = response.data.bookingData.sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
         setBookings(sortedData);
-      } else {
-        console.log("error");
-      }
+      } 
+      
     } catch (error) {
       console.log(error);
     }

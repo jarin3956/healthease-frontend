@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import axiosinstance from '../Axios/Axios';
+import { axiosinstance } from '../Axios/Axios';
 import Swal from 'sweetalert2';
 
 const useGoogleAuth = () => {

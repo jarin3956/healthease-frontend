@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBTypography, MDBIcon } from 'mdb-react-ui-kit';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import Swal from 'sweetalert2';
 import NotFound from '../../Common/NotFound/NotFound';
 import './ViewPrescription.scss';
@@ -36,9 +36,11 @@ function ViewPrescription() {
 
     const viewPrescription = async (bookingId) => {
         try {
-            const response = await axiosinstance.get(`booking/view-user-prescription/${bookingId}`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            })
+            
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.get(`booking/view-user-prescription/${bookingId}`)
+
             if (response.status === 200) {
                 setPrescription(response.data.presc);
                 setDoctor(response.data.doctor);

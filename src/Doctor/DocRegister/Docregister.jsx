@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axiosinstance from '../../Axios/Axios'
+import { axiosinstance } from '../../Axios/Axios'
 import './Docregister.scss'
 
 
@@ -20,15 +20,12 @@ function Docregister() {
         setLoading(true);
         setError('');
 
-
         if (!name || !email || !password || !repassword || !profileimg) {
             setError('Please fill in all fields.');
             setShake(true);
             setLoading(false);
             return;
         }
-
-
 
         const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
         if (!name.match(nameRegex)) {
@@ -38,9 +35,6 @@ function Docregister() {
             return;
         }
 
-
-
-
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.match(emailRegex)) {
             setError('Please enter a valid email address.');
@@ -49,7 +43,6 @@ function Docregister() {
             return;
         }
 
-
         if (password.length < 6 || !/\d{6}/.test(password)) {
             setError('Password should be at least 6 characters long and contain 6 numbers.');
             setShake(true);
@@ -57,15 +50,12 @@ function Docregister() {
             return;
         }
 
-
         if (!profileimg.type.includes('image')) {
             setError('Please upload a valid profile image.');
             setShake(true);
             setLoading(false);
             return;
         }
-
-
 
         try {
             const formData = new FormData();
@@ -83,18 +73,8 @@ function Docregister() {
             }
 
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 500 || status === 400 || status === 401 || status === 409) {
-                    setError( error.response.data.message + 'Please try again later')
-                    setShake(true)
-                }
-            } else {
-                setError('An error occurred. Please try again later')
-                setShake(true)
-            }
+            setShake(true)
             console.log(error);
-
         } finally {
             setLoading(false)
         }

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 
 import Swal from 'sweetalert2';
 
@@ -18,10 +18,8 @@ import {
 } from '@mui/material';
 
 import './Usersmgt.css'
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import NotFound from '../../Common/NotFound/NotFound'
 
 function Usersmgt() {
@@ -29,22 +27,24 @@ function Usersmgt() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [searchQuery, setSearchQuery] = useState('');
-
     const [users, setUsersData] = useState([]);
 
     const admintoken = localStorage.getItem('admintoken');
 
     useEffect(() => {
+
         const fetchUsersData = async () => {
+
             try {
-                const response = await axiosinstance.get('admin/users',{
-                    headers: {
-                        Authorization: `Bearer ${admintoken}`
-                    }
-                });
-                const userdata = response.data.users;
-                setUsersData(userdata);
-                console.log(userdata, "this is the data");
+
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.get('admin/users')
+
+                if (response.status === 200) {
+                    setUsersData(response.data.users);
+                }
+
             } catch (error) {
                 console.log(error);
             }
@@ -64,38 +64,33 @@ function Usersmgt() {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, sure!',
             cancelButtonText: 'No, keep it'
-          });
-          if (result.isConfirmed) {
+        });
+        if (result.isConfirmed) {
             handleBlockUser(userId);
-          }
+        }
     }
-
-
-    // const admintoken = localStorage.getItem('admintoken')
 
     const handleBlockUser = async (userId) => {
 
 
         try {
-            const response = await axiosinstance.put(`admin/change-user-status/${userId}`, null,{
-                headers: {
-                    Authorization: `Bearer ${admintoken}`
-                }
-            });
-            const updatedUser = response.data.user
-            setUsersData((prevUsers) =>
-                prevUsers.map((user) => (user._id === updatedUser._id ? updatedUser : user))
-            );
+            
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.put(`admin/change-user-status/${userId}`)
 
             if (response.status === 200) {
                 toast.success(response.data.message);
+                const updatedUser = response.data.user
+                setUsersData((prevUsers) =>
+                    prevUsers.map((user) => (user._id === updatedUser._id ? updatedUser : user))
+                );
             } else {
                 toast.error(response.data.message);
             }
 
         } catch (error) {
             console.log(error);
-            toast.error('An error occurred. Please try again.');
         }
     };
 
@@ -122,14 +117,11 @@ function Usersmgt() {
 
     const isDataFound = filteredUsers.length > 0;
 
-
-
-
     return (
         <>
             <ToastContainer />
 
-            <div className="card p-3 py-4   rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)',minHeight: '100vh' }}>
+            <div className="card p-3 py-4   rounded-0 " style={{ backgroundColor: 'rgb(70, 166, 210)', minHeight: '100vh' }}>
                 <div className=' rounded-3' style={{ backgroundColor: '#0490DB' }} >
                     <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>User Management</p>
                 </div>
@@ -173,7 +165,7 @@ function Usersmgt() {
                                             <TableCell component="th" scope="row" align="center" >
                                                 {user.name}
                                             </TableCell>
-                                            <TableCell align="center"><img src={user.image ? `/UserImages/${user.image}` : user.picture} alt={user.name} style={{ width: '60px',height: '60px',borderRadius: '15px' }} /></TableCell>
+                                            <TableCell align="center"><img src={user.image ? `/UserImages/${user.image}` : user.picture} alt={user.name} style={{ width: '60px', height: '60px', borderRadius: '15px' }} /></TableCell>
                                             <TableCell align="center">{user.email}</TableCell>
                                             <TableCell align="center">{user.age ? user.age : 'No data updated'}</TableCell>
                                             <TableCell align="center">{user.gender ? user.gender : 'No data updated'}</TableCell>
@@ -185,10 +177,10 @@ function Usersmgt() {
                                                     onClick={() => blockUser(user._id)}
                                                     sx={{
                                                         backgroundColor: '#D41D1D',
-                                                        color: '#fff', 
+                                                        color: '#fff',
                                                         '&:hover': {
-                                                            backgroundColor: '#B40F0F', 
-                                                            
+                                                            backgroundColor: '#B40F0F',
+
                                                         },
                                                     }}
                                                 >

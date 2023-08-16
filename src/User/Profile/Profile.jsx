@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './Profile.scss';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
 
 import WalletTable from '../WalletTable/WalletTable';
@@ -11,10 +11,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Profile() {
+
+    const token = localStorage.getItem('token');
     const navigate = useNavigate();
 
     const [user, setUserr] = useState(null);
-
     const [showDetails, setShowDetails] = useState(false);
     const [showEdit, setShowEdit] = useState(false)
     const [height, setHeight] = useState('');
@@ -28,23 +29,20 @@ function Profile() {
     const [namee, setNamee] = useState('')
     const [imagee, setImagee] = useState(null)
     const [main, setMain] = useState(true)
-
     const [proImageUrl, setProImgUrl] = useState('')
-
-
-    const token = localStorage.getItem('token');
 
     useEffect(() => {
         if (!token) {
             navigate('/login');
         } else {
             const fetchUserProfile = async () => {
+
                 try {
-                    const response = await axiosinstance.get('profile', {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
+
+                    const axiosInstance = createInstance(token)
+
+                    const response = await axiosInstance.get('profile')
+
                     if (response.status === 200) {
                         setUserr(response.data);
                         setImagee(response.data.image);
@@ -64,17 +62,7 @@ function Profile() {
                     }
 
                 } catch (error) {
-                    if (error.response) {
-                        const status = error.response.status;
-                        if (status === 404 || status === 500) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops!',
-                                text: error.response.data.message,
-                                confirmButtonText: 'OK',
-                            })
-                        }
-                    }
+                    console.log(error);
                 }
             };
 
@@ -130,6 +118,7 @@ function Profile() {
             }
 
             if (agee && heighte && weighte && gendere) {
+
                 if (isNaN(agee) || agee < 10 || agee > 100) {
                     toast.error('Age must be a number between 10 and 100.');
                     setShowEdit(true);
@@ -164,9 +153,13 @@ function Profile() {
                 formData.append('gender', gendere);
             }
 
-            let response = await axiosinstance.post('edit-user-profile', formData, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.post('edit-user-profile', formData,{
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
 
             if (response.status === 200) {
                 setShowEdit(false);
@@ -183,19 +176,7 @@ function Profile() {
             }
 
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 404 || status === 500 || status === 400) {
-                    toast.error(error.response.data.message);
-                    setShowEdit(true);
-                    setMain(false);
-                }
-            } else {
-                toast.error('There was an error in saving data');
-                setShowEdit(true);
-                setMain(false);
-                console.log(error);
-            }
+            console.log(error);
         }
     };
 
@@ -248,9 +229,10 @@ function Profile() {
                 height,
                 weight,
             };
-            const response = await axiosinstance.post('add-more-info', dataNeeded, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.post('add-more-info', dataNeeded )
 
             if (response.status === 200) {
                 const updatedUser = response.data.user;
@@ -266,20 +248,7 @@ function Profile() {
                 setMain(false);
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 404 || status === 500) {
-                    toast.error(error.response.data.message);
-                    setShowDetails(true);
-                    setMain(false);
-                }
-            } else {
-                toast.error('Error occurred while saving details.');
-                setShowDetails(true);
-                setMain(false);
-                console.log(error);
-            }
-
+            console.log(error);
         }
     };
 

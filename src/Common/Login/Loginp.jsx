@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosinstance from '../../Axios/Axios';
+import { axiosinstance } from '../../Axios/Axios';
 import './Loginp.scss';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -15,12 +15,11 @@ function Loginp({ user }) {
   const [shake, setShake] = useState(false);
 
   const { loginWithRedirect } = useAuth0();
-
   const [showPassword, setShowPassword] = useState(false);
 
   const handleGoogleSignIn = () => {
     loginWithRedirect({
-      screen_hint: 'signup', 
+      screen_hint: 'signup',
     });
   };
 
@@ -52,17 +51,8 @@ function Loginp({ user }) {
           setShake(true);
         }
       } catch (error) {
-        if (error.response) {
-          const status = error.response.status
-          if (status === 403 || status === 401 || status === 404 || status === 500 || status === 400) {
-            setErrorMessage(error.response.data.message)
-            setShake(true)
-          } else {
-            console.log(error);
-            setErrorMessage('An error occurred. Please try again later')
-            setShake(true)
-          }
-        }
+        console.log(error);
+        setShake(true)
       }
     } else if (user === 'doctor') {
       try {
@@ -78,18 +68,8 @@ function Loginp({ user }) {
           setShake(true);
         }
       } catch (error) {
-        if (error.response) {
-          const status = error.response.status
-          if (status === 403 || status === 401 || status === 404 || status === 500) {
-            setErrorMessage(error.response.data.message)
-            setShake(true)
-          }
-        } else {
-          console.log(error);
-          setErrorMessage('An error occurred. Please try again later')
-          setShake(true)
-        }
-
+        console.log(error);
+        setShake(true)
       }
     } else if (user === 'admin') {
       try {
@@ -100,27 +80,17 @@ function Loginp({ user }) {
         if (response.status === 200) {
           localStorage.setItem('admintoken', response.data.admin);
           navigate('/admin/dashboard')
-        } else{
+        } else {
           setErrorMessage('Something went wrong, please try after sometime');
           setShake(true);
         }
       } catch (error) {
-        if (error.response) {
-          const status = error.response.status
-          if (status === 401 || status === 404 || status === 500) {
-            setErrorMessage(error.response.data.message)
-            setShake(true)
-          }
-        } else {
-          console.log(error);
-          setErrorMessage('An error occurred. Please try again later')
-          setShake(true)
-        }
+        console.log(error);
+        setShake(true)
       }
     }
   }
 
-  
 
   function handleAnimationEnd() {
     setShake(false);
@@ -138,35 +108,6 @@ function Loginp({ user }) {
 
   return (
     <>
-      {/* <div className={`login-container ${shake ? 'shake' : ''}`}>
-        <form onSubmit={loginUser} className="login-form" onAnimationEnd={handleAnimationEnd} >
-
-          <h1>Login</h1>
-          {errorMessage && <h6 className="admin-login-error text-danger">{errorMessage}</h6>}
-
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder="Email"
-            className="login-input"
-          />
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            placeholder="Password"
-            className="login-input"
-          />
-          <input type="submit" value="Login" className="login-button" />
-          <span className='ptoreg p-3' onClick={handleRegisterClick} >Need to register?</span>
-          
-
-        </form>
-        <button className='gosignupbut' onClick={handleGoogleSignIn}>
-          Sign in with Google
-        </button>
-      </div> */}
 
       <div className={`login-container ${shake ? 'shake' : ''}`}>
         <form className="loginform-cm" onAnimationEnd={handleAnimationEnd} >
@@ -195,7 +136,6 @@ function Loginp({ user }) {
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              // type="password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your Password"
               className="input"
@@ -203,13 +143,6 @@ function Loginp({ user }) {
             <svg onClick={() => setShowPassword(!showPassword)} viewBox="0 0 576 512" height="1em" xmlns="http://www.w3.org/2000/svg"><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"></path></svg>
           </div>
 
-          {/* <div className="flex-row">
-            <div>
-              <input type="checkbox" />
-              <label>Remember me </label>
-            </div>
-            <span className="span">Forgot password?</span>
-          </div> */}
           <button className="button-submit" onClick={loginUser} >Sign In</button>
           <p className="p">Don't have an account? <span className="span" onClick={handleRegisterClick} >Sign Up</span></p>
 

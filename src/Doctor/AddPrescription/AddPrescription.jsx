@@ -2,7 +2,7 @@ import React,{ useState } from 'react'
 import './AddPrescription.scss'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
 
 function AddPrescription() {
@@ -34,26 +34,15 @@ function AddPrescription() {
 
         try {
             
-            const response = await axiosinstance.post('booking/submit-prescription',prescriptionData, {
-                headers: {
-                    Authorization: `Bearer ${doctortoken}`,
-                  },
-            })
+            const axiosInstance = createInstance(doctortoken)
+
+            const response = await axiosInstance.post('booking/submit-prescription',prescriptionData)
+
             if (response.status === 200) {
                 toast.success(response.data.message)
                 navigate('/doctor/view-schedule')
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 400 || status === 404 || status === 500) {
-                    toast.error(error.response.data.message+', Please try after sometime')
-                }else if (status === 409) {
-                    toast.error(error.response.data.message+', Will be updated soon')
-                }
-            } else {
-                toast.error('Something went wrong, Please try after sometime')   
-            }
             console.log(error);
         }
     }

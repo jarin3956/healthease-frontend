@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import axiosinstance from '../../../Axios/Axios';
+import { createInstance } from '../../../Axios/Axios';
 
 function Areachart() {
 
@@ -12,15 +12,13 @@ function Areachart() {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const response = await axiosinstance.get('admin/bookings',{
-              headers: {
-                Authorization: `Bearer ${admintoken}`
-            }
-            });
+
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.get('admin/bookings')
+
             if (response.status === 200) {
               setRevenueData(response.data.bookingData);
-            } else {
-              console.log('error');
             }
           } catch (error) {
             console.log(error);

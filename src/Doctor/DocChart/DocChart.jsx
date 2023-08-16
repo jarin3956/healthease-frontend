@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-// import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import {
     MDBCol,
     MDBContainer,
@@ -10,7 +9,6 @@ import {
 } from "mdb-react-ui-kit";
 import DocBarchart from '../Charts/DocBarchart/DocBarchart';
 import DocLinechart from '../Charts/DocLinechart/DocLinechart';
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -59,8 +57,6 @@ function groupBookingData(data) {
         return acc;
     }, []);
 
-    // console.log('groupedData of the doc :', groupedData);
-
     return groupedData;
 }
 
@@ -78,16 +74,15 @@ function DocChart({ chartData }) {
     useEffect(() => {
         const bookingData = async () => {
             try {
-                const response = await axiosinstance.get('doctor/load-all-bookings',{
-                    headers: {
-                        Authorization: `Bearer ${doctortoken}`
-                    }
-                })
+        
+                const axiosInstance = createInstance(doctortoken)
+
+                const response = await axiosInstance.get('doctor/load-all-bookings')
+
                 if (response.status === 200) {
 
                     const sortedData = response.data.bookingData.filter((a) => {
                         if (a.DocId === targetId) {
-                            // console.log(a);
                             return a;
                         }
                     });
@@ -98,14 +93,6 @@ function DocChart({ chartData }) {
                     toast.error('Something went wrong, Please try after sometime.')
                 }
             } catch (error) {
-                if (error.response) {
-                    const status = error.response.status
-                    if (status === 404 || status === 500) {
-                        toast.error(error.response.data.message + 'Please try after sometime.')
-                    }
-                } else {
-                    toast.error('Something went wrong, Please try after sometime.')
-                }
                 console.log(error);
             }
         }

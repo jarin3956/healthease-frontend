@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import NotFound from '../../Common/NotFound/NotFound';
@@ -27,10 +27,12 @@ function Viewdoc() {
     const token = localStorage.getItem('token');
 
     const viewDoctors = async (specialName) => {
+
         try {
-            const response = await axiosinstance.get(`view-doctors-spec/${specialName}`,{
-                headers: {'Authorization': `Bearer ${token}`}
-            })
+        
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.get(`view-doctors-spec/${specialName}`)
 
             if (response.status === 200) {
                 setDoctors(response.data.doctor)
@@ -40,14 +42,6 @@ function Viewdoc() {
             }
         } catch (error) {
             setError(true)
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    toast.error(error.response.data.message + 'Please try after sometime. ')
-                }
-            } else {
-                toast.error('Something went wrong, Please try after sometime. ')
-            }
             console.log(error);
         }
     }

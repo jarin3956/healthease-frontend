@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './Landingpage.scss';
-import axiosinstance from '../../Axios/Axios';
+import { axiosinstance } from '../../Axios/Axios';
 import Viewspec from '../ViewSpec/Viewspec';
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
 
 
 function Landingpage() {
@@ -23,23 +20,12 @@ function Landingpage() {
                     toast.error('Could not process now, Please try after sometime');
                 }
             } catch (error) {
-                if (error.response) {
-                    const status = error.response.status
-                    if (status === 404 || status === 500) {
-                        toast.error(error.response.data.message)
-                    }
-                } else {
-                    toast.error('Could not process now, Please try after sometime');
-                    console.log(error);
-                }
-                
+                console.log(error);
             }
 
         }
         fetchSpec()
     }, [])
-
-
 
 
     return (
@@ -60,7 +46,6 @@ function Landingpage() {
                 </div>
             </div>
         </>
-
     )
 }
 

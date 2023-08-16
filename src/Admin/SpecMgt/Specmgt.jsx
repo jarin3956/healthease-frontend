@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 
 import {
     TableContainer,
@@ -15,14 +15,10 @@ import {
 } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
-
 import Swal from 'sweetalert2';
-
 import './Specmgt.scss'
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import NotFound from '../../Common/NotFound/NotFound'
 
 
@@ -63,32 +59,23 @@ function Specmgt() {
 
     const handleBlock = async (specId) => {
         try {
-            const response = await axiosinstance.put(`specialization/control-specialization/${specId}`, null ,{
-                headers: {
-                    Authorization: `Bearer ${admintoken}`
-                }
-            });
-            const updatedSpec = response.data.spec
-            setSpecialization((prevSpec) =>
-                prevSpec.map((spec) => (spec._id === updatedSpec._id ? updatedSpec : spec))
-            );
+
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.put(`specialization/control-specialization/${specId}`)
 
             if (response.status === 200) {
                 toast.success(response.data.message);
+                const updatedSpec = response.data.spec
+                setSpecialization((prevSpec) =>
+                    prevSpec.map((spec) => (spec._id === updatedSpec._id ? updatedSpec : spec))
+                );
             } else {
                 toast.error('Cannot process now, Please try after sometime');
             }
 
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    toast.error(error.response.data.message)
-                }
-            } else {
-                console.log(error);
-                toast.error('Error changing status, Please try after sometime');
-            }
+            console.log(error);
         }
     }
 
@@ -112,27 +99,18 @@ function Specmgt() {
 
     const deleteSpec = async (specId) => {
         try {
-            const response = await axiosinstance.delete(`specialization/delete-specialization/${specId}`,{
-                headers: {
-                    Authorization: `Bearer ${admintoken}`
-                }
-            });
+
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.delete(`specialization/delete-specialization/${specId}`)
+
             if (response.status === 200) {
                 toast.success(response.data.message);
             } else {
                 toast.error('Could not process now, Please try after sometime');
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    toast.error(error.response.data.message);
-                }
-            } else {
-                console.log(error);
-                toast.error('Error deleting the specialization, Please try after sometime');
-            }
-
+            console.log(error);
         }
     }
 
@@ -172,9 +150,12 @@ function Specmgt() {
             if (image) {
                 formData.append('image', image)
             }
-            const response = await axiosinstance.post('specialization/edit-spec', formData , {
+
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.post('specialization/edit-spec', formData, {
                 headers: {
-                    Authorization: `Bearer ${admintoken}`
+                    'Content-Type': 'multipart/form-data'
                 }
             })
 
@@ -186,16 +167,7 @@ function Specmgt() {
             }
             setShowEdit(false);
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    toast.error(error.response.data.message)
-                }
-            } else {
-                toast.error('Cannot proceed at this moment, Please try after sometime');
-                console.log(error);
-            }
-
+            console.log(error);
         }
     };
 
@@ -204,28 +176,21 @@ function Specmgt() {
 
     useEffect(() => {
         const fetchSpecData = async () => {
+
             try {
-                const response = await axiosinstance.get('specialization/admin-view', {
-                    headers: {
-                        Authorization: `Bearer ${admintoken}`
-                    }
-                })
+
+                const axiosInstance = createInstance(admintoken)
+                const response = await axiosInstance.get('specialization/admin-view')
+
                 if (response.status === 200) {
                     const specData = response.data.spec;
                     setSpecialization(specData)
                 } else {
                     toast.error('Could not find data now, Please try after sometime');
                 }
+
             } catch (error) {
-                if (error.response) {
-                    const status = error.response.status
-                    if (status === 404 || status === 500) {
-                        toast.error(error.response.data.message);
-                    }
-                } else {
-                    toast.error('Could not find data now, Please try after sometime');
-                    console.log(error);
-                }
+                console.log(error);
             }
         }
         fetchSpecData();
@@ -342,7 +307,7 @@ function Specmgt() {
                                                 key={spec.name}
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
-                                                <TableCell component="th" scope="row"  align="center" >
+                                                <TableCell component="th" scope="row" align="center" >
                                                     {spec.name}
                                                 </TableCell>
                                                 <TableCell align="center"><img src={`/SpecializationImages/${spec.image}`} alt={spec.name} style={{ width: '100px' }} /></TableCell>

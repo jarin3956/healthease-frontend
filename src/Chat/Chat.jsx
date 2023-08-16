@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './Chat.scss'
 import {
     MDBCard,
@@ -8,7 +8,64 @@ import {
     MDBRow,
 } from "mdb-react-ui-kit";
 
-function Chat() {
+import { useSocket } from '../Context/SocketProvider'
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
+function Chat({ user }) {
+
+    const navigate = useNavigate()
+
+    const [message, setMessage] = useState();
+    const [chatHistory, setChatHistory] = useState([]);
+    const url = new URL(window.location.href);
+    const chatId = url.pathname.split('/').pop();
+
+
+    const socket = useSocket();
+
+    const SendMessage = () => {
+        socket.emit('send-message', message, chatId)
+        setChatHistory([...chatHistory, { send: true, message: message }])
+        setMessage('');
+    }
+
+    useEffect(() => {
+
+        
+
+        socket.on('recieved-message', (message) => {
+            // console.log(message, 'front-end');
+            setChatHistory([...chatHistory, { send: false, message: message }]);
+        })
+
+        socket.on('chat-rejected', () => {
+            
+            Swal.fire({
+                title: 'Chat Rejected',
+                text: "Doctor is not available to chat with you. Please try again later.",
+                icon: 'error',
+                confirmButtonText: 'OK',
+              }).then(() => {
+                closeChat();
+              });
+        });
+
+        return () => {
+            socket.off('recieved-message');
+            socket.off('chat-rejected');
+        };
+
+    },[socket.connected, chatHistory]);
+
+    const closeChat = () => {
+        if (user === 'user') {
+            navigate('/view-Bookings')
+        } else if (user === 'doctor') {
+            navigate('/doctor/home')
+        }
+    }
+
     return (
         <>
             <div className="ho-cookieCard " style={{ minHeight: '90vh' }}>
@@ -25,19 +82,23 @@ function Chat() {
                                                         <div className="chat-head-txt">Feel Free to Ask</div>
                                                     </div>
                                                     <div className="chat-body" >
-                                                        <div className="message incoming">
-                                                            <p>Hello, how can I assist you today?</p>
-                                                        </div>
-                                                        <div className="message outgoing">
-                                                            <p>I have a question about your services.</p>
-                                                        </div>
-                                                        <div className="message incoming">
-                                                            <p>Sure, I'm here to help. What would you like to know?</p>
-                                                        </div>
+                                                        {chatHistory.map((e) => {
+                                                            if (e.send) {
+                                                                return <div className="message outgoing">
+                                                                    <p>{e.message}</p>
+                                                                </div>
+                                                            } else {
+                                                                return <div className="message incoming">
+                                                                    <p>{e.message}</p>
+                                                                </div>
+                                                            }
+
+                                                        })}
+
                                                     </div>
                                                     <div className="chat-footer">
-                                                        <input placeholder="Type your message"  type="text" />
-                                                        <button className="chat-send-button">
+                                                        <input onChange={(e) => { setMessage(e.target.value) }} placeholder="Type your message" value={message} type="text" />
+                                                        <button className="chat-send-button" onClick={SendMessage}>
                                                             <div className="svg-wrapper-1">
                                                                 <div className="svg-wrapper">
                                                                     <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -48,8 +109,10 @@ function Chat() {
                                                             </div>
                                                             <span>Send</span>
                                                         </button>
-
                                                     </div>
+                                                </div>
+                                                <div className='d-flex justify-content-center p-3'>
+                                                    <button className='chat-end-butt' onClick={closeChat}>Close</button>
                                                 </div>
                                             </MDBRow>
                                         </MDBCardBody>

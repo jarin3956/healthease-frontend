@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import axiosinstance from '../../Axios/Axios'
+import { createInstance } from '../../Axios/Axios'
 import { useNavigate } from 'react-router-dom'
 import './Specregister.scss'
 
@@ -43,59 +43,50 @@ function Specregister() {
             formData.append('name', name)
             formData.append('description', description)
             formData.append('image', image)
-            const response = await axiosinstance.post('specialization/register', formData ,{
+            
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.post('specialization/register', formData, {
                 headers: {
-                    Authorization: `Bearer ${admintoken}`
-                  }
-            } )
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
             if (response.status === 200) {
                 navigate('/admin/specialization')
             } else {
                 setError("Could not process now, Try after sometime")
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 500 || status === 409 || status === 400 ) {
-                    setError(error.response.data.message);
-                }
-            } else {
-                setError("Could not process now, Try after sometime");
-                console.log(error);
-            }
-            
+            console.log(error);
         }
     }
 
     return (
         <>
-
-            
-                <div className="spl-regCard ">
-                    <div className='spl-reg-main' >
-                        <form className="reg-spl-form-main p-2" >
-                            <p className="reg-spl-heading">Add Specialization</p>
-                            {error && (
-                                <p className="text-danger" style={{ marginBottom: '10px' }}>
-                                    {error}
-                                </p>
-                            )}
-                            <div className="reg-spl-inputContainer">
-                                <input placeholder="Name" value={name} className="reg-spl-inputField" type="text" onChange={(e) => setName(e.target.value)} />
-                            </div>
-                            <div className="reg-spl-inputContainer">
-                                <input placeholder="Description" value={description} className="reg-spl-inputField" type="text" onChange={(e) => setDescription(e.target.value)} />
-                            </div>
-                            <div className="reg-spl-inputContainer">
+            <div className="spl-regCard ">
+                <div className='spl-reg-main' >
+                    <form className="reg-spl-form-main p-2" >
+                        <p className="reg-spl-heading">Add Specialization</p>
+                        {error && (
+                            <p className="text-danger" style={{ marginBottom: '10px' }}>
+                                {error}
+                            </p>
+                        )}
+                        <div className="reg-spl-inputContainer">
+                            <input placeholder="Name" value={name} className="reg-spl-inputField" type="text" onChange={(e) => setName(e.target.value)} />
+                        </div>
+                        <div className="reg-spl-inputContainer">
+                            <input placeholder="Description" value={description} className="reg-spl-inputField" type="text" onChange={(e) => setDescription(e.target.value)} />
+                        </div>
+                        <div className="reg-spl-inputContainer">
                             <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files.item(0))} required="" className="reg-splfle-input" />
-                            </div>
-                            <button className="reg-splbutton" onClick={(e) => registerSpec(e)} >Save</button>
-                            <p onClick={() => navigate('/admin/specialization')} className='text-danger thespl-backbtn' >Go Back</p>
-                        </form>
-                    </div>
+                        </div>
+                        <button className="reg-splbutton" onClick={(e) => registerSpec(e)} >Save</button>
+                        <p onClick={() => navigate('/admin/specialization')} className='text-danger thespl-backbtn' >Go Back</p>
+                    </form>
                 </div>
-           
-
+            </div>
         </>
     )
 }

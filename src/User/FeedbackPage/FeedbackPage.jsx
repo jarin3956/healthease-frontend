@@ -1,18 +1,19 @@
 import React, { useState } from 'react'
 import './FeedbackPage.scss'
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function FeedbackPage() {
+
     const url = new URL(window.location.href);
     const bookingId = url.pathname.split('/').pop();
 
+    const token = localStorage.getItem('token');
+
     const [rating, setRating] = useState(0);
     const [comments, setComments] = useState('');
-
-    const token = localStorage.getItem('token');
 
     const navigate = useNavigate()
 
@@ -35,17 +36,12 @@ function FeedbackPage() {
             bookingId
         };
 
-        // console.log(rating,"this is the rating");
-        // console.log(comments,"this is the comments");
-        // console.log(bookingId, "this is the feedback id for booking");
 
         try {
 
-            const response = await axiosinstance.post('booking/submit-feedback', feedbackData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
+            const axiosInstance = createInstance(token)
+
+            const response = await axiosInstance.post('booking/submit-feedback', feedbackData)
 
             if (response.status === 200) {
                 toast.success(response.data.message)
@@ -53,18 +49,8 @@ function FeedbackPage() {
             }
 
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 400 || status === 404 || status === 500) {
-                    toast.error(error.response.data.message+', Please try after sometime')
-                }else if(status === 409){
-                    toast.error(error.response.data.message+', Will be updated soon')
-                }
-            } else {
-                toast.error('Something went wrong, Please try after sometime')
-            }
+            console.log(error);
         }
-
     }
 
     return (

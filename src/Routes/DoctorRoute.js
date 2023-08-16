@@ -41,7 +41,7 @@ function DoctorRoute() {
                     <Route path='video-call' element={<VideoCall/>}/>
                     <Route path='room/:roomId'element={<Room user={doctor} />} />
                     <Route path='add-prescription/:bookingConfirmId' element={<AddPrescription/>} />
-                    <Route path='chat' element={<Chat/>} />
+                    <Route path='chat/:chatId' element={<Chat user={doctor} />} />
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>

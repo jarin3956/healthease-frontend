@@ -3,18 +3,13 @@ import { useSocket } from '../Context/SocketProvider';
 import ReactPlayer from 'react-player'
 import peer from '../Service/Peer'
 import { useNavigate } from 'react-router-dom';
-
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-
 import './Room.scss'
-import axiosinstance from '../Axios/Axios';
-
+import { axiosinstance } from '../Axios/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import Swal from 'sweetalert2';
-
 
 
 function Room({ user }) {

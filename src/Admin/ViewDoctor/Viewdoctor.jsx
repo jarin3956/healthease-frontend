@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBTypography, MDBIcon } from 'mdb-react-ui-kit';
 import './Viewdoctor.scss'
 import { useLocation } from 'react-router-dom';
-import axiosinstance from '../../Axios/Axios';
+import { createInstance } from '../../Axios/Axios';
 
 
 
@@ -21,11 +21,11 @@ function Viewdoctor() {
 
     const viewDoctorProfile = async (doctorId) => {
         try {
-            const response = await axiosinstance.get(`admin/view-doctor-profile/${doctorId}`,{
-                headers: {
-                    Authorization: `Bearer ${admintoken}`
-                }
-            });
+
+            const axiosInstance = createInstance(admintoken)
+
+            const response = await axiosInstance.get(`admin/view-doctor-profile/${doctorId}`)
+
             if (response.status === 200) {
                 setDoctor(response.data.doctorData);
             } else {
@@ -52,11 +52,8 @@ function Viewdoctor() {
         return <div>Error occurred while fetching doctor's profile.</div>;
     }
 
-
     return (
         <>
-
-
             <section className="card p-3 py-4 mb-5  rounded-0 vh-100" style={{ backgroundColor: 'rgb(70, 166, 210)' }} >
                 <MDBContainer className="py-5 h-100">
                     <MDBRow className="justify-content-center align-items-center h-100">
@@ -121,9 +118,6 @@ function Viewdoctor() {
                     </MDBRow>
                 </MDBContainer>
             </section>
-
-
-
         </>
     )
 }

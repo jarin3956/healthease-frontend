@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axiosinstance from '../../Axios/Axios'
+import { axiosinstance } from '../../Axios/Axios'
 import './Register.scss'
 
 function Register() {
@@ -26,7 +26,6 @@ function Register() {
             return;
         }
 
-
         const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
         if (!name.match(nameRegex)) {
             setErrormsg('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
@@ -34,7 +33,6 @@ function Register() {
             setLoading(false);
             return;
         }
-
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.match(emailRegex)) {
@@ -44,14 +42,12 @@ function Register() {
             return;
         }
 
-
         if (password.length < 6) {
             setErrormsg('Password should be at least 6 characters long.');
             setShake(true);
             setLoading(false);
             return;
         }
-
 
         if (!image.type.includes('image')) {
             setErrormsg('Please upload an image.');
@@ -132,7 +128,6 @@ function Register() {
                 </form>
             </div>
         </div>
-
     )
 }
 

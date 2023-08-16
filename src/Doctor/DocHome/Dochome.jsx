@@ -1,64 +1,64 @@
 import React, { useEffect, useState } from 'react';
 import './DocHome.scss';
-import axiosinstance from '../../Axios/Axios';
-
+import { createInstance } from '../../Axios/Axios'
 import Docschedule from '../Docschedule/Docschedule';
-
 import NotFound from '../../Common/NotFound/NotFound';
-
 import DocChart from '../DocChart/DocChart';
 import { useNavigate } from 'react-router-dom';
-
+import { useSocket } from '../../Context/SocketProvider'
 import Swal from 'sweetalert2';
 
 
 
 function Dochome() {
 
+  const socket = useSocket()
   const [schedule, setSchedule] = useState(null)
-
   const [docId, setDocId] = useState(null);
-
   const doctortoken = localStorage.getItem('doctortoken')
-
   const navigate = useNavigate()
 
   useEffect(() => {
+    socket.on('user-requested', (user, roomId) => {
+
+      Swal.fire({
+        title: 'Chat Request',
+        text: `${user.name} Requested a chat , Do you want to join ?`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+
+        if (result.isConfirmed) {
+          socket.emit('join-chat', roomId)
+          const handleRoomJoin = () => {
+            navigate(`/doctor/chat/${user._id}`)
+          }
+          socket.on('chat-connected', handleRoomJoin);
+        } else {
+          socket.emit('doc-rejected', user._id)
+        }
+      });
+    })
+  })
+  useEffect(() => {
     if (doctortoken) {
       const getSchedule = async () => {
+
         try {
-          const response = await axiosinstance.get('doctor/schedule-data', {
-            headers: {
-              Authorization: `Bearer ${doctortoken}`,
-            },
-          });
+
+          const axiosInstance = createInstance(doctortoken)
+
+          const response = await axiosInstance.get('doctor/schedule-data')
           if (response.status === 200) {
-            // console.log(response.data.schedule.doc_id, " this is doc id i need to pass to the chart");
             setSchedule(response.data.schedule.schedule)
             setDocId(response.data.schedule.doc_id);
-          } 
-          
-
-        } catch (error) {
-          if (error.response) {
-            const status = error.response.status;
-            if (status === 401) {
-              localStorage.removeItem('doctortoken');
-              Swal.fire('Unauthorized', 'You are not authorized to access this resource.', 'error')
-                .then(() => {
-                  navigate('/doctor/login')
-                });
-            } else if (status === 403) {
-              localStorage.removeItem('doctortoken');
-              Swal.fire('Forbidden', 'You do not have permission to access this resource.', 'error')
-                .then(() => {
-                  navigate('/doctor/login')
-                });
-            } 
-          } else {
-            console.log(error);
-            Swal.fire('Oops!', 'Error when loading doctor data', 'error');
+            socket.emit('set-up', response.data.schedule.doc_id)
           }
+          
+        } catch (error) {
+          console.log(error);
         }
       }
       getSchedule()
@@ -73,7 +73,6 @@ function Dochome() {
       <section className=" doc-home-page">
         <p className='text-center the-main-head-dochome '>Embrace the future of medical consultations with HealthEase.</p>
 
-
         <div className="p-2">
           <div className="home-sch-panel rounded-3">
             {schedule ? (
@@ -81,7 +80,7 @@ function Dochome() {
                 {docId &&
                   <DocChart chartData={docId} />
                 }
-                          <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
+                <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
 
                 <Docschedule data={schedule} />
               </>

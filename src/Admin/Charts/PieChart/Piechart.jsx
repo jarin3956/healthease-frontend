@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import axiosinstance from '../../../Axios/Axios';
+import { createInstance } from '../../../Axios/Axios';
 
 
 function groupBookingData(data) {
@@ -23,9 +23,7 @@ function groupBookingData(data) {
     }, []);
   
     const sortedData = groupedData.sort((a, b) => b.count - a.count); 
-  
-    // console.log('groupedData:', sortedData); 
-  
+    
     return sortedData;
   }
   
@@ -42,11 +40,11 @@ function Piechart() {
     useEffect(() => {
         const bookingData = async () => {
             try {
-                const response = await axiosinstance.get('admin/bookings',{
-                  headers: {
-                    Authorization: `Bearer ${admintoken}`
-                }
-                })
+
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.get('admin/bookings')
+
                 if (response.status === 200) {
                     setBookingData(response.data.bookingData)
                 } else {

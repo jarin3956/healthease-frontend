@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from 'react'
 import './Adminregister.css'
 import { useNavigate } from 'react-router-dom';
-import axiosinstance from '../../Axios/Axios';
+import { axiosinstance } from '../../Axios/Axios';
 
 
 function Adminregister() {
@@ -24,7 +24,6 @@ function Adminregister() {
             return;
         }
 
-        // Name validation
         const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
         if (!name.match(nameRegex)) {
             setErrorMessage('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
@@ -55,21 +54,16 @@ function Adminregister() {
                 repassword,
             };
             const response = await axiosinstance.post('admin/register',neededData);
-            const data = response.data;
-            if (data.status === 'ok') {
+            
+            if (response.status === 200) {
                 navigate('/admin/login')
-            }else if(data.status === 'error'){
-                setErrorMessage(data.message)
-                setShake(true)
-            }else{
+            } else {
                 setErrorMessage('An error occurred. Please try again later');
                 setShake(true)
             }
             
         } catch (error) {
             console.log(error);
-            setErrorMessage('An error occurred. Please try again later');
-            setShake(true);
         }finally{
             setIsLoading(false)
         }

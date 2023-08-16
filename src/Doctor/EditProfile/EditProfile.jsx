@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axiosinstance from '../../Axios/Axios'
+import { createInstance, axiosinstance } from '../../Axios/Axios'
 import Swal from 'sweetalert2';
-
 import { toast, ToastContainer } from 'react-toastify';
-
 
 function EditProfile() {
 
@@ -18,26 +16,20 @@ function EditProfile() {
     const [fare, setFare] = useState('')
     const [specialization, setSpecialization] = useState('')
     const [selectedSpecializationId, setSelectedSpecializationId] = useState('');
-
-
     const [proImageUrl, setProImgUrl] = useState('')
     const [certiImageUrl, setCertiImgUrl] = useState('')
-
     const [spec, setSpec] = useState([]);
-
 
     const doctortoken = localStorage.getItem('doctortoken')
     const navigate = useNavigate()
 
-    
-
-    
-
     const getProfile = async () => {
         try {
-            const response = await axiosinstance.get('doctor/profile', {
-                headers: { Authorization: `Bearer ${doctortoken}` }
-            })
+
+            const axiosInstance = createInstance(doctortoken)
+
+            const response = await axiosInstance.get('doctor/profile')
+
             if (response.status === 200) {
                 let docdata = response.data.doctor
                 setName(docdata.name)
@@ -47,23 +39,11 @@ function EditProfile() {
                 setExperience(docdata.experience)
                 setSpecialization(docdata.specialization)
                 setFare(docdata.fare)
-                // setProfileimg(docdata.profileimg)
-                //setCertificate(docdata.certificate)
-
                 setProImgUrl(`/DocImages/${docdata.profileimg}`)
                 setCertiImgUrl(`/DocImages/${docdata.certificate}`)
-                
             }
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 404 || status === 500) {
-                    Swal.fire(error.response.data.message, 'Please try after some time.', 'error')
-                }
-            } else {
-                console.log(error);
-                Swal.fire('Oops!', 'Error when loading doctor data', 'error');
-            }
+            console.log(error);
         }
     }
 
@@ -74,26 +54,16 @@ function EditProfile() {
                 setSpec(response.data.spec)
             }
             else {
-                Swal.fire({ title: "Error", text:"Please Try again later."})
+                Swal.fire({ title: "Error", text: "Please Try again later." })
             }
-            
+
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 404 || status === 500) {
-                    Swal.fire({ title: "Server Error", text: error.response.data.message})
-                }
-                
-            } else {
-                console.log(error);
-                Swal.fire({ title: "Server Error", text:"Please Try again later."})
-            }
-            
+            console.log(error);
         }
     }
 
     useEffect(() => {
-        
+
         fetchSpec()
         getProfile()
 
@@ -103,11 +73,11 @@ function EditProfile() {
     useEffect(() => {
         const specializationItem = spec.find(
             (item) => item.name === specialization
-          );
-          if (specializationItem) {
+        );
+        if (specializationItem) {
             setSelectedSpecializationId(specializationItem._id);
-          }
-    },[spec, specialization]);
+        }
+    }, [spec, specialization]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -117,8 +87,6 @@ function EditProfile() {
             toast.error('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
             return;
         }
-
-        
 
         const ageNum = parseInt(age);
         if (isNaN(ageNum) || ageNum < 23 || ageNum > 80) {
@@ -155,10 +123,6 @@ function EditProfile() {
             return;
         }
 
-        
-
-
-
         try {
             const formData = new FormData();
             formData.append('name', name);
@@ -171,9 +135,11 @@ function EditProfile() {
             formData.append('profileimg', profileimg);
             formData.append('certificate', certificate);
 
-            const response = await axiosinstance.put('doctor/edit-profile', formData, {
+            const axiosInstance = createInstance(doctortoken)
+
+            const response = await axiosInstance.put('doctor/edit-profile', formData, {
                 headers: {
-                    Authorization: `Bearer ${doctortoken}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             })
 
@@ -183,17 +149,7 @@ function EditProfile() {
                 Swal.fire('Error', 'Something went wrong, Please try after sometime', 'error')
             }
 
-            console.log(response);
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 404 || status === 500 || status === 400) {
-                    Swal.fire('Error', error.response.data.message, 'error')
-                } 
-            } else {
-                console.log(error);
-                Swal.fire('Oops!', 'Something went wrong, Please try after sometime', 'error');
-            }
             console.log(error);
         }
     }
@@ -201,7 +157,7 @@ function EditProfile() {
 
     return (
         <>
-         <ToastContainer />
+            <ToastContainer />
             <div className="spl-regCard ">
                 <div className='spl-reg-main' >
                     <form className="reg-spl-form-main p-2" encType="multipart/form-data" onSubmit={handleSubmit}  >
@@ -223,7 +179,7 @@ function EditProfile() {
                             <input placeholder="Experience" value={fare} className="reg-spl-inputField" type="text" onChange={(e) => setFare(e.target.value)} />
                         </div>
 
-                        
+
                         <div className="reg-spl-inputContainer">
                             <img
                                 src={proImageUrl}
@@ -234,7 +190,6 @@ function EditProfile() {
                         <div className="reg-spl-inputContainer">
                             <input
                                 type="file"
-                                // onChange={(e) => setProfileimg(e.target.files[0])}
                                 onChange={(e) => {
                                     const file = e.target.files[0];
                                     setProfileimg(file)
@@ -254,7 +209,6 @@ function EditProfile() {
                         <div className="reg-spl-inputContainer">
                             <input
                                 type="file"
-                                // onChange={(e) => setCertificate(e.target.files[0])}
                                 onChange={(e) => {
                                     const file = e.target.files[0]
                                     setCertificate(file)

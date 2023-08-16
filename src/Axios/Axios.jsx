@@ -1,34 +1,142 @@
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
+const baseURL = 'http://localhost:3001/';
 
 const axiosinstance = axios.create({
-  baseURL: 'http://localhost:3001/',
+  baseURL: baseURL,
 });
-
 
 axiosinstance.interceptors.response.use(
   (response) => {
-    
-    if (response.data.error === 'Doctor Blocked'){
-      localStorage.removeItem('doctortoken')
-      if(!localStorage.getItem('doctortoken')) {
-        window.location='/doctor/login'
-      }
-    }
-
-    else if (response.data.error === 'User Blocked'){
-      
-      localStorage.removeItem('token')
-      if(!localStorage.getItem('token')) {
-        window.location='/login'
-      }
-    }
 
     return response;
   },
   (error) => {
+
+    if (error.response) {
+      const status = error.response.status
+      if (status === 403 || status === 401) {
+        const userType = error.response.data.user;
+        if (userType === 'user') {
+          localStorage.removeItem('token');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.response.data.message + ', You do not have permission to access this resource.',
+            confirmButtonText: 'OK',
+          }).then(() => {
+            window.location = '/login';
+          });
+        } else if (userType === 'doctor') {
+          localStorage.removeItem('doctortoken');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.response.data.message + ', You do not have permission to access this resource.',
+            confirmButtonText: 'OK',
+          }).then(() => {
+            window.location = '/doctor/login';
+          });
+        } else if (userType === 'admin') {
+          localStorage.removeItem('admintoken');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.response.data.message + ', You do not have permission to access this resource.',
+            confirmButtonText: 'OK',
+          }).then(() => {
+            window.location = '/admin/login';
+          });
+
+        }
+      } else if (status === 404 || status === 500 || status === 400) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response.data.message + ', Please try after sometime',
+          confirmButtonText: 'OK',
+        })
+      } 
+    }
+
     return Promise.reject(error);
   }
+
 );
 
-export default axiosinstance;
+
+
+const createInstance = (token) => {
+  const instance = axios.create({
+    baseURL: baseURL,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  instance.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 403 || status === 401) {
+          const userType = error.response.data.user;
+          if (userType === 'user') {
+            localStorage.removeItem('token');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.response.data.message + ', You do not have permission to access this resource.',
+              confirmButtonText: 'OK',
+            }).then(() => {
+              window.location = '/login';
+            });
+          } else if (userType === 'doctor') {
+            localStorage.removeItem('doctortoken');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.response.data.message + ', You do not have permission to access this resource.',
+              confirmButtonText: 'OK',
+            }).then(() => {
+              window.location = '/doctor/login';
+            });
+          } else if (userType === 'admin') {
+            localStorage.removeItem('admintoken');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.response.data.message + ', You do not have permission to access this resource.',
+              confirmButtonText: 'OK',
+            }).then(() => {
+              window.location = '/admin/login';
+            });
+          }
+        } else if (status === 404 || status === 500 || status === 400) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.response.data.message + ', Please try after sometime',
+            confirmButtonText: 'OK',
+          });
+        } else if (status === 422){
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: error.response.data.message,
+            confirmButtonText: 'OK',
+          })
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
+};
+
+export { createInstance, axiosinstance };

@@ -48,7 +48,7 @@ function UserRoute() {
                     <Route path='room/:roomId'element={<Room user={user} />}/>
                     <Route path='feed-back/:bookingConfirmId' element={<FeedbackPage/>} />
                     <Route path='view-prescription/:bookingId' element={<ViewPrescription/>}/>
-                    <Route path='chat' element={<Chat/>} />
+                    <Route path='chat/:chatId' element={<Chat user={user} />} />
                     
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />

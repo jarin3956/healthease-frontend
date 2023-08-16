@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axiosinstance from '../../Axios/Axios';
+import { axiosinstance } from '../../Axios/Axios';
 import { Form } from 'react-bootstrap';
 import './Verifyp.scss';
 
@@ -18,38 +18,34 @@ function Verifyp() {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get('id');
   const userType = queryParams.get('userType');
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      
+
       if (userType === 'user') {
-        let usresponse = await axiosinstance.post('verify', {
+        let response = await axiosinstance.post('verify', {
           id,
           otp
         });
-        let usdata = usresponse.data;
-        if (usdata.status === 'ok') {
+  
+        if (response.status === 200) {
           navigate('/login');
-        } else if (usdata.status === 'error') {
-          setVerificationStatus('Verification failed: ' + usdata.message);
+        } else {
+          setVerificationStatus('Verification failed');
           setShake(true);
         }
       } else if (userType === 'doctor') {
-        let docresponse = await axiosinstance.post('doctor/verify', {
+        let response = await axiosinstance.post('doctor/verify', {
           id,
           otp
         });
-        let docdata = docresponse.data;
-        if (docdata.status === 'ok') {
-          
-              navigate('/doctor/login');
-            
-          
-        } else if (docdata.status === 'error') {
-          setVerificationStatus('Verification failed: ' + docdata.message);
+        if (response.status === 200) {
+          navigate('/doctor/login');
+        } else {
+          setVerificationStatus('Verification failed');
           setShake(true);
         }
       }
@@ -65,33 +61,30 @@ function Verifyp() {
   const handleResendOTP = async () => {
     if (userType === 'user') {
       try {
-        let resendotpuser = await axiosinstance.post('resend-otp', { userId: id });
-        let reuserdata = resendotpuser.data;
-        if (reuserdata.status === 'ok') {
-          setResendOtpStatus('success');
+        let response = await axiosinstance.post('resend-otp', { userId: id });
+        if (response.status === 200) {
+          setResendOtpStatus(response.data.message);
           setTimer(60);
           setShowButton(false);
         } else {
-          setResendOtpStatus('error');
+          setResendOtpStatus('Something went wrong');
         }
       } catch (error) {
-        setResendOtpStatus('error');
         console.log(error);
       }
     } else if (userType === 'doctor') {
       try {
-        let resendotpdoc = await axiosinstance.post('doctor/resend-otp', { doctorId: id });
-        let redocdata = resendotpdoc.data;
-        if (redocdata.status === 'ok') {
-          setResendOtpStatus('success');
+        let response = await axiosinstance.post('doctor/resend-otp', { doctorId: id });
+
+        if (response.status === 200) {
+          setResendOtpStatus(response.data.message);
           setTimer(60);
           setShowButton(false);
         } else {
-          setResendOtpStatus('error');
+          setResendOtpStatus(response.data.message);
         }
 
       } catch (error) {
-        setResendOtpStatus('error');
         console.log(error);
       }
     }
@@ -133,35 +126,35 @@ function Verifyp() {
   return (
     <div className="VerifyPage p-3">
       <div className={`verify-register-container ${shake ? 'shake' : ''}`}>
-          <Form onSubmit={handleSubmit} className="register-form" onAnimationEnd={handleAnimationEnd}>
-            <div className="doc-logover-container">
-              <img src="/healtheaselogo.png" alt="Logo" className="doc-logover-image" />
-            </div>
-            <h1 className="verify-title">Verify</h1>
-            <p className="verify-description">Please enter the OTP</p>
-            <p className="verify-description">OTP will expire in {timer} seconds</p>
-            <Form.Control
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              type="text"
-              className="verify-input"
-              placeholder="Enter OTP"
-              required
-            />
-            <button type="submit" className="verify-button" disabled={isLoading}>
-              {isLoading ? 'Verifying...' : 'Verify'}
-            </button>
-            {verificationStatus && <h6 className="text-center text-danger">{verificationStatus}</h6>}
-            {resendOtpStatus === 'success' && <p className="text-center text-success">OTP Resent Successfully</p>}
-            {resendOtpStatus === 'error' && <p className="text-center text-danger">Failed to Resend OTP</p>}
-          </Form>
-          <br />
-          {showButton && (
-            <button className="verify-button" onClick={handleResendOTP}>
-              Resend OTP
-            </button>
-          )}
-        </div>
+        <Form onSubmit={handleSubmit} className="register-form" onAnimationEnd={handleAnimationEnd}>
+          <div className="doc-logover-container">
+            <img src="/healtheaselogo.png" alt="Logo" className="doc-logover-image" />
+          </div>
+          <h1 className="verify-title">Verify</h1>
+          <p className="verify-description">Please enter the OTP</p>
+          <p className="verify-description">OTP will expire in {timer} seconds</p>
+          <Form.Control
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            type="text"
+            className="verify-input"
+            placeholder="Enter OTP"
+            required
+          />
+          <button type="submit" className="verify-button" disabled={isLoading}>
+            {isLoading ? 'Verifying...' : 'Verify'}
+          </button>
+          {verificationStatus && <h6 className="text-center text-danger">{verificationStatus}</h6>}
+          {resendOtpStatus === 'success' && <p className="text-center text-success">OTP Resent Successfully</p>}
+          {resendOtpStatus === 'error' && <p className="text-center text-danger">Failed to Resend OTP</p>}
+        </Form>
+        <br />
+        {showButton && (
+          <button className="verify-button" onClick={handleResendOTP}>
+            Resend OTP
+          </button>
+        )}
+      </div>
     </div>
   );
 }
