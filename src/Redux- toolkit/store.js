@@ -1,8 +1,9 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import scheduleSlice from "../Redux- toolkit/authslice"
-import bookingSlice from '../Redux- toolkit/bookingsSlice'
-import { persistStore, persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import scheduleSlice from "../Redux- toolkit/authslice";
+import bookingSlice from '../Redux- toolkit/bookingsSlice';
+import chatSlice from '../Redux- toolkit/chatSlice';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
 const persistConfig = {
     key: "root",
@@ -13,6 +14,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     schedule : scheduleSlice,
     bookings: bookingSlice,
+    chatRoomId: chatSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

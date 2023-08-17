@@ -9,7 +9,6 @@ import { useSocket } from '../../Context/SocketProvider'
 import Swal from 'sweetalert2';
 
 
-
 function Dochome() {
 
   const socket = useSocket()
@@ -19,6 +18,7 @@ function Dochome() {
   const navigate = useNavigate()
 
   useEffect(() => {
+
     socket.on('user-requested', (user, roomId) => {
 
       Swal.fire({
@@ -41,9 +41,12 @@ function Dochome() {
         }
       });
     })
-  })
+  },[socket])
+
   useEffect(() => {
+
     if (doctortoken) {
+
       const getSchedule = async () => {
 
         try {
@@ -63,7 +66,7 @@ function Dochome() {
       }
       getSchedule()
     }
-  }, [])
+  }, [doctortoken,socket])
 
 
 

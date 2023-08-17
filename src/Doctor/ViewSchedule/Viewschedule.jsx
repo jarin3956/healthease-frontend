@@ -14,6 +14,10 @@ import NotFound from '../../Common/NotFound/NotFound'
 
 
 function Viewschedule() {
+
+  const doctortoken = localStorage.getItem('doctortoken')
+
+
   const [schedule, setSchedule] = useState(true)
   const [completed, setCompleted] = useState(false)
   const [upcomming, setUpcomming] = useState(false)
@@ -22,7 +26,6 @@ function Viewschedule() {
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedTimeSlotsByDay, setSelectedTimeSlotsByDay] = useState({});
   const [booking, setBooking] = useState(null);
-  const doctortoken = localStorage.getItem('doctortoken')
   const [doctorData, setDoctorData] = useState(null)
 
   const handleSubmit = async (e) => {
@@ -61,12 +64,9 @@ function Viewschedule() {
       if (response.status === 200) {
         toast.success('Successfully saved schedule');
         setViewSchedule(response.data.schedule.schedule);
-      } else {
-        toast.error('Something went wrong, Please try after sometime');
-      }
+      } 
     } catch (error) {
       console.log(error);
-      
     }
     console.log('Selected Time Slots:', selectedTimeSlotsByDay, 'and', selectedDays);
   };
@@ -135,8 +135,8 @@ function Viewschedule() {
       if (response.status === 200) {
         setBooking(response.data.bookingData);
         setDoctorData(response.data.doctor);
-      } else {
-        toast.error('Something went wrong, Please try after sometime.');
+      } else if (response.status === 204) {
+        toast.success("Consider adjusting your schedule to attract more patients.");
       }
     } catch (error) {
       console.log(error);
@@ -181,8 +181,6 @@ function Viewschedule() {
 
       if (response.status === 200) {
         fetchBookingData();
-      } else {
-        toast.error('Something went wrong, Please try after sometime')
       }
 
     } catch (error) {

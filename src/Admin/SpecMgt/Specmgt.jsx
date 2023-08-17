@@ -22,14 +22,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import NotFound from '../../Common/NotFound/NotFound'
 
 
-
 function Specmgt() {
+
+    const navigate = useNavigate()
+    const admintoken = localStorage.getItem('admintoken')
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [searchQuery, setSearchQuery] = useState('');
-
-    const navigate = useNavigate()
     const [specialization, setSpecialization] = useState([])
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
@@ -40,6 +40,7 @@ function Specmgt() {
 
 
     const blockSpec = async (specId) => {
+
         Swal.fire({
             icon: 'warning',
             title: 'Are you sure?',
@@ -106,6 +107,7 @@ function Specmgt() {
 
             if (response.status === 200) {
                 toast.success(response.data.message);
+                fetchSpecData()
             } else {
                 toast.error('Could not process now, Please try after sometime');
             }
@@ -162,8 +164,6 @@ function Specmgt() {
             if (response.status === 200) {
                 toast.success(response.data.message);
                 setSpecialization(response.data.spec)
-            } else {
-                toast.error('Could not complete now, Please try after sometime');
             }
             setShowEdit(false);
         } catch (error) {
@@ -171,30 +171,34 @@ function Specmgt() {
         }
     };
 
-    const admintoken = localStorage.getItem('admintoken')
 
+    const fetchSpecData = async () => {
+
+        try {
+
+            const axiosInstance = createInstance(admintoken)
+            const response = await axiosInstance.get('specialization/admin-view')
+
+            if (response.status === 200) {
+                const specData = response.data.spec;
+                setSpecialization(specData)
+            } else {
+                toast.error('Could not find data now, Please try after sometime');
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
-        const fetchSpecData = async () => {
 
-            try {
-
-                const axiosInstance = createInstance(admintoken)
-                const response = await axiosInstance.get('specialization/admin-view')
-
-                if (response.status === 200) {
-                    const specData = response.data.spec;
-                    setSpecialization(specData)
-                } else {
-                    toast.error('Could not find data now, Please try after sometime');
-                }
-
-            } catch (error) {
-                console.log(error);
-            }
+        if (admintoken) {
+            fetchSpecData();
         }
-        fetchSpecData();
-    }, [deleteSpec]);
+
+
+    }, [admintoken]);
 
 
 

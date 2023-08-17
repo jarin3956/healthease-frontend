@@ -20,13 +20,12 @@ import NotFound from '../../Common/NotFound/NotFound'
 
 function Doctormgt() {
 
+    const admintoken = localStorage.getItem('admintoken')
+
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [searchQuery, setSearchQuery] = useState('');
-
     const [doctors, setDoctors] = useState([])
-
-    const admintoken = localStorage.getItem('admintoken')
 
     useEffect(() => {
 
@@ -38,9 +37,8 @@ function Doctormgt() {
                 const response = await axiosInstance.get('admin/doctors')
 
                 if (response.status === 200) {
-                    const sortedDoctors = response.data.doctors.slice(); // Create a copy of the array
+                    const sortedDoctors = response.data.doctors.slice();
                     sortedDoctors.sort((a, b) => {
-                        // Compare createdAt dates for sorting in reverse order
                         return new Date(b.createdAt) - new Date(a.createdAt);
                     });
                     setDoctors(sortedDoctors);
@@ -74,7 +72,7 @@ function Doctormgt() {
         try {
 
             const axiosInstance = createInstance(admintoken)
-            const response = await axiosInstance.put(`admin/change-doctor-blocking/${doctorId}`)
+            const response = await axiosInstance.put(`admin/doctor-blocking-mgt/${doctorId}`)
 
             if (response.status === 200) {
                 toast.success(response.data.message);
@@ -82,13 +80,10 @@ function Doctormgt() {
                 setDoctors((prevDoctors) =>
                     prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
                 );
-            } else {
-                toast.error(response.data.message);
-            }
+            } 
 
         } catch (error) {
             console.log(error);
-            toast.error('An error occurred. Please try again.');
         }
     };
 
@@ -127,7 +122,6 @@ function Doctormgt() {
 
         } catch (error) {
             console.log(error);
-            // toast.error('An error occurred. Please try again.');
         }
     };
 

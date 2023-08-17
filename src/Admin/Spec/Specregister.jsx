@@ -1,14 +1,16 @@
-import React, { useState } from 'react'
-import { createInstance } from '../../Axios/Axios'
-import { useNavigate } from 'react-router-dom'
-import './Specregister.scss'
+import React, { useState } from 'react';
+import { createInstance } from '../../Axios/Axios';
+import { useNavigate } from 'react-router-dom';
+import './Specregister.scss';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Specregister() {
 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [image, setImage] = useState(null)
-    const [error, setError] = useState('');
+    // const [error, setError] = useState('');
 
     const navigate = useNavigate()
 
@@ -17,24 +19,24 @@ function Specregister() {
     const registerSpec = async (e) => {
         e.preventDefault();
         if (!name || !description || !image) {
-            setError('Please fill in all fields.');
+            toast.error('Please fill in all fields.');
             return;
         }
 
         const nameRegex = /^[A-Z]{1,50}$/;
         if (!name.match(nameRegex)) {
-            setError('Name must be all capital letters within 50 characters');
+            toast.error('Name must be all capital letters within 50 characters');
             return;
         }
 
         const descriptionRegex = /^[A-Za-z,\-\s]{10,300}$/;
         if (!description.match(descriptionRegex)) {
-            setError('Description must start with a capital letter and be between 10 and 300 characters');
+            toast.error('Description must start with a capital letter and be between 10 and 300 characters');
             return;
         }
 
         if (!image) {
-            setError('Image is required');
+            toast.error('Image is required');
             return false;
         }
 
@@ -43,7 +45,7 @@ function Specregister() {
             formData.append('name', name)
             formData.append('description', description)
             formData.append('image', image)
-            
+
             const axiosInstance = createInstance(admintoken)
 
             const response = await axiosInstance.post('specialization/register', formData, {
@@ -53,10 +55,9 @@ function Specregister() {
             });
 
             if (response.status === 200) {
+                toast.success(response.data.message)
                 navigate('/admin/specialization')
-            } else {
-                setError("Could not process now, Try after sometime")
-            }
+            } 
         } catch (error) {
             console.log(error);
         }
@@ -64,15 +65,17 @@ function Specregister() {
 
     return (
         <>
+            <ToastContainer />
+
             <div className="spl-regCard ">
                 <div className='spl-reg-main' >
                     <form className="reg-spl-form-main p-2" >
                         <p className="reg-spl-heading">Add Specialization</p>
-                        {error && (
+                        {/* {error && (
                             <p className="text-danger" style={{ marginBottom: '10px' }}>
                                 {error}
                             </p>
-                        )}
+                        )} */}
                         <div className="reg-spl-inputContainer">
                             <input placeholder="Name" value={name} className="reg-spl-inputField" type="text" onChange={(e) => setName(e.target.value)} />
                         </div>

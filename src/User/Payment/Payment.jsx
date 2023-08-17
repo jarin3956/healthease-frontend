@@ -27,6 +27,7 @@ const CenteredButton = styled(Button)({
 
 function Payment() {
 
+    const token = localStorage.getItem('token')
     const navigate = useNavigate()
 
     const selector = useSelector((state) => state.bookings.booking)
@@ -48,7 +49,7 @@ function Payment() {
         const fetchData = async () => {
             if (selector !== undefined && selector !== null) {
                 let docId = selector.docId;
-                
+
                 try {
 
                     const axiosInstance = createInstance(token)
@@ -82,7 +83,6 @@ function Payment() {
         }
         console.log(selector, 'selector for booking data');
 
-
         try {
 
             const axiosInstance = createInstance(token)
@@ -98,13 +98,14 @@ function Payment() {
                     walletBooking()
                 }
             }
-            else {
-                toast.error('Cannot process the request now, Please try after sometime.');
-            }
+
         } catch (error) {
             console.log(error);
+            toast.error('Cannot process the request now, Please try after sometime.');
         }
     }
+
+
 
     const walletBooking = async () => {
         const bookingData = {
@@ -118,7 +119,7 @@ function Payment() {
 
             const axiosInstance = createInstance(token)
 
-            const response = await axiosInstance.post('booking/wallet-booking-data' , {
+            const response = await axiosInstance.post('booking/wallet-booking-data', {
                 bookingData
             });
 
@@ -148,7 +149,7 @@ function Payment() {
                         confirmButton: 'my-swal-confirm-button',
                     },
                 }).then(() => {
-                    navigate('/home') ;
+                    navigate('/home');
                 });
             }
             else {
@@ -170,10 +171,9 @@ function Payment() {
 
     const paypal = useRef()
 
-    const token = localStorage.getItem('token')
-
 
     useEffect(() => {
+
         if (view) {
             window.paypal
                 .Buttons({
@@ -281,7 +281,10 @@ function Payment() {
                 })
                 .render(paypal.current);
         }
+
     }, [view, doctor]);
+
+
 
     const checkWallet = async () => {
 
@@ -304,7 +307,7 @@ function Payment() {
                 })
             }
         } catch (error) {
-           console.log(error);
+            console.log(error);
         }
     }
 
@@ -370,7 +373,7 @@ function Payment() {
 
                                         <CardActions>
                                             {/* <button onClick={selectedPayment === 'paypal' ? openPayment : checkWallet}>Pay</button> */}
-                                            <CenteredButton size="small" onClick={selectedPayment === 'paypal' ? openPayment : checkWallet} >PAY </CenteredButton>
+                                            <CenteredButton size="small" onClick={selectedPayment === 'paypal' ? openPayment : checkWallet} > PAY </CenteredButton>
                                         </CardActions>
                                         {userWallet && (
                                             <>

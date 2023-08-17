@@ -9,21 +9,19 @@ import {
 } from "mdb-react-ui-kit";
 
 import Swal from 'sweetalert2';
-
 import VideoCall from '../../VideoCall/VideoCall';
-
 import './Bookings.scss'
-import { useNavigate } from 'react-router-dom';
-import { useSocket } from '../../Context/SocketProvider'
+// import { useNavigate } from 'react-router-dom';
+// import { useSocket } from '../../Context/SocketProvider';
 
 function Bookings({ bookingData, handleCancelBooking, doctorData }) {
 
-    const socket = useSocket()
+    // const socket = useSocket()
 
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [selectedEmailId, setSelectedEmailId] = useState(null);
 
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
 
     const handleCancelBookingClick = async (bookingId) => {
         try {

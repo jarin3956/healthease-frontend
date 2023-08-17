@@ -72,7 +72,6 @@ function Usersmgt() {
 
     const handleBlockUser = async (userId) => {
 
-
         try {
             
             const axiosInstance = createInstance(admintoken)

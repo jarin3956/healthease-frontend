@@ -11,6 +11,7 @@ import {
 import { useSocket } from '../Context/SocketProvider'
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useSelector } from 'react-redux';
 
 function Chat({ user }) {
 
@@ -30,9 +31,16 @@ function Chat({ user }) {
         setMessage('');
     }
 
+    const selecter = useSelector((state) => state.chatRoomId);
+
+
     useEffect(() => {
 
-        
+        socket.on('doctor-joined', (user) => {
+            // Update UI to show that the doctor has joined
+            console.log(`Doctor ${user.name} joined the chat`);
+            // You can set a state variable or perform any other action here
+        });
 
         socket.on('recieved-message', (message) => {
             // console.log(message, 'front-end');
@@ -59,11 +67,8 @@ function Chat({ user }) {
     },[socket.connected, chatHistory]);
 
     const closeChat = () => {
-        if (user === 'user') {
-            navigate('/view-Bookings')
-        } else if (user === 'doctor') {
-            navigate('/doctor/home')
-        }
+        socket.emit('leave-chat',selecter.chatRoomId);
+        navigate(user === 'user' ? '/view-Bookings' : '/doctor/home');
     }
 
     return (

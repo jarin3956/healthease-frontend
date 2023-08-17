@@ -93,8 +93,6 @@ function Revenue() {
   const totalRevenue = bookings.reduce((sum, booking) => sum + booking.Fare, 0);
   const totalProfit = (totalRevenue * 15) / 100;
   const bookingsCount = bookings.length
-
-
   const isDataFound = filteredBookings.length > 0;
 
 
