@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from 'react'
-import './Viewschedule.scss'
-import { createInstance } from '../../Axios/Axios'
-import { useDispatch, useSelector } from 'react-redux'
-import { addSchedule } from '../../Redux- toolkit/authslice'
+import React, { useState, useEffect } from 'react';
+import './Viewschedule.scss';
+import { createInstance } from '../../Axios/Axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { addSchedule } from '../../Redux- toolkit/authslice';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import Docschedule from '../Docschedule/Docschedule'
-import ScheduleForm from '../ScheduleForm/ScheduleForm'
-import Bookings from '../Bookings/Bookings'
-
-import NotFound from '../../Common/NotFound/NotFound'
+import Docschedule from '../Docschedule/Docschedule';
+import ScheduleForm from '../ScheduleForm/ScheduleForm';
+import Bookings from '../Bookings/Bookings';
+import NotFound from '../../Common/NotFound/NotFound';
 
 
 function Viewschedule() {
 
   const doctortoken = localStorage.getItem('doctortoken')
 
-
   const [schedule, setSchedule] = useState(true)
   const [completed, setCompleted] = useState(false)
   const [upcomming, setUpcomming] = useState(false)
   const [cancelled, setCancelled] = useState(false)
+  const [notPaid, setNotPaid] = useState(false)
   const [docSchedule, setViewSchedule] = useState(null);
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedTimeSlotsByDay, setSelectedTimeSlotsByDay] = useState({});
   const [booking, setBooking] = useState(null);
-  const [doctorData, setDoctorData] = useState(null)
+  const [doctorData, setDoctorData] = useState(null);
+
+  const [day, setDay] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,23 +38,8 @@ function Viewschedule() {
     }
 
     try {
-      // const response = await axiosinstance.post(
-      //   'doctor/set-schedule',
-      //   {
-      //     schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
-      //       day,
-      //       time: timeSlots.map((timeslot) => ({ timeslot })),
-      //     })),
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${doctortoken}`,
-      //     },
-      //   }
-      // );
 
       const axiosInstance = createInstance(doctortoken)
-
       const response = await axiosInstance.post('doctor/set-schedule',{
         schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
           day,
@@ -106,30 +92,30 @@ function Viewschedule() {
     });
   };
 
-  const day = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday'
-  ]
+  // const day = [
+  //   'Monday',
+  //   'Tuesday',
+  //   'Wednesday',
+  //   'Thursday',
+  //   'Friday',
+  //   'Saturday',
+  //   'Sunday'
+  // ]
 
 
-  const timeSlots = [
-    '10:00 am - 10:30 am', '10:30 am - 11:00 am', '11:00 am - 11:30 am', '11:30 am - 12:00 pm', '12:00 pm - 12:30 pm', '12:30 pm - 01:00 pm', '01:00 pm - 01:30 pm', '01:30 pm - 02:00 pm', '02:00 pm - 02:30 pm', '02:30 pm - 03:00 pm', '03:00 pm - 03:30 pm', '03:30 pm - 04:00 pm', '04:00 pm - 04:30 pm', '04:30 pm - 05:00 pm', '05:00 pm - 05:30 pm',
-  ];
+  // const timeSlots = [
+  //   '10:00 am - 10:30 am', '10:30 am - 11:00 am', '11:00 am - 11:30 am', '11:30 am - 12:00 pm', '12:00 pm - 12:30 pm', '12:30 pm - 01:00 pm', '01:00 pm - 01:30 pm', '01:30 pm - 02:00 pm', '02:00 pm - 02:30 pm', '02:30 pm - 03:00 pm', '03:00 pm - 03:30 pm', '03:30 pm - 04:00 pm', '04:00 pm - 04:30 pm', '04:30 pm - 05:00 pm', '05:00 pm - 05:30 pm',
+  // ];
 
   const dispatch = useDispatch()
 
   // const selector = useSelector((state) => state.schedule.schedule);
 
   const fetchBookingData = async () => {
+
     try {
       
       const axiosInstance = createInstance(doctortoken)
-
       const response = await axiosInstance.get('booking/load-doc-bookings')
 
       if (response.status === 200) {
@@ -137,6 +123,19 @@ function Viewschedule() {
         setDoctorData(response.data.doctor);
       } else if (response.status === 204) {
         toast.success("Consider adjusting your schedule to attract more patients.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const daySlots = async () => {
+    try {
+      const axiosInstance = createInstance(doctortoken)
+      const response = await axiosInstance.get('doctor/find-dayslots');
+      if (response.status === 200) {
+        setDay(response.data.extractedDays);
+        setTimeSlots(response.data.extractedTime)
       }
     } catch (error) {
       console.log(error);
@@ -151,7 +150,6 @@ function Viewschedule() {
       try {
 
         const axiosInstance = createInstance(doctortoken)
-
         const response = await axiosInstance.get('doctor/schedule-data')
 
         if (response.status === 200) {
@@ -165,9 +163,13 @@ function Viewschedule() {
       }
     };
 
+    
+
     getSchedules();
 
-    fetchBookingData()
+    fetchBookingData();
+
+    daySlots();
 
   }, []);
 
@@ -176,7 +178,6 @@ function Viewschedule() {
     try {
 
       const axiosInstance = createInstance(doctortoken)
-
       const response = await axiosInstance.put(`booking/cancel-booking-doctor/${bookingId}`)
 
       if (response.status === 200) {
@@ -205,6 +206,7 @@ function Viewschedule() {
                     setCompleted(false);
                     setUpcomming(false);
                     setCancelled(false);
+                    setNotPaid(false);
                   }}
                 />
                 <span className="name">Schedule</span>
@@ -219,6 +221,7 @@ function Viewschedule() {
                     setCompleted(true);
                     setUpcomming(false);
                     setCancelled(false);
+                    setNotPaid(false);
                   }}
                 />
                 <span className="name">Completed</span>
@@ -233,6 +236,7 @@ function Viewschedule() {
                     setCompleted(false);
                     setUpcomming(true);
                     setCancelled(false);
+                    setNotPaid(false);
                   }}
                 />
                 <span className="name">Upcoming</span>
@@ -247,9 +251,25 @@ function Viewschedule() {
                     setCompleted(false);
                     setUpcomming(false);
                     setCancelled(true);
+                    setNotPaid(false);
                   }}
                 />
                 <span className="name">Cancelled</span>
+              </label>
+              <label className="radio">
+                <input
+                  type="radio"
+                  name="radio"
+                  checked={notPaid}
+                  onChange={() => {
+                    setNotPaid(true);
+                    setSchedule(false);
+                    setCompleted(false);
+                    setUpcomming(false);
+                    setCancelled(false);
+                  }}
+                />
+                <span className="name">Not paid</span>
               </label>
             </div>
           </div>
@@ -299,6 +319,15 @@ function Viewschedule() {
             <>
               {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED').length > 0 ? (
                 <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED')} />
+              ) : (
+                <NotFound/>
+              )}
+            </>
+          )}
+          {notPaid && (
+            <>
+              {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'NOTPAID').length > 0 ? (
+                <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'NOTPAID')} />
               ) : (
                 <NotFound/>
               )}

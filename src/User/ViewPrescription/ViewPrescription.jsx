@@ -48,25 +48,6 @@ function ViewPrescription() {
             }
 
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    Swal.fire({
-                        icon: 'Error',
-                        title: 'Error!',
-                        text: error.response.data.message + 'Please try again later',
-                        confirmButtonText: 'OK',
-                    })
-                }
-
-            } else {
-                Swal.fire({
-                    icon: 'Error',
-                    title: 'Error!',
-                    text: 'Something went wrong, Please try again later',
-                    confirmButtonText: 'OK',
-                })
-            }
             console.log(error);
         }
     }

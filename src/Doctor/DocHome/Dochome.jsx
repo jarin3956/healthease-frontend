@@ -52,7 +52,6 @@ function Dochome() {
         try {
 
           const axiosInstance = createInstance(doctortoken)
-
           const response = await axiosInstance.get('doctor/schedule-data')
           if (response.status === 200) {
             setSchedule(response.data.schedule.schedule)

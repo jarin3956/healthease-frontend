@@ -25,7 +25,7 @@ import NotFound from '../../Common/NotFound/NotFound'
 function Usersmgt() {
 
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState('');
     const [users, setUsersData] = useState([]);
 
@@ -38,11 +38,14 @@ function Usersmgt() {
             try {
 
                 const axiosInstance = createInstance(admintoken)
-
                 const response = await axiosInstance.get('admin/users')
 
                 if (response.status === 200) {
-                    setUsersData(response.data.users);
+                    const sortedUsers = response.data.users.slice();
+                    sortedUsers.sort((a,b) => {
+                        return new Date(b.createdAt) - new Date(a.createdAt);
+                    })
+                    setUsersData(sortedUsers);
                 }
 
             } catch (error) {

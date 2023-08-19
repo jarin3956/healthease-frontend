@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import VideoCall from '../../VideoCall/VideoCall';
 import { useSocket } from '../../Context/SocketProvider';
 import { useDispatch } from 'react-redux';
-import {addChatRoomId } from '../../Redux- toolkit/chatSlice'
+import { addChatRoomId } from '../../Redux- toolkit/chatSlice'
 
 import {
   MDBCard,
@@ -27,17 +27,24 @@ function Bookings() {
   const token = localStorage.getItem('token');
   const navigate = useNavigate()
 
-  const [bookings, setBooking] = useState(null)
+  const [bookings, setBooking] = useState(null);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [selectedEmailId, setSelectedEmailId] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const bookingsPerPage = 10;
 
   const fetchBooking = async () => {
-    try {
-      
-      const axiosInstance = createInstance(token)
 
-      const response = await axiosInstance.get('booking/load-user-bookings')
+    try {
+
+      const axiosInstance = createInstance(token)
+      const response = await axiosInstance.get('booking/load-user-bookings', {
+        params: {
+          page: currentPage,
+          limit: bookingsPerPage,
+        },
+      })
 
       if (response.status === 200) {
         setBooking(response.data.bookingData);
@@ -55,13 +62,12 @@ function Bookings() {
     }
 
 
-  }, [token]);
+  }, [token, currentPage]);
 
   const CancelBooking = async (bookingId) => {
     try {
 
       const axiosInstance = createInstance(token)
-
       const response = await axiosInstance.put(`booking/cancel-booking-user/${bookingId}`)
 
       if (response.status === 200) {
@@ -69,8 +75,6 @@ function Bookings() {
         fetchBooking()
         toast.success('Booking cancelled successfully!')
 
-      } else {
-        toast.error('Something went wrong, Please try after sometime')
       }
 
     } catch (error) {
@@ -101,13 +105,13 @@ function Bookings() {
     setSelectedEmailId(email)
   }
 
-const dispatch = useDispatch()  
+  const dispatch = useDispatch()
 
-  const handleChat = (roomId,docterId) => {
+  const handleChat = (roomId, docterId) => {
 
     if (userData && bookings && docterId) {
       socket.emit('setup', userData);
-      socket.emit('join-chat',roomId,userData,docterId);
+      socket.emit('join-chat', roomId, userData, docterId);
 
       const handleRoomJoin = () => {
         dispatch(addChatRoomId(roomId))
@@ -115,7 +119,6 @@ const dispatch = useDispatch()
       }
 
       socket.on('chat-connected', handleRoomJoin);
-
 
       return () => {
         socket.off('chat-connected', handleRoomJoin);
@@ -192,6 +195,9 @@ const dispatch = useDispatch()
                                   {booking.bookingData.Status === 'PENDING' && (
                                     <p className=" mb-0 small text-primary" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
                                   )}
+                                  {booking.bookingData.Status === 'NOTPAID' && (
+                                    <p className=" mb-0 small" style={{ fontWeight: '700',color:'orange' }}>{booking.bookingData.Status}</p>
+                                  )}
                                 </MDBCol>
                               </>
 
@@ -238,13 +244,13 @@ const dispatch = useDispatch()
                                     md="2"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-                                    <button className="chatBtn" onClick={() => handleChat(booking.bookingData._id,booking.doctorData._id)}>
+                                    <button className="chatBtn" onClick={() => handleChat(booking.bookingData._id, booking.doctorData._id)}>
                                       <svg height="1.6em" fill="white" xmlSpace="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
                                         <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
                                       </svg>
                                       <span className="tooltip">Chat</span>
                                     </button>
-                                    
+
                                   </MDBCol>
                                 </>
                               )}
@@ -265,6 +271,26 @@ const dispatch = useDispatch()
                 </MDBCol>
               </MDBRow>
             </MDBContainer>
+
+
+            
+              <div className='d-flex justify-content-center' >
+                <button
+                  className='user-vdo-cancelbutt m-2'
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  Previous
+                </button>
+                <button
+                  className='user-vdo-startbutt m-2'
+                  disabled={bookings.length < bookingsPerPage}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  Next
+                </button>
+              </div>
+           
           </>
 
         ) : (

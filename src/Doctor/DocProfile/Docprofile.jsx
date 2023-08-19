@@ -20,23 +20,21 @@ import {
 import Swal from 'sweetalert2';
 
 
-
 function Docprofile() {
     const navigate = useNavigate()
-    const [doctor, setDoctor] = useState(null)
-    const [showMore, setShowMore] = useState(false)
-
-    const [docId, setDocId] = useState('')
-    const [age, setAge] = useState('')
-    const [fare, setFare] = useState('')
-    const [gender, setGender] = useState('')
-    const [regno, setRegno] = useState('')
+    const [doctor, setDoctor] = useState(null);
+    const [showMore, setShowMore] = useState(false);
+    const [docId, setDocId] = useState('');
+    const [age, setAge] = useState('');
+    const [fare, setFare] = useState('');
+    const [gender, setGender] = useState('');
+    const [regno, setRegno] = useState('');
     const [specialization, setSpecialization] = useState('');
-    const [experience, setExperience] = useState('')
-    const [certificate, setCertificate] = useState(null)
+    const [experience, setExperience] = useState('');
+    const [certificate, setCertificate] = useState(null);
     const [spec, setSpec] = useState([]);
-
-    const [theMain, setTheMain] = useState(true)
+    const [theMain, setTheMain] = useState(true);
+    const [rating, setRating] = useState(null)
 
 
     const doctortoken = localStorage.getItem('doctortoken')
@@ -50,8 +48,12 @@ function Docprofile() {
                     const axiosInstance = createInstance(doctortoken)
 
                     const response = await axiosInstance.get('doctor/profile')
+
                     if (response.status === 200) {
                         setDoctor(response.data.doctor);
+                        if (response.data.average) {
+                            setRating(response.data.average)
+                        }
                     }
 
                 } catch (error) {
@@ -178,16 +180,7 @@ function Docprofile() {
             }
 
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 404 || status === 500) {
-                    toast.error(error.response.data.message + 'Please try after sometime.');
-                }
-            } else {
-                toast.error('Something went wrong, Please try after sometime.');
-                console.log(error);
-            }
-
+            console.log(error);
         }
     }
 
@@ -212,6 +205,19 @@ function Docprofile() {
         e.preventDefault()
         navigate('/doctor/edit-profile')
     }
+
+    const renderStars = () => {
+        if (rating) {
+            const stars = [];
+            for (let i = 0; i < rating; i++) {
+                stars.push(<span key={i} className="star-icon-docpro">⭐</span>);
+            }
+            return stars;
+        } else {
+            return doctor.regno;
+        }
+    };
+
 
 
     return (
@@ -296,10 +302,10 @@ function Docprofile() {
                                                     {doctor.regno && (
                                                         <MDBRow>
                                                             <MDBCol sm="3">
-                                                                <MDBCardText>Reg.No</MDBCardText>
+                                                                <MDBCardText>{rating ? 'Your Rating' : 'Reg.No'}</MDBCardText>
                                                             </MDBCol>
                                                             <MDBCol sm="9">
-                                                                <MDBCardText className="text-muted">{doctor.regno}</MDBCardText>
+                                                                <MDBCardText className="text-muted">{renderStars()}</MDBCardText>
                                                             </MDBCol>
                                                         </MDBRow>
                                                     )}

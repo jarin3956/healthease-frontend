@@ -17,7 +17,6 @@ function Home() {
                 try {
 
                     const axiosInstance = createInstance(token)
-
                     const response = await axiosInstance.get('view-specialization')
 
                     if (response.status === 200) {

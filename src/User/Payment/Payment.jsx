@@ -53,7 +53,6 @@ function Payment() {
                 try {
 
                     const axiosInstance = createInstance(token)
-
                     const response = await axiosInstance.get(`booking/load-doctors/${docId}`)
 
                     if (response.status === 200) {

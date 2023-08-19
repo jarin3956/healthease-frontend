@@ -21,21 +21,19 @@ import NotFound from '../../Common/NotFound/NotFound';
 
 function Revenue() {
 
+  const admintoken = localStorage.getItem('admintoken');
+  const navigate = useNavigate();
+
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [bookings, setBookings] = useState([])
   const [searchQuery, setSearchQuery] = useState('');
-
-  const navigate = useNavigate()
-
-  const admintoken = localStorage.getItem('admintoken')
 
   const fetchBookingData = async () => {
 
     try {
 
       const axiosInstance = createInstance(admintoken)
-
       const response = await axiosInstance.get('admin/bookings')
 
       if (response.status === 200) {
@@ -85,8 +83,7 @@ function Revenue() {
     booking.Booked_date.toLowerCase().includes(searchQuery.toLowerCase()) ||
     booking.Booked_day.toLowerCase().includes(searchQuery.toLowerCase()) ||
     booking.Booked_timeSlot.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.Payment_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.Status.toLowerCase().includes(searchQuery.toLowerCase())
+    booking.Payment_id.toLowerCase().includes(searchQuery.toLowerCase()) 
   );
 
 
@@ -114,7 +111,7 @@ function Revenue() {
             </div>
             <div className="ad-card yellow">
               <p className="tip">Completed Bookings</p>
-              <p className="second-text">{bookingsCount} bookings</p>
+              <p className="second-text">{bookingsCount} Bookings</p>
             </div>
           </div>
           <div className='d-flex justify-content-center'>
@@ -147,7 +144,6 @@ function Revenue() {
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booked Slot</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Booking Date</TableCell>
                     <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Payment Type</TableCell>
-                    <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -161,19 +157,18 @@ function Revenue() {
                       </TableCell>
                       <TableCell align="center">
                         <Button variant="contained" color="primary" onClick={() => viewDoctor(booking.DocId)} >
-                          View Doctor
+                          {booking.DocId}
                         </Button>
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="center"  >
                         <Button variant="contained" color="primary" onClick={() => viewUser(booking.UserId)} >
-                          View User
+                          {booking.UserId}
                         </Button>
                       </TableCell>
-                      <TableCell align="center">₹ {booking.Fare}</TableCell>
+                      <TableCell align="center">₹{booking.Fare}</TableCell>
                       <TableCell align="center">{booking.Booked_date}, {booking.Booked_day}, {booking.Booked_timeSlot}</TableCell>
                       <TableCell align="center">{booking.CreatedAt}</TableCell>
                       <TableCell align="center">{booking.Payment_type}</TableCell>
-                      <TableCell align="center">{booking.Status}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

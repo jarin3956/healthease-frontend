@@ -23,7 +23,7 @@ function Doctormgt() {
     const admintoken = localStorage.getItem('admintoken')
 
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState('');
     const [doctors, setDoctors] = useState([])
 
@@ -33,7 +33,6 @@ function Doctormgt() {
             try {
 
                 const axiosInstance = createInstance(admintoken)
-
                 const response = await axiosInstance.get('admin/doctors')
 
                 if (response.status === 200) {

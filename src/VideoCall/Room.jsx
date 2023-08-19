@@ -167,14 +167,6 @@ function Room({ user }) {
                 }
 
             } catch (error) {
-                if (error.response) {
-                    const status = error.response.status
-                    if (status === 404 || status === 400 || status === 500) {
-                        toast.error(error.response.data.message)
-                    }
-                } else {
-                    toast.error('Something went wrong, Please try after sometime')
-                }
                 console.log(error);
             }
         }

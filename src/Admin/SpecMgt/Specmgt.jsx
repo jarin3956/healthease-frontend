@@ -28,16 +28,15 @@ function Specmgt() {
     const admintoken = localStorage.getItem('admintoken')
 
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState('');
-    const [specialization, setSpecialization] = useState([])
-    const [name, setName] = useState('')
-    const [description, setDescription] = useState('')
-    const [image, setImage] = useState(null)
+    const [specialization, setSpecialization] = useState([]);
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [image, setImage] = useState(null);
     const [showEdit, setShowEdit] = useState(false);
-    const [specid, setSpecId] = useState('')
+    const [specid, setSpecId] = useState('');
     const [imageUrl, setImageUrl] = useState('');
-
 
     const blockSpec = async (specId) => {
 
@@ -321,10 +320,10 @@ function Specmgt() {
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                                                         <Button variant="contained" color="secondary" onClick={() => blockSpec(spec._id)}
                                                             sx={{
-                                                                backgroundColor: 'rgb(23, 116, 197)',
+                                                                backgroundColor: '#D49425',
                                                                 color: '#fff',
                                                                 '&:hover': {
-                                                                    backgroundColor: '#094593',
+                                                                    backgroundColor: '#E85A0D',
 
                                                                 },
                                                             }} >

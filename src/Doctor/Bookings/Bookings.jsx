@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
     MDBCard,
     MDBCardBody,
@@ -10,20 +10,16 @@ import {
 
 import Swal from 'sweetalert2';
 import VideoCall from '../../VideoCall/VideoCall';
-import './Bookings.scss'
-// import { useNavigate } from 'react-router-dom';
-// import { useSocket } from '../../Context/SocketProvider';
+import './Bookings.scss';
+
 
 function Bookings({ bookingData, handleCancelBooking, doctorData }) {
-
-    // const socket = useSocket()
 
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [selectedEmailId, setSelectedEmailId] = useState(null);
 
-    // const navigate = useNavigate()
-
     const handleCancelBookingClick = async (bookingId) => {
+
         try {
 
             const result = await Swal.fire({
@@ -47,44 +43,26 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
     }
 
 
-
     const handleStartBookingClick = async (bookingId, email) => {
         setSelectedBookingId(bookingId);
         setSelectedEmailId(email);
     }
 
-    // const handleChat = (roomId,userId) => {
-    //     if (doctorData && bookingData && userId) {
-    //         socket.emit('setup', doctorData);
-    //         socket.emit('join-chat', roomId,doctorData);
-
-    //         const handleRoomJoin = () => {
-    //             navigate(`/doctor/chat/${userId}`)
-    //         }
-    //         socket.on('chat-connected', handleRoomJoin);
-
-    //         return () => {
-    //             socket.off('chat-connected', handleRoomJoin);
-    //         }
-    //     }
-    // }
 
     return (
         <>
-            <MDBContainer className="py-5 h-100">
+            <MDBContainer className="py-5" style={{ minHeight: '100vh' }}>
                 <MDBRow className="justify-content-center align-items-center h-100">
                     <MDBCol lg="10" xl="11">
                         <MDBCard style={{ borderRadius: "10px" }}>
                             <MDBCardBody className="p-4">
                                 {bookingData.map((booking) => (
-
                                     <MDBCard className="shadow border m-2">
                                         <MDBCardBody>
                                             <MDBRow>
                                                 <MDBCol md="2" className="d-flex justify-content-center" >
                                                     {booking.userData ? (
                                                         <MDBCardImage
-                                                            // src={`/UserImages/${booking.userData.image}`}
                                                             src={booking.userData.image ? `/UserImages/${booking.userData.image}` : booking.userData.picture}
                                                             className='rounded-5 '
                                                             fluid
@@ -164,21 +142,53 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <p className=" mb-0 small">{booking.bookingData.Booked_date}</p>
+                                                            <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}</p>
                                                         </MDBCol>
                                                         <MDBCol
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
                                                             <p className=" mb-0 small">
-                                                                {booking.bookingData.Booked_day}
+                                                                {booking.bookingData.Booked_timeSlot}
                                                             </p>
                                                         </MDBCol>
                                                         <MDBCol
                                                             md="3"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <p className=" mb-0 small">{booking.bookingData.Booked_timeSlot}</p>
+                                                            <p className=" mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                                        </MDBCol>
+
+                                                    </>
+                                                )}
+
+                                                {booking.bookingData.Status === "NOTPAID" && (
+                                                    <>
+                                                        <MDBCol
+                                                            md="3"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <p className=" mb-0">{booking.userData.name}</p>
+                                                        </MDBCol>
+                                                        <MDBCol
+                                                            md="2"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}</p>
+                                                        </MDBCol>
+                                                        <MDBCol
+                                                            md="2"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <p className=" mb-0 small">
+                                                                {booking.bookingData.Booked_timeSlot}
+                                                            </p>
+                                                        </MDBCol>
+                                                        <MDBCol
+                                                            md="3"
+                                                            className="text-center d-flex justify-content-center align-items-center"
+                                                        >
+                                                            <p className=" mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
                                                         </MDBCol>
 
                                                     </>
@@ -213,12 +223,8 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                                             md="3"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            {/* <button onClick={() => navigate('/doctor/chat') } className='doc-vdo-startbutt'>
-                                                                Chat
-                                                            </button> */}
-                                                            {/* <button onClick={() => handleChat(booking.bookingData._id,booking.userData._id)} className='doc-vdo-startbutt' >
-                                                                Chat
-                                                            </button> */}
+                                                            <p className=" mb-0 small text-success" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+
                                                         </MDBCol>
 
                                                     </>
@@ -236,8 +242,6 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                 )}
                             </MDBCardBody>
                         </MDBCard>
-
-
                     </MDBCol>
                 </MDBRow>
             </MDBContainer>

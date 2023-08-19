@@ -75,19 +75,8 @@ function Register() {
             }
             
         } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 500 || status === 401 || status === 409 || status === 400) {
-                    setErrormsg(error.response.data.message)
-                    setShake(true)
-                }
-
-            } else {
-                console.log(error);
-                setErrormsg('An error occurred. Please try again later')
-                setShake(true)
-            }
-
+            console.log(error);
+            setShake(true)
         } finally {
             setLoading(false)
         }

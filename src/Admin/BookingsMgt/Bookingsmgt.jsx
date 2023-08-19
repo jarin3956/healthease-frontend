@@ -19,23 +19,19 @@ import NotFound from '../../Common/NotFound/NotFound';
 
 function Bookingsmgt() {
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const [bookings, setBookings] = useState([])
-
-  const [searchQuery, setSearchQuery] = useState('');
-
+  const admintoken = localStorage.getItem('admintoken');
   const navigate = useNavigate()
 
-  const admintoken = localStorage.getItem('admintoken')
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [bookings, setBookings] = useState([])
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchBookingData = async () => {
 
     try {
 
       const axiosInstance = createInstance(admintoken)
-
       const response = await axiosInstance.get('admin/bookings')
 
       if (response.status === 200) {
@@ -156,8 +152,8 @@ function Bookingsmgt() {
                       <TableCell align="center">₹ {booking.Fare}</TableCell>
                       <TableCell align="center">{booking.Booked_date}, {booking.Booked_day}, {booking.Booked_timeSlot}</TableCell>
                       <TableCell align="center">{booking.CreatedAt}</TableCell>
-                      <TableCell align="center">{booking.Payment_id}</TableCell>
-                      <TableCell align="center">{booking.Payment_type}</TableCell>
+                      <TableCell align="center">{booking.Payment_id ? booking.Payment_id : 'Not paid yet'}</TableCell>
+                      <TableCell align="center">{booking.Payment_type ? booking.Payment_type :'Not paid yet'}</TableCell>
                       <TableCell align="center">{booking.Status}</TableCell>
                     </TableRow>
                   ))}

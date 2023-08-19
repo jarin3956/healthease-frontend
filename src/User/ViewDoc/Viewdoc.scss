@@ -1,62 +1,49 @@
+.viewdoc-Card {
+  background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+  min-height: 90vh;
 
-  
-  .vdoc-cookieCard {
-    
-    background: linear-gradient(to right, rgb(70, 166, 210), rgb(152, 205, 255));
-    align-items: flex-start;
+  .view-docmainhead {
+    color: rgb(78, 83, 84);
+    font-size: 1.5em;
+    font-weight: 600;
+    padding-bottom: 40px;
+    text-align: center;
+  }
+
+
+  .view-doccard-container {
+    background-color: rgb(210, 218, 220);
+    padding: 30px;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    min-height: 90vh;
+    align-items: center;
+    gap: 20px;
 
-    .the-main-head{
-      color: rgb(78, 83, 84);
-      font-size: 2em;
-      font-weight: 600;
-      padding-bottom: 40px;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .viewdoc-Card {
+    padding: 10px;
+
+    .view-docmainhead {
+      font-size: 20px;
+      padding-bottom: 20px;
     }
 
-    .vdoc-cookieHeading {
-      font-size: 2em;
-      font-weight: 900;
-      color:  rgb(241, 241, 241);;
-    }
-    .vdoc-thecrd-container{
+    .view-doccard-container {
       background-color: rgb(210, 218, 220);
-      padding: 30px;
-      border-radius: 8px;
+      padding: 15px;
+      border-radius: 0;
     }
 
   }
-  
-  
-  @media (max-width: 768px) {
-    .vdoc-cookieCard {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 0;
 
-      .the-main-head{
-        font-size: 20px;
-        padding-bottom: 20px;
-       }
-      
-      .vdoc-thecrd-container{
-        background-color: rgb(210, 218, 220);
-         padding: 15px;
-         border-radius: 0;
-
-        
-       }
-
-    }
-    
-  }
-
-  
-
-
-  
-  
+}

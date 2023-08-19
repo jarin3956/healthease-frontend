@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import './Viewdoc.scss'
-
+import React, { useEffect, useState } from 'react';
+import './Viewdoc.scss';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -9,37 +8,30 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { createInstance } from '../../Axios/Axios';
 import { useLocation, useNavigate } from 'react-router-dom';
-
 import NotFound from '../../Common/NotFound/NotFound';
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Viewdoc() {
 
+    const token = localStorage.getItem('token');
     const navigate = useNavigate()
+
     const [doctors, setDoctors] = useState([])
     const [error, setError] = useState(false)
+
     const location = useLocation()
     const searchParams = new URLSearchParams(location.search);
     const specialName = searchParams.get('specialization');
 
-    const token = localStorage.getItem('token');
-
     const viewDoctors = async (specialName) => {
 
         try {
-        
             const axiosInstance = createInstance(token)
-
             const response = await axiosInstance.get(`view-doctors-spec/${specialName}`)
-
             if (response.status === 200) {
                 setDoctors(response.data.doctor)
-            } else {
-                setError(true)
-                toast.error('Something went wrong, Please try after sometime. ')
-            }
+            } 
         } catch (error) {
             setError(true)
             console.log(error);
@@ -63,12 +55,12 @@ function Viewdoc() {
             <ToastContainer />
 
             {error ? <NotFound /> : (
-                <div className="vdoc-cookieCard ">
-                    <p className='text-center the-main-head '>Book an appointment for an online consultation</p>
-                    <div className='vdoc-thecrd-container row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3'  >
+                <div className="viewdoc-Card">
+                    <p className='view-docmainhead '>Book an appointment for an online consultation</p>
+                    <div className='view-doccard-container'  >
                         {doctors.map((doctor) => (
                             <div className='p-3' >
-                                <Card key={doctor._id} sx={{ maxWidth: 330 }}>
+                                <Card key={doctor._id} sx={{ width: 300 }}>
                                     <CardMedia
                                         component="img"
                                         alt="doctor"
@@ -95,7 +87,6 @@ function Viewdoc() {
                                 </Card>
                             </div>
                         ))}
-
                     </div>
                 </div>
             )}

@@ -1,6 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { axiosinstance } from '../Axios/Axios';
-import Swal from 'sweetalert2';
 
 const useGoogleAuth = () => {
   const { isAuthenticated, user, logout } = useAuth0();
@@ -17,12 +16,6 @@ const useGoogleAuth = () => {
           logout();
         }
       } catch (error) {
-        if (error.response) {
-          const status = error.response.status;
-          if (status === 403 || status === 500 || status === 400) {
-            Swal.fire('Oops!', error.response.data.message, 'error');
-          }
-        }
         logout();
         console.log(error);
       }

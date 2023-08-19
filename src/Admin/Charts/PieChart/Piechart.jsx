@@ -42,7 +42,6 @@ function Piechart() {
             try {
 
                 const axiosInstance = createInstance(admintoken)
-
                 const response = await axiosInstance.get('admin/bookings')
 
                 if (response.status === 200) {
@@ -63,7 +62,7 @@ function Piechart() {
 
     const groupedData = groupBookingData(bookingData);
 
-    const COLORS = ['#D4D416', '#30D727', '#C71009', '#21ACCF'];
+    const COLORS = ['#C71009', '#30D727', '#21ACCF', '#D4D416','#CF701D'];
 
 
     return (

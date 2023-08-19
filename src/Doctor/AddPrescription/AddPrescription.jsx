@@ -1,9 +1,11 @@
-import React,{ useState } from 'react'
-import './AddPrescription.scss'
+import React, { useState } from 'react';
+import './AddPrescription.scss';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createInstance } from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
 
 function AddPrescription() {
 
@@ -33,14 +35,29 @@ function AddPrescription() {
         }
 
         try {
-            
-            const axiosInstance = createInstance(doctortoken)
 
-            const response = await axiosInstance.post('booking/submit-prescription',prescriptionData)
+            const axiosInstance = createInstance(doctortoken)
+            const response = await axiosInstance.post('booking/submit-prescription', prescriptionData)
 
             if (response.status === 200) {
-                toast.success(response.data.message)
-                navigate('/doctor/view-schedule')
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Successfully updated prescription',
+                    showCancelButton: true,
+                    confirmButtonText: 'Follow-up appointment needed',
+                    cancelButtonText: 'No, not needed',
+                    confirmButtonColor: '#FF0000',
+                    cancelButtonColor: '#333333',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigate(`/doctor/follow-up-appointment/${bookingId}`);
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        navigate('/doctor/view-schedule');
+                    }
+                });
+
             }
         } catch (error) {
             console.log(error);
@@ -49,7 +66,7 @@ function AddPrescription() {
 
     return (
         <>
-        <ToastContainer />
+            <ToastContainer />
             <div className="add-Prescription">
                 <div className='add-pre-main'>
                     <form className="add-pre-form p-2" >

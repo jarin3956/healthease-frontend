@@ -1,83 +1,69 @@
-import React, { useEffect, useState } from 'react'
-import './Bookconsult.scss'
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { createInstance } from '../../Axios/Axios';
+import { addDays, format } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { addBooking } from '../../Redux- toolkit/bookingsSlice';
-import { useDispatch } from 'react-redux';
-import { addDays, format, getDay } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 
+function FollowUp() {
 
-function Bookconsult() {
+    const doctortoken = localStorage.getItem('doctortoken');
+    const navigate = useNavigate()
+    const url = new URL(window.location.href);
+    const bookingId = url.pathname.split('/').pop();
 
+    const [schedule, setSchedule] = useState();
     const [selectedDay, setSelectedDay] = useState('');
-    const [selectedTime, setSelectedTimeSlot] = useState('');
-    const [docSchedule, setDocSchedule] = useState([]);
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const docId = searchParams.get('doc');
-    const [doctorId, setDoctorId] = useState('');
+    const [selectedTime, setSelectedTimeSlot] = useState('')
 
-    const dispatch = useDispatch();
+    const getSchedule = async () => {
 
-    const navigate = useNavigate();
+        const axiosInstance = createInstance(doctortoken);
+        const response = await axiosInstance.get('doctor/schedule-data');
 
-    const token = localStorage.getItem('token')
+        if (response.status === 200) {
+            const currentDate = new Date();
+            const currentDay = currentDate.getDay();
+            const currentWeekStart = addDays(currentDate, -currentDay);
+            const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    const showSlots = async (docId) => {
+            const scheduleArray = Object.values(response.data.schedule.schedule);
 
-        try {
+            console.log(scheduleArray);
 
-            const axiosInstance = createInstance(token)
-            const response = await axiosInstance.get(`view-doctor-slots/${docId}`)
+            const updatedSchedule = [];
+            for (let index = 0; index < 7; index++) {
+                const dayDate = addDays(currentWeekStart, index);
+                const upcomingDate = addDays(dayDate, dayDate < currentDate ? 7 : 0);
+                const dayName = weekDays[dayDate.getDay()];
 
-            if (response.status === 200) {
-
-                const currentDate = new Date();
-                const currentDay = currentDate.getDay();
-                const currentWeekStart = addDays(currentDate, -currentDay);
-                const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-                const scheduleArray = Object.values(response.data.schedule);
-
-                const updatedSchedule = [];
-                for (let index = 0; index < 7; index++) {
-                    const dayDate = addDays(currentWeekStart, index);
-                    const upcomingDate = addDays(dayDate, dayDate < currentDate ? 7 : 0);
-                    const dayName = weekDays[dayDate.getDay()];
-
-                    const dayObj = scheduleArray.find(scheduleDay => scheduleDay.day === dayName);
-                    if (dayObj) {
-                        updatedSchedule.push({
-                            ...dayObj,
-                            day: dayName,
-                            date: format(upcomingDate, 'MMM d, yyyy'),
-                        });
-                    }
+                const dayObj = scheduleArray.find(scheduleDay => scheduleDay.day === dayName);
+                if (dayObj) {
+                    updatedSchedule.push({
+                        ...dayObj,
+                        day: dayName,
+                        date: format(upcomingDate, 'MMM d, yyyy'),
+                    });
                 }
-
-                const sortedSchedule = updatedSchedule.sort((a, b) => {
-                    const dateA = new Date(a.date);
-                    const dateB = new Date(b.date);
-                    return dateA - dateB;
-                });
-                setDocSchedule(sortedSchedule);
-            } else {
-                toast.error('Something went wrong, Please try after sometime.')
             }
-        } catch (error) {
-            console.log(error);
+
+            const sortedSchedule = updatedSchedule.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return dateA - dateB;
+            });
+            setSchedule(sortedSchedule)
         }
-    };
+    }
 
     useEffect(() => {
-        if (docId) {
-            showSlots(docId)
-            setDoctorId(docId)
+        if (doctortoken && bookingId) {
+            console.log('hai');
+            getSchedule()
+
         }
-    }, [location])
+    }, [doctortoken]);
 
     const handleDayClick = (day) => {
         setSelectedDay(day);
@@ -87,9 +73,7 @@ function Bookconsult() {
         setSelectedTimeSlot(timeslot)
     }
 
-
     const bookTheSlot = async () => {
-
         if (!selectedDay || !selectedTime) {
             toast.error('Please select a day and time');
             return;
@@ -98,18 +82,20 @@ function Bookconsult() {
         try {
 
             const bookingData = {
-                docId: doctorId,
-                selectedDay: selectedDay,
-                selectedTime: selectedTime,
-                selectedDate: docSchedule.find((day) => day.day === selectedDay)?.date,
-            };
-
-            if (bookingData) {
-                dispatch(addBooking(bookingData))
-                navigate('/payment')
-
+                bookingId,
+                selectedDay,
+                selectedTime,
+                selectedDate: schedule.find((day) => day.day === selectedDay)?.date,
             }
 
+            const axiosInstance = createInstance(doctortoken);
+            const response = await axiosInstance.post('booking/follow-up-booking', {
+                bookingData
+            });
+            if (response.status === 200) {
+                toast.success(response.data.message)
+                navigate('/doctor/view-schedule');
+            }
         } catch (error) {
             console.log(error);
         }
@@ -117,15 +103,13 @@ function Bookconsult() {
 
     return (
         <>
-            <ToastContainer />
-
             <div className="book-cookieCard ">
                 <div className="home-sch-panel rounded-3 m-2">
-                    {docSchedule ? (
+                    {schedule ? (
                         <>
                             <h3 className="text-center the-first-text-bk">Available Days</h3>
                             <div className="view-day-slot-container">
-                                {docSchedule.map((day) => (
+                                {schedule.map((day) => (
                                     <div
                                         className={`view-day-box ${selectedDay === day.day ? 'selected' : ''}`}
                                         key={day.day}
@@ -140,9 +124,9 @@ function Bookconsult() {
                             {selectedDay && (
                                 <>
                                     <h3 className="text-center the-second-text-bk">Time Slots for {selectedDay}</h3>
-                                    {docSchedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
+                                    {schedule.find((day) => day.day === selectedDay)?.time.some((time) => time.isAvailable) ? (
                                         <div className="view-time-slot-container">
-                                            {docSchedule.find((day) => day.day === selectedDay)
+                                            {schedule.find((day) => day.day === selectedDay)
                                                 .time.filter((time) => time.isAvailable)
                                                 .map((time) => (
                                                     <div
@@ -176,4 +160,4 @@ function Bookconsult() {
     )
 }
 
-export default Bookconsult
+export default FollowUp
