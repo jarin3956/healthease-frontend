@@ -61,43 +61,46 @@ function Bookings() {
       fetchBooking()
     }
 
-
   }, [token, currentPage]);
 
   const CancelBooking = async (bookingId) => {
-    try {
 
+    try {
       const axiosInstance = createInstance(token)
       const response = await axiosInstance.put(`booking/cancel-booking-user/${bookingId}`)
-
       if (response.status === 200) {
-
         fetchBooking()
         toast.success('Booking cancelled successfully!')
-
       }
-
     } catch (error) {
       console.log(error);
     }
   }
 
-  const handleCancelBooking = (bookingId) => {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Are you sure?',
-      text: 'This action cannot be undone!',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, cancel it!',
-      cancelButtonText: 'No, keep it',
-      confirmButtonColor: '#FF0000',
-      cancelButtonColor: '#333333',
-    }).then((result) => {
-      if (result.isConfirmed) {
+  const handleCancelBooking = (bookingId,booked_Date) => {
 
-        CancelBooking(bookingId);
-      }
-    });
+    const bookedDate = new Date(booked_Date);
+    const currentDate = new Date();
+    const timeDifference = bookedDate - currentDate;
+    const oneDayInMillis = 24 * 60 * 60 * 1000;
+    if (timeDifference < oneDayInMillis) {
+      toast.error("It's too late to cancel now. Your booking is less than 24 hours away !!!");
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: 'This action cannot be undone!',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, cancel it!',
+        cancelButtonText: 'No, keep it',
+        confirmButtonColor: '#FF0000',
+        cancelButtonColor: '#333333',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          CancelBooking(bookingId);
+        }
+      });
+    }
   }
 
   const handleStartBooking = (bookingId, email) => {
@@ -196,7 +199,7 @@ function Bookings() {
                                     <p className=" mb-0 small text-primary" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
                                   )}
                                   {booking.bookingData.Status === 'NOTPAID' && (
-                                    <p className=" mb-0 small" style={{ fontWeight: '700',color:'orange' }}>{booking.bookingData.Status}</p>
+                                    <p className=" mb-0 small" style={{ fontWeight: '700', color: 'orange' }}>{booking.bookingData.Status}</p>
                                   )}
                                 </MDBCol>
                               </>
@@ -208,7 +211,7 @@ function Bookings() {
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
                                     <button
-                                      onClick={() => handleCancelBooking(booking.bookingData._id)}
+                                      onClick={() => handleCancelBooking(booking.bookingData._id,booking.bookingData.Booked_date)}
                                       className="user-vdo-cancelbutt"
                                     >
                                       Cancel
@@ -254,6 +257,22 @@ function Bookings() {
                                   </MDBCol>
                                 </>
                               )}
+                              {booking.bookingData.Status === "NOTPAID" && (
+                                <>
+                                  <MDBCol
+                                    md="2"
+                                    className="text-center d-flex justify-content-center align-items-center"
+                                  >
+                                    <button
+                                      onClick={() => navigate(`/follow-up-payment/${booking.bookingData._id}`)}
+                                      className="user-vdo-startbutt"
+                                    >
+                                      PAY
+                                    </button>
+                                  </MDBCol>
+
+                                </>
+                              )}
                             </MDBRow>
                           </MDBCardBody>
                         </MDBCard>
@@ -273,24 +292,24 @@ function Bookings() {
             </MDBContainer>
 
 
-            
-              <div className='d-flex justify-content-center' >
-                <button
-                  className='user-vdo-cancelbutt m-2'
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                >
-                  Previous
-                </button>
-                <button
-                  className='user-vdo-startbutt m-2'
-                  disabled={bookings.length < bookingsPerPage}
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  Next
-                </button>
-              </div>
-           
+
+            <div className='d-flex justify-content-center' >
+              <button
+                className='user-vdo-cancelbutt m-2'
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+              >
+                Previous
+              </button>
+              <button
+                className='user-vdo-startbutt m-2'
+                disabled={bookings.length < bookingsPerPage}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
+                Next
+              </button>
+            </div>
+
           </>
 
         ) : (

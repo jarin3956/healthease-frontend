@@ -40,7 +40,7 @@ function Viewschedule() {
     try {
 
       const axiosInstance = createInstance(doctortoken)
-      const response = await axiosInstance.post('doctor/set-schedule',{
+      const response = await axiosInstance.post('doctor/set-schedule', {
         schedule: Object.entries(selectedTimeSlotsByDay).map(([day, timeSlots]) => ({
           day,
           time: timeSlots.map((timeslot) => ({ timeslot })),
@@ -50,7 +50,7 @@ function Viewschedule() {
       if (response.status === 200) {
         toast.success('Successfully saved schedule');
         setViewSchedule(response.data.schedule.schedule);
-      } 
+      }
     } catch (error) {
       console.log(error);
     }
@@ -92,20 +92,6 @@ function Viewschedule() {
     });
   };
 
-  // const day = [
-  //   'Monday',
-  //   'Tuesday',
-  //   'Wednesday',
-  //   'Thursday',
-  //   'Friday',
-  //   'Saturday',
-  //   'Sunday'
-  // ]
-
-
-  // const timeSlots = [
-  //   '10:00 am - 10:30 am', '10:30 am - 11:00 am', '11:00 am - 11:30 am', '11:30 am - 12:00 pm', '12:00 pm - 12:30 pm', '12:30 pm - 01:00 pm', '01:00 pm - 01:30 pm', '01:30 pm - 02:00 pm', '02:00 pm - 02:30 pm', '02:30 pm - 03:00 pm', '03:00 pm - 03:30 pm', '03:30 pm - 04:00 pm', '04:00 pm - 04:30 pm', '04:30 pm - 05:00 pm', '05:00 pm - 05:30 pm',
-  // ];
 
   const dispatch = useDispatch()
 
@@ -114,7 +100,7 @@ function Viewschedule() {
   const fetchBookingData = async () => {
 
     try {
-      
+
       const axiosInstance = createInstance(doctortoken)
       const response = await axiosInstance.get('booking/load-doc-bookings')
 
@@ -163,7 +149,7 @@ function Viewschedule() {
       }
     };
 
-    
+
 
     getSchedules();
 
@@ -185,156 +171,155 @@ function Viewschedule() {
       }
 
     } catch (error) {
-      console.log(error);      
+      console.log(error);
     }
   };
 
   return (
     <>
       <ToastContainer />
-      
-        <section className='rounded-3 doc-schedule-page' style={{minHeight:'90vh'}} >
-          <div className='the-buttons-vs p-3 ' >
-            <div className="radio-inputs">
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="radio"
-                  checked={schedule}
-                  onChange={() => {
-                    setSchedule(true);
-                    setCompleted(false);
-                    setUpcomming(false);
-                    setCancelled(false);
-                    setNotPaid(false);
-                  }}
-                />
-                <span className="name">Schedule</span>
-              </label>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="radio"
-                  checked={completed}
-                  onChange={() => {
-                    setSchedule(false);
-                    setCompleted(true);
-                    setUpcomming(false);
-                    setCancelled(false);
-                    setNotPaid(false);
-                  }}
-                />
-                <span className="name">Completed</span>
-              </label>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="radio"
-                  checked={upcomming}
-                  onChange={() => {
-                    setSchedule(false);
-                    setCompleted(false);
-                    setUpcomming(true);
-                    setCancelled(false);
-                    setNotPaid(false);
-                  }}
-                />
-                <span className="name">Upcoming</span>
-              </label>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="radio"
-                  checked={cancelled}
-                  onChange={() => {
-                    setSchedule(false);
-                    setCompleted(false);
-                    setUpcomming(false);
-                    setCancelled(true);
-                    setNotPaid(false);
-                  }}
-                />
-                <span className="name">Cancelled</span>
-              </label>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="radio"
-                  checked={notPaid}
-                  onChange={() => {
-                    setNotPaid(true);
-                    setSchedule(false);
-                    setCompleted(false);
-                    setUpcomming(false);
-                    setCancelled(false);
-                  }}
-                />
-                <span className="name">Not paid</span>
-              </label>
-            </div>
+
+      <section className='rounded-3 doc-schedule-page' style={{ minHeight: '90vh' }} >
+        <div className='the-buttons-vs p-3 ' >
+          <div className="radio-inputs">
+            <label className="radio">
+              <input
+                type="radio"
+                name="radio"
+                checked={schedule}
+                onChange={() => {
+                  setSchedule(true);
+                  setCompleted(false);
+                  setUpcomming(false);
+                  setCancelled(false);
+                  setNotPaid(false);
+                }}
+              />
+              <span className="name">Schedule</span>
+            </label>
+            <label className="radio">
+              <input
+                type="radio"
+                name="radio"
+                checked={completed}
+                onChange={() => {
+                  setSchedule(false);
+                  setCompleted(true);
+                  setUpcomming(false);
+                  setCancelled(false);
+                  setNotPaid(false);
+                }}
+              />
+              <span className="name">Completed</span>
+            </label>
+            <label className="radio">
+              <input
+                type="radio"
+                name="radio"
+                checked={upcomming}
+                onChange={() => {
+                  setSchedule(false);
+                  setCompleted(false);
+                  setUpcomming(true);
+                  setCancelled(false);
+                  setNotPaid(false);
+                }}
+              />
+              <span className="name">Upcoming</span>
+            </label>
+            <label className="radio">
+              <input
+                type="radio"
+                name="radio"
+                checked={cancelled}
+                onChange={() => {
+                  setSchedule(false);
+                  setCompleted(false);
+                  setUpcomming(false);
+                  setCancelled(true);
+                  setNotPaid(false);
+                }}
+              />
+              <span className="name">Cancelled</span>
+            </label>
+            <label className="radio">
+              <input
+                type="radio"
+                name="radio"
+                checked={notPaid}
+                onChange={() => {
+                  setNotPaid(true);
+                  setSchedule(false);
+                  setCompleted(false);
+                  setUpcomming(false);
+                  setCancelled(false);
+                }}
+              />
+              <span className="name">Not paid</span>
+            </label>
           </div>
-          {schedule && (
-            <>
-              {docSchedule ? (
-                <>
-                  <Docschedule data={docSchedule} />
+        </div>
+        {schedule && (
+          <>
+            {docSchedule ? (
+              <>
+                <Docschedule data={docSchedule} context="viewsch"  />
+              </>
+            ) : (
+              <ScheduleForm
+                selectedDays={selectedDays}
+                selectedTimeSlotsByDay={selectedTimeSlotsByDay}
+                handleSubmit={handleSubmit}
+                handleDaySlotClick={handleDaySlotClick}
+                handleTimeSlotClick={handleTimeSlotClick}
+                day={day}
+                timeSlots={timeSlots}
+              />
+            )}
+          </>
 
-                </>
-              ) : (
-                <ScheduleForm
-                  selectedDays={selectedDays}
-                  selectedTimeSlotsByDay={selectedTimeSlotsByDay}
-                  handleSubmit={handleSubmit}
-                  handleDaySlotClick={handleDaySlotClick}
-                  handleTimeSlotClick={handleTimeSlotClick}
-                  day={day}
-                  timeSlots={timeSlots}
-                />
-              )}
-            </>
+        )}
+        {completed && (
+          <>
+            {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED').length > 0 ? (
+              <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED')} doctorData={doctorData} />
+            ) : (
+              <NotFound />
 
-          )}
-          {completed && (
-            <>
-              {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED').length > 0 ? (
-                <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'COMPLETED')} doctorData={doctorData}/>
-              ) : (
-                <NotFound/>
-                
-              )}
-            </>
-          )}
-          {upcomming && (
-            <>
-              {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING').length > 0 ? (
-                <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING')} handleCancelBooking={handleCancelBooking} />
-              ) : (
-                <NotFound/>
-              )}
+            )}
+          </>
+        )}
+        {upcomming && (
+          <>
+            {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING').length > 0 ? (
+              <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING')} handleCancelBooking={handleCancelBooking} />
+            ) : (
+              <NotFound />
+            )}
 
-              
-            </>
-          )}
-          {cancelled && (
-            <>
-              {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED').length > 0 ? (
-                <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED')} />
-              ) : (
-                <NotFound/>
-              )}
-            </>
-          )}
-          {notPaid && (
-            <>
-              {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'NOTPAID').length > 0 ? (
-                <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'NOTPAID')} />
-              ) : (
-                <NotFound/>
-              )}
-            </>
-          )}
-        </section>
-      
+
+          </>
+        )}
+        {cancelled && (
+          <>
+            {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED').length > 0 ? (
+              <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'CANCELLED')} />
+            ) : (
+              <NotFound />
+            )}
+          </>
+        )}
+        {notPaid && (
+          <>
+            {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'NOTPAID').length > 0 ? (
+              <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'NOTPAID')} />
+            ) : (
+              <NotFound />
+            )}
+          </>
+        )}
+      </section>
+
     </>
   )
 }

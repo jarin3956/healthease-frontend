@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Docschedule.scss';
 import {
     MDBCol,
@@ -8,12 +8,20 @@ import {
     MDBCard,
 } from "mdb-react-ui-kit";
 import { useNavigate } from 'react-router-dom';
+import { createInstance } from '../../Axios/Axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
-function Docschedule({ data }) {
 
-    const navigate = useNavigate()
+function Docschedule({ data, context }) {
 
-    const [viewSelectedDay, setViewSelectedDay] = useState('')
+    const doctortoken = localStorage.getItem('doctortoken');
+    const navigate = useNavigate();
+
+    const [viewSelectedDay, setViewSelectedDay] = useState('');
+    const [scheduleStatus, setScheduleStatus] = useState(null)
+
     const viewHandleDayClick = (day) => {
         setViewSelectedDay(day)
     }
@@ -22,8 +30,60 @@ function Docschedule({ data }) {
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         return days.indexOf(a.day) - days.indexOf(b.day);
     });
+
+    const getScheduleStatus = async () => {
+        try {
+            const axiosInstance = createInstance(doctortoken)
+            const response = await axiosInstance.get('doctor/view-doc-schedulestatus');
+            if (response.status === 200) {
+                setScheduleStatus(response.data.doctor)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    useEffect(() => {
+        if (data && doctortoken && context === "viewsch") {
+            getScheduleStatus()
+        }
+    }, [])
+
+    const changeScheduleStatus = async () => {
+        try {
+            const axiosInstance = createInstance(doctortoken)
+            const response = await axiosInstance.put('doctor/change-doc-schedulestatus');
+            if (response.status === 200) {
+                toast.success(response.data.message)
+                getScheduleStatus()
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleScheduleStatus = async () => {
+        
+        Swal.fire({
+          icon: 'warning',
+          title: 'Are you sure?',
+          text: 'To change your schedule status!',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, do it!',
+          cancelButtonText: 'No, keep it',
+          confirmButtonColor: '#FF0000',
+          cancelButtonColor: '#333333',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            changeScheduleStatus()
+          }
+        });
+      }
+
     return (
         <>
+            <ToastContainer />
             <MDBContainer className="py-5 h-100">
                 <MDBCol lg="12" xl="12">
                     <MDBCard style={{ borderRadius: "10px" }}  >
@@ -66,17 +126,32 @@ function Docschedule({ data }) {
                                     </>
                                 )}
 
-                                <div className="time-set-butt">
-                                    <button className="time-submit-button" onClick={() => navigate('/doctor/edit-schedule')} >
-                                        Change
-                                    </button>
-                                </div>
-
+                                {context === "viewsch" && (
+                                    <>
+                                        <div className="time-set-butt">
+                                            <button className="time-submit-button" onClick={() => navigate('/doctor/edit-schedule')} >
+                                                Change
+                                            </button>
+                                        </div>
+                                        {scheduleStatus && (
+                                            <div className='d-flex justify-content-center'>
+                                                <button onClick={handleScheduleStatus}
+                                                    className={
+                                                        scheduleStatus.schedule_Status
+                                                            ? 'doc-schedule-stopbutt'
+                                                            : 'doc-schedule-startbutt'
+                                                    }
+                                                >
+                                                    {scheduleStatus.schedule_Status ? 'Stop Scheduling' : 'Start Scheduling'}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </MDBCard>
                         </MDBCardBody>
                     </MDBCard>
                 </MDBCol>
-
             </MDBContainer>
         </>
     )

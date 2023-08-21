@@ -40,7 +40,6 @@ function Profile() {
                 try {
 
                     const axiosInstance = createInstance(token)
-
                     const response = await axiosInstance.get('profile')
 
                     if (response.status === 200) {
@@ -231,7 +230,6 @@ function Profile() {
             };
 
             const axiosInstance = createInstance(token)
-
             const response = await axiosInstance.post('add-more-info', dataNeeded )
 
             if (response.status === 200) {
@@ -241,12 +239,7 @@ function Profile() {
                 setShowDetails(false);
                 setUserr(response.data.user);
                 toast.success(response.data.message)
-
-            } else {
-                toast.error('Error occurred while saving details.');
-                setShowDetails(true);
-                setMain(false);
-            }
+            } 
         } catch (error) {
             console.log(error);
         }
@@ -266,7 +259,7 @@ function Profile() {
                 balance -= transaction.amount;
             }
         }
-        return balance;
+        return balance.toFixed(2);
     };
 
 
@@ -280,7 +273,7 @@ function Profile() {
         setIsPopupOpen(false);
     };
 
-    const walletBalance = user && user.wallet ? calculateWalletBalance(user.wallet) : 0;
+    const walletBalance = user && user.wallet ? calculateWalletBalance(user.wallet) : 0 ;
     return (
         <>
             <ToastContainer />

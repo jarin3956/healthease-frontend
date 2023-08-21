@@ -12,19 +12,18 @@ import { addDays, format, getDay } from 'date-fns';
 
 function Bookconsult() {
 
-    const [selectedDay, setSelectedDay] = useState('');
-    const [selectedTime, setSelectedTimeSlot] = useState('');
-    const [docSchedule, setDocSchedule] = useState([]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
+
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const docId = searchParams.get('doc');
+
+    const [selectedDay, setSelectedDay] = useState('');
+    const [selectedTime, setSelectedTimeSlot] = useState('');
+    const [docSchedule, setDocSchedule] = useState([]);
     const [doctorId, setDoctorId] = useState('');
-
-    const dispatch = useDispatch();
-
-    const navigate = useNavigate();
-
-    const token = localStorage.getItem('token')
 
     const showSlots = async (docId) => {
 
@@ -64,9 +63,7 @@ function Bookconsult() {
                     return dateA - dateB;
                 });
                 setDocSchedule(sortedSchedule);
-            } else {
-                toast.error('Something went wrong, Please try after sometime.')
-            }
+            } 
         } catch (error) {
             console.log(error);
         }

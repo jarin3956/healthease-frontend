@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { useSelector } from 'react-redux'
-import { createInstance } from '../../Axios/Axios'
-import './Payment.scss'
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardMedia, CardContent, Typography, CardActions, Button } from '@mui/material';
 import { styled } from '@mui/system';
+import { createInstance } from '../../Axios/Axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
-import { useDispatch } from 'react-redux'
-import { removeBooking } from '../../Redux- toolkit/bookingsSlice'
 import { useNavigate } from 'react-router-dom';
+
 
 const CenteredButton = styled(Button)({
     display: 'block',
@@ -25,114 +22,97 @@ const CenteredButton = styled(Button)({
     },
 });
 
-function Payment() {
+function FollowUp() {
 
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+
+    const url = new URL(window.location.href);
+    const bookingId = url.pathname.split('/').pop();
+
     const navigate = useNavigate()
 
-    const selector = useSelector((state) => state.bookings.booking)
-
-    const [doctor, setDoctor] = useState(null)
-    const [view, setView] = useState(false)
-    const [userWallet, setUserWallet] = useState(false)
-    const [walletBalance, setWalletBalance] = useState(null)
+    const [doctor, setDoctor] = useState([]);
+    const [booking, setBooking] = useState([]);
+    const [view, setView] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState('paypal');
+    const [userWallet, setUserWallet] = useState(false);
+    const [walletBalance, setWalletBalance] = useState(null);
+
+
 
     const handlePaymentChange = (event) => {
         setSelectedPayment(event.target.value);
     };
 
-    const dispatch = useDispatch()
 
 
     useEffect(() => {
-        const fetchData = async () => {
-            if (selector !== undefined && selector !== null) {
-                let docId = selector.docId;
-
+        if (token) {
+            const getBookingData = async () => {
                 try {
-
                     const axiosInstance = createInstance(token)
-                    const response = await axiosInstance.get(`booking/load-doctors/${docId}`)
-
+                    const response = await axiosInstance.get(`booking/followup-bookingData/${bookingId}`);
                     if (response.status === 200) {
-                        setDoctor(response.data.doctorData)
-                    } else {
-                        toast.error('Cannot process now, Please try after sometime');
+                        setDoctor(response.data.doctor);
+                        setBooking(response.data.booking);
                     }
                 } catch (error) {
                     console.log(error);
                 }
             }
-        };
-
-        if (selector !== undefined && selector !== null) {
-            fetchData();
+            getBookingData()
         }
-    }, [selector]);
+    }, [])
 
+    const openPayment = () => {
+        setView(true)
+    }
 
-    const verifySlotAvailability = async (paymentType) => {
-
-        const verifyData = {
-            selectedDay: selector.selectedDay,
-            selectedTime: selector.selectedTime,
-            docId: selector.docId,
-            paymentType: paymentType
-        }
-        console.log(selector, 'selector for booking data');
+    const checkWallet = async () => {
 
         try {
 
             const axiosInstance = createInstance(token)
-
-            const response = await axiosInstance.post('booking/check-doc-availability', {
-                verifyData
-            });
-
+            const response = await axiosInstance.get('booking/check-wallet')
             if (response.status === 200) {
-                if (verifyData.paymentType === 'paypal') {
-                    setView(true);
-                } else if (verifyData.paymentType === 'wallet') {
-                    walletBooking()
-                }
+                setUserWallet(true)
+                const formattedBalance = response.data.wallet.toFixed(2);
+                setWalletBalance(formattedBalance)
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Something went wrong, please try after sometime',
+                    confirmButtonText: 'OK',
+                })
             }
-
         } catch (error) {
             console.log(error);
-            toast.error('Cannot process the request now, Please try after sometime.');
         }
     }
 
-
     const walletBooking = async () => {
-        const bookingData = {
-            selectedDay: selector.selectedDay,
-            selectedTime: selector.selectedTime,
-            selectedDate: selector.selectedDate,
-            docId: selector.docId,
-            final_fare: doctor.final_fare
+        const paymentData = {
+            bookingId,
+            fare: doctor.final_fare
         }
         try {
-
             const axiosInstance = createInstance(token)
-            const response = await axiosInstance.post('booking/wallet-booking-data', {
-                bookingData
-            });
-
+            const response = await axiosInstance.post('booking/followup-walletBooking', {
+                paymentData
+            })
             if (response.status === 200) {
+                const { Booked_date, Booked_day, Booked_timeSlot, Fare, Payment_id, _id } = response.data.updatebooking;
 
-                const { Booked_date, Booked_day, Booked_timeSlot, Fare, Payment_id, _id } = response.data.bookingData;
-
-                const alertMessage = 
-                `<div style="text-align: left;">
-                    <strong>Booking ID:</strong> ${_id}<br>
-                    <strong>Payment ID:</strong> ${Payment_id}<br>
-                    <strong>Amount:</strong> ${Fare}<br>
-                    <strong>Booked Date:</strong> ${Booked_date}<br>
-                    <strong>Booked Day:</strong> ${Booked_day}<br>
-                    <strong>Time Slot:</strong> ${Booked_timeSlot}
-                </div>`;
+                const alertMessage =
+                    `<div style="text-align: left;">
+                        <strong>Booking ID:</strong> ${_id}<br>
+                        <strong>Payment ID:</strong> ${Payment_id}<br>
+                        <strong>Amount:</strong> ${Fare}<br>
+                        <strong>Booked Date:</strong> ${Booked_date}<br>
+                        <strong>Booked Day:</strong> ${Booked_day}<br>
+                        <strong>Time Slot:</strong> ${Booked_timeSlot}
+                     </div>`;
 
                 Swal.fire({
                     icon: 'success',
@@ -150,23 +130,13 @@ function Payment() {
                     navigate('/view-Bookings');
                 });
             }
-            
-
         } catch (error) {
             console.log(error);
         }
     }
 
-    const openPayment = () => {
-        verifySlotAvailability('paypal')
-    }
-
-    const openWalletPayment = () => {
-        verifySlotAvailability('wallet')
-    }
 
     const paypal = useRef()
-
 
     useEffect(() => {
 
@@ -202,11 +172,7 @@ function Payment() {
                                 toast.success('Payment Successfull')
 
                                 const paymentData = {
-                                    selectedDay: selector.selectedDay,
-                                    selectedTime: selector.selectedTime,
-                                    selectedDate: selector.selectedDate,
-                                    docId: selector.docId,
-                                    final_fare: doctor.final_fare,
+                                    bookingId,
                                     payment_create_time: order.create_time,
                                     payment_update_time: order.update_time,
                                     payment_id: order.id
@@ -216,17 +182,16 @@ function Payment() {
 
                                     const axiosInstance = createInstance(token)
 
-                                    const response = await axiosInstance.post('booking/bookings-data', {
+                                    const response = await axiosInstance.post('booking/followUp-paymentdata', {
                                         paymentData
                                     });
 
                                     if (response.status === 200) {
 
-                                        dispatch(removeBooking())
+                                        const { Booked_date, Booked_day, Booked_timeSlot, Fare, Payment_id, _id } = response.data.updatebooking;
 
-                                        const { Booked_date, Booked_day, Booked_timeSlot, Fare, Payment_id, _id } = response.data.bookingData;
                                         const alertMessage =
-                                        `<div style="text-align: left;">
+                                            `<div style="text-align: left;">
                                             <strong>Booking ID:</strong> ${_id}<br>
                                             <strong>Payment ID:</strong> ${Payment_id}<br>
                                             <strong>Amount:</strong> ${Fare}<br>
@@ -251,13 +216,9 @@ function Payment() {
                                             navigate('/view-Bookings');
                                         });
                                     }
-                                    else {
-                                        toast.error('Cannot process the reques now, Please try after sometime')
-                                    }
                                 } catch (error) {
                                     console.log(error);
                                 }
-
                             } else {
                                 toast.warning('Payment status :' + order.status)
                             }
@@ -265,7 +226,6 @@ function Payment() {
                             console.log("Payment error", error);
                             toast.error('Payment failed')
                         }
-
                     },
                     onError: (err) => {
                         console.error("Payment error:", err);
@@ -280,39 +240,15 @@ function Payment() {
 
 
 
-    const checkWallet = async () => {
-
-        try {
-
-            const axiosInstance = createInstance(token)
-            const response = await axiosInstance.get('booking/check-wallet')
-
-            if (response.status === 200) {
-                setUserWallet(true)
-                const formattedBalance = response.data.wallet.toFixed(2);
-                setWalletBalance(formattedBalance)
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops!',
-                    text: 'Something went wrong, please try after sometime',
-                    confirmButtonText: 'OK',
-                })
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     return (
         <>
             <ToastContainer />
-
             <div className="payment-cookieCard ">
                 <div className="payment-contentWrapper">
                     {!view && (
                         <div className="payment-sch-panel rounded-3 m-2">
-                            {doctor && (
+                            {bookingId && (
                                 <div className='p-2' >
                                     <Card sx={{ maxWidth: 330 }}>
                                         <CardMedia
@@ -332,13 +268,13 @@ function Payment() {
                                                 Amount :{doctor.final_fare}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                Selected Day :{selector.selectedDay}
+                                                Selected Day :{booking.Booked_day}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                Selected Time Slot :{selector.selectedTime}
+                                                Selected Time Slot :{booking.Booked_timeSlot}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                Selected Date :{selector.selectedDate}
+                                                Selected Date :{booking.Booked_date}
                                             </Typography>
                                         </CardContent>
                                         <CardActions>
@@ -363,7 +299,6 @@ function Payment() {
                                         </CardActions>
 
                                         <CardActions>
-                                            {/* <button onClick={selectedPayment === 'paypal' ? openPayment : checkWallet}>Pay</button> */}
                                             <CenteredButton size="small" onClick={selectedPayment === 'paypal' ? openPayment : checkWallet} > PAY </CenteredButton>
                                         </CardActions>
                                         {userWallet && (
@@ -375,7 +310,7 @@ function Payment() {
                                                 </CardContent>
                                                 {walletBalance >= doctor.final_fare ? (
                                                     <CardActions>
-                                                        <CenteredButton size="small" onClick={openWalletPayment}  >PAY using Wallet </CenteredButton>
+                                                        <CenteredButton size="small" onClick={walletBooking} >PAY using Wallet </CenteredButton>
                                                     </CardActions>
                                                 ) : (
                                                     <CardContent>
@@ -383,32 +318,25 @@ function Payment() {
                                                             Not enough balance
                                                         </Typography>
                                                     </CardContent>
-
                                                 )}
-
                                             </>
-
                                         )}
                                     </Card>
                                 </div>
                             )}
-
-
                         </div>
                     )}
-                    {view && (
 
+                    {view && (
                         <div className='razorpay-box rounded-3 m-2' >
                             <div ref={paypal}></div>
                         </div>
-
                     )}
 
                 </div>
             </div>
-
         </>
     )
 }
 
-export default Payment
+export default FollowUp

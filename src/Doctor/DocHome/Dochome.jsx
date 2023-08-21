@@ -84,7 +84,7 @@ function Dochome() {
                 }
                 <p className="text-center text-white mt-3" style={{ fontWeight: '700', fontSize: '30px' }}>Your Schedule</p>
 
-                <Docschedule data={schedule} />
+                <Docschedule data={schedule} context="home" />
               </>
             ) : (
               <>

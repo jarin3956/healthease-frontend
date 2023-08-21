@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,8 +7,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
-
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import { useTheme } from '@mui/material/styles';
@@ -51,6 +49,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 function TablePaginationActions(props) {
+
     const theme = useTheme();
     const { count, page, rowsPerPage, onPageChange } = props;
 
@@ -141,12 +140,11 @@ function WalletTable({ userwallet }) {
         setRowsPerPage(newRowsPerPage);
         setPage(0);
         if (newRowsPerPage === -1) {
-
             setPage(0);
         }
     };
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, userwallet.length - page * rowsPerPage);
 
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, userwallet.length - page * rowsPerPage);
 
     return (
         <>
@@ -157,27 +155,29 @@ function WalletTable({ userwallet }) {
                             <StyledTableCell>Amount</StyledTableCell>
                             <StyledTableCell align="center">Type</StyledTableCell>
                             <StyledTableCell align="center">Time</StyledTableCell>
-
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {userwallet.slice(
-                            rowsPerPage === -1 ? 0 : page * rowsPerPage,
-                            rowsPerPage === -1 ? userwallet.length : page * rowsPerPage + rowsPerPage
-                        ).map((transaction) => (
+                        {userwallet
+                            .slice()
+                            .reverse()
+                            .slice(
+                                rowsPerPage === -1 ? 0 : page * rowsPerPage,
+                                rowsPerPage === -1 ? userwallet.length : page * rowsPerPage + rowsPerPage
+                            ).map((transaction) => (
 
-                            <StyledTableRow key={transaction._id}>
-                                <StyledTableCell component="th" scope="row" className={transaction.type === 'C' ? 'credit' : 'debit'}>
-                                    {transaction.type === 'C' ? "+" + transaction.amount : "-" + transaction.amount}
-                                </StyledTableCell>
-                                <StyledTableCell align="center" className={transaction.type === 'C' ? 'credit' : 'debit'}>
-                                    {transaction.type === 'C' ? 'CR' : 'DB'}
-                                </StyledTableCell>
-                                <StyledTableCell align="center" className={transaction.type === 'C' ? 'credit' : 'debit'} >
-                                    {formatTimestamp(transaction.timestamp)}
-                                </StyledTableCell>
-                            </StyledTableRow>
-                        ))}
+                                <StyledTableRow key={transaction._id}>
+                                    <StyledTableCell component="th" scope="row" className={transaction.type === 'C' ? 'credit' : 'debit'}>
+                                        {transaction.type === 'C' ? "+" + transaction.amount : "-" + transaction.amount}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center" className={transaction.type === 'C' ? 'credit' : 'debit'}>
+                                        {transaction.type === 'C' ? 'CREDIT' : 'DEBIT'}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center" className={transaction.type === 'C' ? 'credit' : 'debit'} >
+                                        {formatTimestamp(transaction.timestamp)}
+                                    </StyledTableCell>
+                                </StyledTableRow>
+                            ))}
                         {emptyRows > 0 && (
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />

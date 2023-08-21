@@ -20,7 +20,7 @@ import Room from '../VideoCall/Room';
 import FeedbackPage from '../User/FeedbackPage/FeedbackPage';
 import ViewPrescription from '../User/ViewPrescription/ViewPrescription';
 import Chat from '../Chat/Chat';
-
+import FollowUp from '../User/FollowUp/FollowUp';
 
 
 function UserRoute() {
@@ -49,7 +49,7 @@ function UserRoute() {
                     <Route path='feed-back/:bookingConfirmId' element={<FeedbackPage/>} />
                     <Route path='view-prescription/:bookingId' element={<ViewPrescription/>}/>
                     <Route path='chat/:chatId' element={<Chat user={user} />} />
-                    
+                    <Route path='follow-up-payment/:bookingId' element={<FollowUp/>}/>
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
                
