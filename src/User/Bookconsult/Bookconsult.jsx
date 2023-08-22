@@ -36,17 +36,14 @@ function Bookconsult() {
 
                 const currentDate = new Date();
                 const currentDay = currentDate.getDay();
-                const currentWeekStart = addDays(currentDate, -currentDay);
-                const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
+                const currentWeekStart = addDays(currentDate, 1);
+                const weekDays = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 const scheduleArray = Object.values(response.data.schedule);
-
                 const updatedSchedule = [];
                 for (let index = 0; index < 7; index++) {
                     const dayDate = addDays(currentWeekStart, index);
                     const upcomingDate = addDays(dayDate, dayDate < currentDate ? 7 : 0);
                     const dayName = weekDays[dayDate.getDay()];
-
                     const dayObj = scheduleArray.find(scheduleDay => scheduleDay.day === dayName);
                     if (dayObj) {
                         updatedSchedule.push({

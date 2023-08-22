@@ -13,7 +13,7 @@ function Home() {
     useEffect(() => {
         if (token) {
             const fetchSpec = async () => {
-                
+
                 try {
 
                     const axiosInstance = createInstance(token)
@@ -43,6 +43,7 @@ function Home() {
                             {spec && spec.map((special) => (
                                 <Viewspec spec={special} />
                             ))}
+                            
                         </div>
                         <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500' }}>Medical History</p>
                         <div className='thedisCard row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mt-4'  >

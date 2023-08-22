@@ -27,27 +27,29 @@ function Doctormgt() {
     const [searchQuery, setSearchQuery] = useState('');
     const [doctors, setDoctors] = useState([])
 
-    useEffect(() => {
+    const fetchDoctorsData = async () => {
+        try {
 
-        const fetchDoctorsData = async () => {
-            try {
+            const axiosInstance = createInstance(admintoken)
+            const response = await axiosInstance.get('admin/doctors')
 
-                const axiosInstance = createInstance(admintoken)
-                const response = await axiosInstance.get('admin/doctors')
-
-                if (response.status === 200) {
-                    const sortedDoctors = response.data.doctors.slice();
-                    sortedDoctors.sort((a, b) => {
-                        return new Date(b.createdAt) - new Date(a.createdAt);
-                    });
-                    setDoctors(sortedDoctors);
-                }
-
-            } catch (error) {
-                console.log(error);
+            if (response.status === 200) {
+                const sortedDoctors = response.data.doctors.slice();
+                sortedDoctors.sort((a, b) => {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                setDoctors(sortedDoctors);
             }
+
+        } catch (error) {
+            console.log(error);
         }
-        fetchDoctorsData()
+    }
+
+    useEffect(() => {
+        if (admintoken) {
+            fetchDoctorsData()
+        }
     }, [])
 
     const BlockDoctor = async (doctorId) => {
@@ -76,10 +78,11 @@ function Doctormgt() {
             if (response.status === 200) {
                 toast.success(response.data.message);
                 const updatedDoctor = response.data.doctor;
-                setDoctors((prevDoctors) =>
-                    prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
-                );
-            } 
+                // setDoctors((prevDoctors) =>
+                //     prevDoctors.map((doctor) => (doctor._id === updatedDoctor._id ? updatedDoctor : doctor))
+                // );
+                fetchDoctorsData()
+            }
 
         } catch (error) {
             console.log(error);
@@ -106,7 +109,6 @@ function Doctormgt() {
         try {
 
             const axiosInstance = createInstance(admintoken)
-
             const response = await axiosInstance.put(`admin/change-doctor-status/${doctorId}`)
 
             if (response.status === 200) {
@@ -189,7 +191,7 @@ function Doctormgt() {
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Specialization</TableCell>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Experience</TableCell>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Fare</TableCell>
-                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Final Fare</TableCell>
+                                        <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Our Fare</TableCell>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Status</TableCell>
                                         <TableCell sx={{ fontSize: '18px', fontWeight: '700' }} align="center">Action</TableCell>
                                     </TableRow>
@@ -209,8 +211,8 @@ function Doctormgt() {
                                             <TableCell align="center">{doctor.gender}</TableCell>
                                             <TableCell align="center">{doctor.specialization}</TableCell>
                                             <TableCell align="center">{doctor.experience} Yrs</TableCell>
-                                            <TableCell align="center">₹ {doctor.fare}</TableCell>
-                                            <TableCell align="center">₹ {doctor.final_fare}</TableCell>
+                                            <TableCell align="center">₹{doctor.fare}</TableCell>
+                                            <TableCell align="center">₹{doctor.final_fare}</TableCell>
                                             <TableCell align="center">{doctor.isBlocked === true ? "Blocked" : "Active"}</TableCell>
                                             <TableCell align="center">
                                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
@@ -231,7 +233,6 @@ function Doctormgt() {
                                                             Verify
                                                         </Button>
                                                     )}
-
                                                     <Button
                                                         variant="contained"
                                                         color="secondary"
@@ -247,14 +248,15 @@ function Doctormgt() {
                                                     >
                                                         {doctor.isBlocked === false ? 'Block' : 'Unblock'}
                                                     </Button>
+                                                    
                                                 </div>
-
                                             </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
+
                     ) : (
                         <NotFound />
                     )}
@@ -271,9 +273,7 @@ function Doctormgt() {
                         />
                     </div>
                 </div>
-
             </div>
-
         </>
     )
 }
