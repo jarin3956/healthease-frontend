@@ -32,7 +32,7 @@ function Landingpage() {
         <>
             <ToastContainer />
             <div className="land-cookieCard ">
-                <p className='text-center the-main-head-land'>Embrace the future of medical consultations with HealthEase.</p>
+                <p className='text-center the-main-head-land'> Embrace the future of medical consultations with HealthEase.</p>
                 <div className='d-flex justify-content-center p-2' >
                     <img src="LandingImage.png" alt="" className="responsive-image" />
                 </div>
