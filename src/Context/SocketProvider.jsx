@@ -9,7 +9,8 @@ export const useSocket = () => {
 }
 
 export const SocketProvider = (props) => {
-    const socket = useMemo(() => io('localhost:3001'),[] )
+    // const socket = useMemo(() => io('localhost:3001'),[] )
+    const socket = useMemo(() => io('eniacecommerce.online'),[] )
   return (
     <SocketContext.Provider value={socket} > 
         {props.children}

@@ -13,7 +13,6 @@ function AddPrescription() {
     const doctortoken = localStorage.getItem('doctortoken');
     const navigate = useNavigate();
 
-
     const url = new URL(window.location.href);
     const bookingId = url.pathname.split('/').pop();
 
@@ -58,16 +57,14 @@ function AddPrescription() {
                     title: 'Success!',
                     text: 'Successfully updated prescription',
                     showCancelButton: true,
-                    confirmButtonText: 'Follow-up',
-                    cancelButtonText: 'Not, needed',
+                    confirmButtonText: 'Follow-Up',
+                    cancelButtonText: 'Next Booking',
                     confirmButtonColor: '#FF0000',
                     cancelButtonColor: '#333333',
-                    closeButtonText: 'Open Modal',
                 }).then((result) => {
                     if (result.isConfirmed) {
                         navigate(`/doctor/follow-up-appointment/${bookingId}`);
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        // navigate('/doctor/view-schedule');
                         openCustomModal();
                     } 
                 });
@@ -83,9 +80,7 @@ function AddPrescription() {
             <ToastContainer />
             <div className="add-Prescription">
                 <div className='add-pre-main'>
-                    <NextBooking isOpen={isCustomModalOpen}
-                        onClose={closeCustomModal}
-                        onOpenAnotherModal={openCustomModal} />
+                    <NextBooking isOpen={isCustomModalOpen} onClose={closeCustomModal} />
                     <form className="add-pre-form p-2" >
                         <p className="add-pre-heading">Add Prescription</p>
                         <div className="add-pre-cont">
