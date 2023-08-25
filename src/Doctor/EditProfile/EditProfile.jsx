@@ -99,7 +99,7 @@ function EditProfile() {
 
 
     const handleSubmit = async (e) => {
-        
+
         e.preventDefault();
 
         const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
@@ -145,25 +145,15 @@ function EditProfile() {
 
         try {
             const formData = new FormData();
-            // formData.append('name', name);
-            // formData.append('age', age);
-            // formData.append('regno', regno);
-            // formData.append('experience', experience);
-            // formData.append('fare', fare);
-            // formData.append('gender', gender);
-            // formData.append('specialization', selectedSpecializationId);
-            // formData.append('profileimg', profileimg);
-            // formData.append('certificate', certificate);
 
             const { signature, timestamp } = generateSignature();
             formData.append('file', profileimg);
-            formData.append('file', certificate);
             formData.append('signature', signature);
             formData.append('timestamp', timestamp);
             formData.append('api_key', apiKey);
             formData.append('upload_preset', cloudinaryUploadPreset);
 
-            const response = await fetch(
+            const profileImageResponse = await fetch(
                 `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
                 {
                     method: 'POST',
@@ -171,39 +161,58 @@ function EditProfile() {
                 }
             );
 
-            const data = await response.json();
-            if (data.secure_url) {
+            const profileImageData = await profileImageResponse.json();
 
-                const profileImageUrl = data.secure_url;
-                const certificateUrl = data.secure_url;
+            if (profileImageData.secure_url) {
+                const profileImageUrl = profileImageData.secure_url;
+                const certificateFormData = new FormData();
+                certificateFormData.append('file', certificate);
+                certificateFormData.append('signature', signature);
+                certificateFormData.append('timestamp', timestamp);
+                certificateFormData.append('api_key', apiKey);
+                certificateFormData.append('upload_preset', cloudinaryUploadPreset);
 
-                const axiosInstance = createInstance(doctortoken)
-                const response = await axiosInstance.put('doctor/edit-profile', {
-                    name,
-                    age,
-                    regno,
-                    experience,
-                    fare,
-                    gender,
-                    selectedSpecializationId,
-                    profileimg:profileImageUrl,
-                    certificate:certificateUrl,
-                })
+                const certificateImageResponse = await fetch(
+                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                    {
+                        method: 'POST',
+                        body: certificateFormData,
+                    }
+                );
 
-                if (response.status === 200) {
-                    navigate('/doctor/profile')
+                const certificateImageData = await certificateImageResponse.json();
+
+                if (certificateImageData.secure_url) {
+
+                    const certificateUrl = certificateImageData.secure_url;
+                    const axiosInstance = createInstance(doctortoken)
+                    const response = await axiosInstance.put('doctor/edit-profile', {
+                        name,
+                        age,
+                        regno,
+                        experience,
+                        fare,
+                        gender,
+                        selectedSpecializationId,
+                        profileimg: profileImageUrl,
+                        certificate: certificateUrl,
+                    })
+
+                    if (response.status === 200) {
+                        navigate('/doctor/profile')
+                    }
+
+                } else {
+                    Swal.fire('Error', 'Cannot upload certificate image. Please try again later', 'error')
                 }
-
             } else {
-                Swal.fire('Error', 'Something went wrong, Please try after sometime', 'error')
+                Swal.fire('Error', 'Cannot upload profile image. Please try again later', 'error')
             }
 
         } catch (error) {
             console.log(error);
         }
     }
-
-
     return (
         <>
             <ToastContainer />
