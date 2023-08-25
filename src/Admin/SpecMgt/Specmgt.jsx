@@ -313,7 +313,7 @@ function Specmgt() {
                                                 <TableCell component="th" scope="row" align="center" >
                                                     {spec.name}
                                                 </TableCell>
-                                                <TableCell align="center"><img src={`/SpecializationImages/${spec.image}`} alt={spec.name} style={{ width: '100px' }} /></TableCell>
+                                                <TableCell align="center"><img  src={spec.image} alt={spec.name} style={{ width: '100px' }} /></TableCell>
                                                 <TableCell align="center">{spec.description}</TableCell>
                                                 <TableCell align="center">{spec.status === true ? 'Active' : 'Blocked'}</TableCell>
                                                 <TableCell align="center">
