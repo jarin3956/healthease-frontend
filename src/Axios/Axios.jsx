@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const baseURL = 'http://eniacecommerce.online/';
+const baseURL = 'https://eniacecommerce.online/';
 // const baseURL = 'http://localhost:3001/';
 
 
