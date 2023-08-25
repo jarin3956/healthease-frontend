@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 import './Profile.scss';
 import { createInstance } from '../../Axios/Axios';
 import { useNavigate } from 'react-router-dom';
-
 import WalletTable from '../WalletTable/WalletTable';
-
 import Swal from 'sweetalert2';
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Image } from 'cloudinary-react';
+import CryptoJS from 'crypto-js';
+import cloudinaryConfig from '../../cloudinaryConfig';
 
 function Profile() {
 
@@ -17,7 +17,7 @@ function Profile() {
 
     const [user, setUserr] = useState(null);
     const [showDetails, setShowDetails] = useState(false);
-    const [showEdit, setShowEdit] = useState(false)
+    const [showEdit, setShowEdit] = useState(false);
     const [height, setHeight] = useState('');
     const [weight, setWeight] = useState('');
     const [age, setAge] = useState('');
@@ -26,10 +26,25 @@ function Profile() {
     const [weighte, setWeighte] = useState('');
     const [agee, setAgee] = useState('');
     const [gendere, setGendere] = useState('');
-    const [namee, setNamee] = useState('')
-    const [imagee, setImagee] = useState(null)
-    const [main, setMain] = useState(true)
-    const [proImageUrl, setProImgUrl] = useState('')
+    const [namee, setNamee] = useState('');
+    const [imagee, setImagee] = useState(null);
+    const [main, setMain] = useState(true);
+    const [proImageUrl, setProImgUrl] = useState('');
+
+    const cloudName = cloudinaryConfig.cloudName;
+    const apiKey = cloudinaryConfig.apiKey ;
+    const apiSecret = cloudinaryConfig.apiSecret;
+    const cloudinaryUploadPreset = 'healthease_images';
+
+    const generateSignature = () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = `timestamp=${timestamp}&upload_preset=${cloudinaryUploadPreset}${apiSecret}`;
+        const signature = CryptoJS.SHA1(paramsToSign).toString();
+        return {
+            signature,
+            timestamp
+        };
+    };
 
     useEffect(() => {
         if (!token) {
@@ -50,14 +65,7 @@ function Profile() {
                         setHeighte(response.data.height);
                         setWeighte(response.data.weight);
                         setGendere(response.data.gender);
-                        setProImgUrl(response.data.image ? `/UserImages/${imagee}` : user.picture)
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops!',
-                            text: 'There was an error, Please try after sometime',
-                            confirmButtonText: 'OK',
-                        })
+                        setProImgUrl(response.data.image ? imagee : user.picture)
                     }
 
                 } catch (error) {
@@ -101,8 +109,8 @@ function Profile() {
         try {
             setMain(true);
             let formData = new FormData();
-            const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
 
+            const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
             if (!namee.match(nameRegex)) {
                 toast.error('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
                 setShowEdit(true);
@@ -113,7 +121,32 @@ function Profile() {
             formData.append('name', namee);
 
             if (imagee) {
-                formData.append("image", imagee);
+                // formData.append("image", imagee);
+                let formDataCloud = new FormData();
+                formDataCloud.append('file', image);
+                const { signature, timestamp } = generateSignature();
+                formDataCloud.append('signature', signature);
+                formDataCloud.append('timestamp', timestamp);
+                formDataCloud.append('api_key', apiKey);
+                formDataCloud.append('upload_preset', cloudinaryUploadPreset);
+
+                const response = await fetch(
+                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                    {
+                        method: 'POST',
+                        body: formData,
+                    }
+                );
+
+                const data = await response.json();
+                if (data.secure_url) {
+                    const cloudinaryUrl = data.secure_url;
+                    formData.append("image", cloudinaryUrl);
+                } else {
+                    toast.error('Cannot upload image. Please try again later');
+                    setShowEdit(true);
+                    setMain(false);
+                }
             }
 
             if (agee && heighte && weighte && gendere) {
@@ -154,7 +187,7 @@ function Profile() {
 
             const axiosInstance = createInstance(token)
 
-            const response = await axiosInstance.post('edit-user-profile', formData,{
+            const response = await axiosInstance.post('edit-user-profile', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -230,7 +263,7 @@ function Profile() {
             };
 
             const axiosInstance = createInstance(token)
-            const response = await axiosInstance.post('add-more-info', dataNeeded )
+            const response = await axiosInstance.post('add-more-info', dataNeeded)
 
             if (response.status === 200) {
                 const updatedUser = response.data.user;
@@ -239,7 +272,7 @@ function Profile() {
                 setShowDetails(false);
                 setUserr(response.data.user);
                 toast.success(response.data.message)
-            } 
+            }
         } catch (error) {
             console.log(error);
         }
@@ -273,7 +306,7 @@ function Profile() {
         setIsPopupOpen(false);
     };
 
-    const walletBalance = user && user.wallet ? calculateWalletBalance(user.wallet) : 0 ;
+    const walletBalance = user && user.wallet ? calculateWalletBalance(user.wallet) : 0;
     return (
         <>
             <ToastContainer />
@@ -284,7 +317,7 @@ function Profile() {
                         {main && !isPopupOpen && (<>
                             <div className="userpro-img">
                                 <img
-                                    src={user.image ? `/UserImages/${user.image}` : user.picture}
+                                    src={user.image ? user.image : user.picture}
                                     alt="Profile"
                                     style={{ width: "100%", height: "100%", borderRadius: "100%" }}
                                 />

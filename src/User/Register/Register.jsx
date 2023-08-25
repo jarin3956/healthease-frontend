@@ -1,18 +1,39 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { axiosinstance } from '../../Axios/Axios'
-import './Register.scss'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { axiosinstance } from '../../Axios/Axios';
+import './Register.scss';
+import { Image } from 'cloudinary-react';
+import CryptoJS from 'crypto-js';
+import cloudinaryConfig from '../../cloudinaryConfig';
 
 function Register() {
-    const navigate = useNavigate()
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [repassword, setRepassword] = useState('')
-    const [image, setImage] = useState(null)
+    const navigate = useNavigate();
+
+    const cloudName = cloudinaryConfig.cloudName;
+    const apiKey = cloudinaryConfig.apiKey ;
+    const apiSecret = cloudinaryConfig.apiSecret;
+    const cloudinaryUploadPreset = 'healthease_images';
+
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [repassword, setRepassword] = useState('');
+    const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [errormsg, setErrormsg] = useState('');
     const [shake, setShake] = useState(false);
+
+    const generateSignature = () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = `timestamp=${timestamp}&upload_preset=${cloudinaryUploadPreset}${apiSecret}`;
+        const signature = CryptoJS.SHA1(paramsToSign).toString();
+        return {
+            signature,
+            timestamp
+        };
+    };
+
 
     const registerUser = async (e) => {
         e.preventDefault();
@@ -58,22 +79,49 @@ function Register() {
 
         try {
             const formData = new FormData();
-            formData.append('name', name);
-            formData.append('email', email);
-            formData.append('password', password);
-            formData.append('repassword', repassword);
-            formData.append('image', image);
-            const response = await axiosinstance.post('register', formData);
-            
-            if (response.status === 200) {
-                const data = response.data
-                console.log('Registration successful');
-                navigate(`/verify?id=${data.id}&userType=user`);
+            // formData.append('name', name);
+            // formData.append('email', email);
+            // formData.append('password', password);
+            // formData.append('repassword', repassword);
+            // formData.append('image', image);
+
+            formData.append('file', image);
+            const { signature, timestamp } = generateSignature();
+            formData.append('signature', signature);
+            formData.append('timestamp', timestamp);
+            formData.append('api_key', apiKey);
+            formData.append('upload_preset', cloudinaryUploadPreset);
+
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData,
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.secure_url) {
+                const cloudinaryUrl = data.secure_url;
+                const response = await axiosinstance.post('register', {
+                    name,
+                    email,
+                    password,
+                    repassword,
+                    image:cloudinaryUrl,
+                });
+
+                if (response.status === 200) {
+                    const resdata = response.data
+                    console.log('Registration successful');
+                    navigate(`/verify?id=${resdata.id}&userType=user`);
+                }
             } else {
-                setErrormsg('An error occurred. Please try again later')
+                setErrormsg('Cannot upload image. Please try again later')
                 setShake(true)
             }
-            
+
         } catch (error) {
             console.log(error);
             setShake(true)

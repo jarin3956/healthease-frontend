@@ -63,7 +63,7 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                                 <MDBCol md="2" className="d-flex justify-content-center" >
                                                     {booking.userData ? (
                                                         <MDBCardImage
-                                                            src={booking.userData.image ? `/UserImages/${booking.userData.image}` : booking.userData.picture}
+                                                            src={booking.userData.image ? booking.userData.image : booking.userData.picture}
                                                             className='rounded-5 '
                                                             fluid
                                                             alt="Phone"

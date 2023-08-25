@@ -167,7 +167,7 @@ function Usersmgt() {
                                             <TableCell component="th" scope="row" align="center" >
                                                 {user.name}
                                             </TableCell>
-                                            <TableCell align="center"><img src={user.image ? `/UserImages/${user.image}` : user.picture} alt={user.name} style={{ width: '60px', height: '60px', borderRadius: '15px' }} /></TableCell>
+                                            <TableCell align="center"><img src={user.image ? user.image : user.picture} alt={user.name} style={{ width: '60px', height: '60px', borderRadius: '15px' }} /></TableCell>
                                             <TableCell align="center">{user.email}</TableCell>
                                             <TableCell align="center">{user.age ? user.age : 'No data updated'}</TableCell>
                                             <TableCell align="center">{user.gender ? user.gender : 'No data updated'}</TableCell>
@@ -210,10 +210,7 @@ function Usersmgt() {
                         />
                     </div>
                 </div>
-
             </div>
-
-
         </>
     );
 }

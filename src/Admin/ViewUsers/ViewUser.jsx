@@ -19,7 +19,6 @@ function ViewUser() {
         try {
 
             const axiosInstance = createInstance(admintoken)
-
             const response = await axiosInstance.get(`admin/view-user-profile/${userId}`)
 
             if (response.status === 200) {
@@ -57,7 +56,7 @@ function ViewUser() {
                                 <MDBRow className="g-0">
                                     <MDBCol md="4" className="gradient-custom-adtble text-center text-white"
                                         style={{ borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem' }}>
-                                        <MDBCardImage src={user.image ? `/UserImages/${user.image}` : user.picture}
+                                        <MDBCardImage src={user.image ? user.image : user.picture}
                                             alt="Avatar" className=" rounded-3 my-5" style={{ width: '80px' }} fluid />
                                         <MDBTypography tag="h5" className='text-black' >{user.name}</MDBTypography>
                                         <MDBCardText>Id:</MDBCardText>

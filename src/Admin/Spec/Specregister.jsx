@@ -95,7 +95,7 @@ function Specregister() {
                 }
 
             } else {
-                toast.error('Cannot upload image')
+                toast.error('Cannot upload image. Please try again later')
             }
 
         } catch (error) {

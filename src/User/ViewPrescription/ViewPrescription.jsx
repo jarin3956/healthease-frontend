@@ -38,7 +38,6 @@ function ViewPrescription() {
         try {
             
             const axiosInstance = createInstance(token)
-
             const response = await axiosInstance.get(`booking/view-user-prescription/${bookingId}`)
 
             if (response.status === 200) {
