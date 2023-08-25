@@ -19,13 +19,16 @@ import Swal from 'sweetalert2';
 import './Specmgt.scss'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import NotFound from '../../Common/NotFound/NotFound'
+import NotFound from '../../Common/NotFound/NotFound';
+import cloudinaryConfig from '../../cloudinaryConfig';
+import { Image } from 'cloudinary-react';
+import CryptoJS from 'crypto-js';
 
 
 function Specmgt() {
 
-    const navigate = useNavigate()
-    const admintoken = localStorage.getItem('admintoken')
+    const navigate = useNavigate();
+    const admintoken = localStorage.getItem('admintoken');
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -37,6 +40,21 @@ function Specmgt() {
     const [showEdit, setShowEdit] = useState(false);
     const [specid, setSpecId] = useState('');
     const [imageUrl, setImageUrl] = useState('');
+
+    const cloudName = cloudinaryConfig.cloudName;
+    const apiKey = cloudinaryConfig.apiKey;
+    const apiSecret = cloudinaryConfig.apiSecret;
+    const cloudinaryUploadPreset = 'healthease_images';
+
+    const generateSignature = () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = `timestamp=${timestamp}&upload_preset=${cloudinaryUploadPreset}${apiSecret}`;
+        const signature = CryptoJS.SHA1(paramsToSign).toString();
+        return {
+            signature,
+            timestamp
+        };
+    };
 
     const blockSpec = async (specId) => {
 
@@ -61,7 +79,6 @@ function Specmgt() {
         try {
 
             const axiosInstance = createInstance(admintoken)
-
             const response = await axiosInstance.put(`specialization/control-specialization/${specId}`)
 
             if (response.status === 200) {
@@ -101,7 +118,6 @@ function Specmgt() {
         try {
 
             const axiosInstance = createInstance(admintoken)
-
             const response = await axiosInstance.delete(`specialization/delete-specialization/${specId}`)
 
             if (response.status === 200) {
@@ -122,7 +138,7 @@ function Specmgt() {
             setDescription(specToEdit.description);
             setImage(specToEdit.image)
             setSpecId(specId)
-            setImageUrl(`/SpecializationImages/${specToEdit.image}`);
+            setImageUrl(specToEdit.image);
             setShowEdit(true)
         }
     }
@@ -145,26 +161,50 @@ function Specmgt() {
         try {
 
             const formData = new FormData();
-            formData.append('specid', specid)
-            formData.append('name', name)
-            formData.append('description', description)
+            // formData.append('specid', specid)
+            // formData.append('name', name)
+            // formData.append('description', description)
             if (image) {
-                formData.append('image', image)
+                // formData.append('image', image)
+                formData.append('file', image);
+                const { signature, timestamp } = generateSignature();
+                formData.append('signature', signature);
+                formData.append('timestamp', timestamp);
+                formData.append('api_key', apiKey);
+                formData.append('upload_preset', cloudinaryUploadPreset);
             }
 
-            const axiosInstance = createInstance(admintoken)
-
-            const response = await axiosInstance.post('specialization/edit-spec', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData,
                 }
-            })
+            );
 
-            if (response.status === 200) {
-                toast.success(response.data.message);
-                setSpecialization(response.data.spec)
+            const data = await response.json();
+
+            if (data.secure_url) {
+                const cloudinaryUrl = data.secure_url;
+
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.post('specialization/edit-spec', {
+                    specid,
+                    name,
+                    description,
+                    image: cloudinaryUrl,
+                })
+
+                if (response.status === 200) {
+                    toast.success(response.data.message);
+                    setSpecialization(response.data.spec)
+                }
+                setShowEdit(false);
+            } else {
+                toast.error('Cannot upload image')
             }
-            setShowEdit(false);
+
         } catch (error) {
             console.log(error);
         }
@@ -313,7 +353,7 @@ function Specmgt() {
                                                 <TableCell component="th" scope="row" align="center" >
                                                     {spec.name}
                                                 </TableCell>
-                                                <TableCell align="center"><img  src={spec.image} alt={spec.name} style={{ width: '100px' }} /></TableCell>
+                                                <TableCell align="center"><img src={spec.image} alt={spec.name} style={{ width: '100px' }} /></TableCell>
                                                 <TableCell align="center">{spec.description}</TableCell>
                                                 <TableCell align="center">{spec.status === true ? 'Active' : 'Blocked'}</TableCell>
                                                 <TableCell align="center">

@@ -5,9 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-
 import { useNavigate } from 'react-router-dom';
-
 import './Viewspec.scss'
 import { useSpring, animated } from 'react-spring';
 
@@ -37,7 +35,7 @@ function Viewspec({ spec }) {
                         component="img"
                         alt="specialization"
                         height="140"
-                        src={`/SpecializationImages/${spec.image}`}
+                        src={spec.image}
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">

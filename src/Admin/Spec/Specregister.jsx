@@ -6,21 +6,21 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Image } from 'cloudinary-react';
 import CryptoJS from 'crypto-js';
+import cloudinaryConfig from '../../cloudinaryConfig';
 
 function Specregister() {
 
-    const [name, setName] = useState('')
-    const [description, setDescription] = useState('')
-    const [image, setImage] = useState(null)
-
-    const navigate = useNavigate()
-
     const admintoken = localStorage.getItem('admintoken');
+    const navigate = useNavigate();
 
-    const cloudName = 'duyqedeqb';
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [image, setImage] = useState(null);
+
+    const cloudName = cloudinaryConfig.cloudName;
+    const apiKey = cloudinaryConfig.apiKey ;
+    const apiSecret = cloudinaryConfig.apiSecret;
     const cloudinaryUploadPreset = 'healthease_images';
-    const apiKey = '892513314174859';
-    const apiSecret = 'rZTABzocLy21bYfWAppYkTGuCWk';
 
     const generateSignature = () => {
         const timestamp = Math.floor(Date.now() / 1000);
@@ -31,7 +31,6 @@ function Specregister() {
             timestamp
         };
     };
-
 
     const registerSpec = async (e) => {
         e.preventDefault();
