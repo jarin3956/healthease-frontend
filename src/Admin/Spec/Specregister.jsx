@@ -4,17 +4,34 @@ import { useNavigate } from 'react-router-dom';
 import './Specregister.scss';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Image } from 'cloudinary-react';
+import CryptoJS from 'crypto-js';
 
 function Specregister() {
 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [image, setImage] = useState(null)
-    // const [error, setError] = useState('');
 
     const navigate = useNavigate()
 
-    const admintoken = localStorage.getItem('admintoken')
+    const admintoken = localStorage.getItem('admintoken');
+
+    const cloudName = 'duyqedeqb';
+    const cloudinaryUploadPreset = 'healthease_images';
+    const apiKey = '892513314174859';
+    const apiSecret = 'rZTABzocLy21bYfWAppYkTGuCWk';
+
+    const generateSignature = () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = `timestamp=${timestamp}&upload_preset=${cloudinaryUploadPreset}${apiSecret}`;
+        const signature = CryptoJS.SHA1(paramsToSign).toString();
+        return {
+            signature,
+            timestamp
+        };
+    };
+
 
     const registerSpec = async (e) => {
         e.preventDefault();
@@ -42,22 +59,46 @@ function Specregister() {
 
         try {
             const formData = new FormData();
-            formData.append('name', name)
-            formData.append('description', description)
-            formData.append('image', image)
+            // formData.append('name', name);
+            // formData.append('description', description);
+            // formData.append('image', image)
 
-            const axiosInstance = createInstance(admintoken)
+            formData.append('file', image);
+            const { signature, timestamp } = generateSignature();
+            formData.append('signature', signature);
+            formData.append('timestamp', timestamp);
+            formData.append('api_key', apiKey);
+            formData.append('upload_preset', cloudinaryUploadPreset);
 
-            const response = await axiosInstance.post('specialization/register', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData,
                 }
-            });
+            );
 
-            if (response.status === 200) {
-                toast.success(response.data.message)
-                navigate('/admin/specialization')
-            } 
+            const data = await response.json();
+
+            if (data.secure_url) {
+                const cloudinaryUrl = data.secure_url;
+                const axiosInstance = createInstance(admintoken)
+
+                const response = await axiosInstance.post('specialization/register', {
+                    name,
+                    description,
+                    image: cloudinaryUrl,
+                });
+
+                if (response.status === 200) {
+                    toast.success(response.data.message)
+                    navigate('/admin/specialization')
+                }
+
+            } else {
+                toast.error('Cannot upload image')
+            }
+
         } catch (error) {
             console.log(error);
         }
@@ -66,16 +107,10 @@ function Specregister() {
     return (
         <>
             <ToastContainer />
-
             <div className="spl-regCard ">
                 <div className='spl-reg-main' >
                     <form className="reg-spl-form-main p-2" >
                         <p className="reg-spl-heading">Add Specialization</p>
-                        {/* {error && (
-                            <p className="text-danger" style={{ marginBottom: '10px' }}>
-                                {error}
-                            </p>
-                        )} */}
                         <div className="reg-spl-inputContainer">
                             <input placeholder="Name" value={name} className="reg-spl-inputField" type="text" onChange={(e) => setName(e.target.value)} />
                         </div>
