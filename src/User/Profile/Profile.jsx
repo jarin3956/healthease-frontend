@@ -106,17 +106,8 @@ function Profile() {
 
         try {
             setMain(true);
+            
             let formData = new FormData();
-
-            const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
-            if (!namee.match(nameRegex)) {
-                toast.error('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
-                setShowEdit(true);
-                setMain(false);
-                return;
-            }
-
-            formData.append('name', namee);
 
             if (imagee) {
                 // formData.append("image", imagee);
@@ -148,6 +139,16 @@ function Profile() {
                     return;
                 }
             }
+
+            const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
+            if (!namee.match(nameRegex)) {
+                toast.error('Name should start with a capital letter and be between 5 to 30 characters long (only alphabets).');
+                setShowEdit(true);
+                setMain(false);
+                return;
+            }
+
+            formData.append('name', namee);
 
             if (agee && heighte && weighte && gendere) {
 
@@ -187,11 +188,7 @@ function Profile() {
 
             const axiosInstance = createInstance(token)
 
-            const response = await axiosInstance.post('edit-user-profile', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
+            const response = await axiosInstance.post('edit-user-profile', formData)
 
             if (response.status === 200) {
                 setShowEdit(false);
