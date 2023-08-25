@@ -37,7 +37,9 @@ function Docregister() {
 
 
     const registerDoctor = async (e) => {
+
         e.preventDefault();
+
         setLoading(true);
         setError('');
 
@@ -112,15 +114,14 @@ function Docregister() {
                     profileimg: cloudinaryUrl,
                 });
 
-                const data = response.data
+                const resdata = response.data
                 if (response.status === 200) {
                     console.log('Registration successful');
-                    navigate(`/doctor/verify?id=${data.id}&userType=doctor`);
+                    navigate(`/doctor/verify?id=${resdata.id}&userType=doctor`);
                 }
             } else {
                 setError('Cannot upload image. Please try again later');
                 setShake(true);
-                setLoading(false);
             }
 
         } catch (error) {
@@ -128,6 +129,7 @@ function Docregister() {
             console.log(error);
         } finally {
             setLoading(false)
+            e.target.submit();
         }
     }
 
