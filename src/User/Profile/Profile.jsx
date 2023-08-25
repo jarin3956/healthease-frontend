@@ -102,8 +102,6 @@ function Profile() {
         setWeight('');
     }
 
-
-
     const handleeditsave = async (userId) => {
 
         try {
@@ -122,9 +120,10 @@ function Profile() {
 
             if (imagee) {
                 // formData.append("image", imagee);
+                
+                const { signature, timestamp } = generateSignature();
                 let formDataCloud = new FormData();
                 formDataCloud.append('file', imagee);
-                const { signature, timestamp } = generateSignature();
                 formDataCloud.append('signature', signature);
                 formDataCloud.append('timestamp', timestamp);
                 formDataCloud.append('api_key', apiKey);
@@ -134,7 +133,7 @@ function Profile() {
                     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
                     {
                         method: 'POST',
-                        body: formData,
+                        body: formDataCloud,
                     }
                 );
 
@@ -146,6 +145,7 @@ function Profile() {
                     toast.error('Cannot upload image. Please try again later');
                     setShowEdit(true);
                     setMain(false);
+                    return;
                 }
             }
 
