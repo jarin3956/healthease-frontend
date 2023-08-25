@@ -123,7 +123,7 @@ function Profile() {
             if (imagee) {
                 // formData.append("image", imagee);
                 let formDataCloud = new FormData();
-                formDataCloud.append('file', image);
+                formDataCloud.append('file', imagee);
                 const { signature, timestamp } = generateSignature();
                 formDataCloud.append('signature', signature);
                 formDataCloud.append('timestamp', timestamp);
