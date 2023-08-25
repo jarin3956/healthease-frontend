@@ -319,7 +319,7 @@ function Payment() {
                                             component="img"
                                             alt="specialization"
                                             height="140"
-                                            src={`/DocImages/${doctor.profileimg}`}
+                                            src={doctor.profileimg}
                                         />
                                         <CardContent>
                                             <Typography gutterBottom variant="h5" component="div">

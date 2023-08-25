@@ -78,7 +78,7 @@ function ViewPrescription() {
                                     <MDBRow className="g-0">
                                         <MDBCol md="4" className="gradient-custom-adtble text-center text-white"
                                             style={{ borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem' }}>
-                                            <MDBCardImage src={`/DocImages/${doctor.profileimg}`}
+                                            <MDBCardImage src={doctor.profileimg}
                                                 alt="Avatar" className=" rounded-3 my-5" style={{ width: '80px' }} fluid />
                                             <MDBTypography tag="h5" className='text-black' >Dr.{doctor.name}</MDBTypography>
                                             <MDBCardText className='text-black' >{doctor.specialization}</MDBCardText>
@@ -102,7 +102,7 @@ function ViewPrescription() {
                                                         <MDBCardText className="text-muted">{user.age ? 'AGE : '+ user.age :user.email}, {user.gender ? 'GENDER : '+ user.gender :''}</MDBCardText>
                                                     </MDBCol>
                                                     <MDBCol size="4" className="mb-2">
-                                                        <MDBCardImage src={user.image ? `/UserImages/${user.image}` : user.picture}
+                                                        <MDBCardImage src={user.image ? user.image : user.picture}
                                                             alt="Avatar" className=" rounded-3" style={{ width: '80px' }} fluid />
                                                     </MDBCol>
                                                 </MDBRow>

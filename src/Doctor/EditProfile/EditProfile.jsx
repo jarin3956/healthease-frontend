@@ -3,31 +3,49 @@ import { useNavigate } from 'react-router-dom'
 import { createInstance, axiosinstance } from '../../Axios/Axios'
 import Swal from 'sweetalert2';
 import { toast, ToastContainer } from 'react-toastify';
+import { Image } from 'cloudinary-react';
+import CryptoJS from 'crypto-js';
+import cloudinaryConfig from '../../cloudinaryConfig';
 
 function EditProfile() {
 
-    const [name, setName] = useState('')
-    const [age, setAge] = useState('')
-    const [gender, setGender] = useState('')
-    const [regno, setRegno] = useState('')
-    const [experience, setExperience] = useState('')
-    const [profileimg, setProfileimg] = useState(null)
-    const [certificate, setCertificate] = useState(null)
-    const [fare, setFare] = useState('')
-    const [specialization, setSpecialization] = useState('')
+    const doctortoken = localStorage.getItem('doctortoken');
+    const navigate = useNavigate();
+
+    const [name, setName] = useState('');
+    const [age, setAge] = useState('');
+    const [gender, setGender] = useState('');
+    const [regno, setRegno] = useState('');
+    const [experience, setExperience] = useState('');
+    const [profileimg, setProfileimg] = useState(null);
+    const [certificate, setCertificate] = useState(null);
+    const [fare, setFare] = useState('');
+    const [specialization, setSpecialization] = useState('');
     const [selectedSpecializationId, setSelectedSpecializationId] = useState('');
-    const [proImageUrl, setProImgUrl] = useState('')
-    const [certiImageUrl, setCertiImgUrl] = useState('')
+    const [proImageUrl, setProImgUrl] = useState('');
+    const [certiImageUrl, setCertiImgUrl] = useState('');
     const [spec, setSpec] = useState([]);
 
-    const doctortoken = localStorage.getItem('doctortoken')
-    const navigate = useNavigate()
+    const cloudName = cloudinaryConfig.cloudName;
+    const apiKey = cloudinaryConfig.apiKey;
+    const apiSecret = cloudinaryConfig.apiSecret;
+    const cloudinaryUploadPreset = 'healthease_images';
+
+    const generateSignature = () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = `timestamp=${timestamp}&upload_preset=${cloudinaryUploadPreset}${apiSecret}`;
+        const signature = CryptoJS.SHA1(paramsToSign).toString();
+        return {
+            signature,
+            timestamp
+        };
+    };
+
 
     const getProfile = async () => {
         try {
 
             const axiosInstance = createInstance(doctortoken)
-
             const response = await axiosInstance.get('doctor/profile')
 
             if (response.status === 200) {
@@ -39,8 +57,8 @@ function EditProfile() {
                 setExperience(docdata.experience)
                 setSpecialization(docdata.specialization)
                 setFare(docdata.fare)
-                setProImgUrl(`/DocImages/${docdata.profileimg}`)
-                setCertiImgUrl(`/DocImages/${docdata.certificate}`)
+                setProImgUrl(docdata.profileimg)
+                setCertiImgUrl(docdata.certificate)
             }
         } catch (error) {
             console.log(error);
@@ -79,7 +97,9 @@ function EditProfile() {
         }
     }, [spec, specialization]);
 
+
     const handleSubmit = async (e) => {
+        
         e.preventDefault();
 
         const nameRegex = /^[A-Z][a-zA-Z]{4,29}$/;
@@ -125,26 +145,55 @@ function EditProfile() {
 
         try {
             const formData = new FormData();
-            formData.append('name', name);
-            formData.append('age', age);
-            formData.append('regno', regno);
-            formData.append('experience', experience);
-            formData.append('fare', fare);
-            formData.append('gender', gender);
-            formData.append('specialization', selectedSpecializationId);
-            formData.append('profileimg', profileimg);
-            formData.append('certificate', certificate);
+            // formData.append('name', name);
+            // formData.append('age', age);
+            // formData.append('regno', regno);
+            // formData.append('experience', experience);
+            // formData.append('fare', fare);
+            // formData.append('gender', gender);
+            // formData.append('specialization', selectedSpecializationId);
+            // formData.append('profileimg', profileimg);
+            // formData.append('certificate', certificate);
 
-            const axiosInstance = createInstance(doctortoken)
+            const { signature, timestamp } = generateSignature();
+            formData.append('file', profileimg);
+            formData.append('file', certificate);
+            formData.append('signature', signature);
+            formData.append('timestamp', timestamp);
+            formData.append('api_key', apiKey);
+            formData.append('upload_preset', cloudinaryUploadPreset);
 
-            const response = await axiosInstance.put('doctor/edit-profile', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData,
                 }
-            })
+            );
 
-            if (response.status === 200) {
-                navigate('/doctor/profile')
+            const data = await response.json();
+            if (data.secure_url) {
+
+                const profileImageUrl = data.secure_url;
+                const certificateUrl = data.secure_url;
+
+                const axiosInstance = createInstance(doctortoken)
+                const response = await axiosInstance.put('doctor/edit-profile', {
+                    name,
+                    age,
+                    regno,
+                    experience,
+                    fare,
+                    gender,
+                    selectedSpecializationId,
+                    profileimg:profileImageUrl,
+                    certificate:certificateUrl,
+                })
+
+                if (response.status === 200) {
+                    navigate('/doctor/profile')
+                }
+
             } else {
                 Swal.fire('Error', 'Something went wrong, Please try after sometime', 'error')
             }

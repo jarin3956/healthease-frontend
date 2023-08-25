@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import './Docprofile.scss'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Image } from 'cloudinary-react';
+import CryptoJS from 'crypto-js';
+import cloudinaryConfig from '../../cloudinaryConfig';
 
 import {
     MDBCol,
@@ -21,7 +24,10 @@ import Swal from 'sweetalert2';
 
 
 function Docprofile() {
-    const navigate = useNavigate()
+
+    const doctortoken = localStorage.getItem('doctortoken');
+    const navigate = useNavigate();
+
     const [doctor, setDoctor] = useState(null);
     const [showMore, setShowMore] = useState(false);
     const [docId, setDocId] = useState('');
@@ -34,10 +40,24 @@ function Docprofile() {
     const [certificate, setCertificate] = useState(null);
     const [spec, setSpec] = useState([]);
     const [theMain, setTheMain] = useState(true);
-    const [rating, setRating] = useState(null)
+    const [rating, setRating] = useState(null);
 
 
-    const doctortoken = localStorage.getItem('doctortoken')
+    const cloudName = cloudinaryConfig.cloudName;
+    const apiKey = cloudinaryConfig.apiKey;
+    const apiSecret = cloudinaryConfig.apiSecret;
+    const cloudinaryUploadPreset = 'healthease_images';
+
+    const generateSignature = () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = `timestamp=${timestamp}&upload_preset=${cloudinaryUploadPreset}${apiSecret}`;
+        const signature = CryptoJS.SHA1(paramsToSign).toString();
+        return {
+            signature,
+            timestamp
+        };
+    };
+
     useEffect(() => {
         if (!doctortoken) {
             navigate('/doctor/login')
@@ -46,7 +66,6 @@ function Docprofile() {
             const getProfile = async () => {
                 try {
                     const axiosInstance = createInstance(doctortoken)
-
                     const response = await axiosInstance.get('doctor/profile')
 
                     if (response.status === 200) {
@@ -147,37 +166,61 @@ function Docprofile() {
 
         try {
             const formData = new FormData();
-            formData.append('docId', docId)
-            formData.append('age', age);
-            formData.append('gender', gender);
-            formData.append('regno', regno);
-            formData.append('specialization', specialization);
-            formData.append('fare', fare)
-            formData.append('experience', experience);
-            formData.append('certificate', certificate);
+            // formData.append('docId', docId)
+            // formData.append('age', age);
+            // formData.append('gender', gender);
+            // formData.append('regno', regno);
+            // formData.append('specialization', specialization);
+            // formData.append('fare', fare)
+            // formData.append('experience', experience);
+            // formData.append('certificate', certificate);
+            const { signature, timestamp } = generateSignature();
+            formData.append('file', certificate);
+            formData.append('signature', signature);
+            formData.append('timestamp', timestamp);
+            formData.append('api_key', apiKey);
+            formData.append('upload_preset', cloudinaryUploadPreset);
 
-            const axiosInstance = createInstance(doctortoken)
-
-            const response = await axiosInstance.post('doctor/start-journey', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData,
                 }
-            })
+            );
 
-            if (response.status === 200) {
-                setDoctor(response.data.doctor);
+            const data = await response.json();
+            if (data.secure_url) {
+                const cloudinaryUrl = data.secure_url;
+                const axiosInstance = createInstance(doctortoken)
+                const response = await axiosInstance.post('doctor/start-journey', {
+                    docId,
+                    age,
+                    gender,
+                    regno,
+                    specialization,
+                    fare,
+                    experience,
+                    certificate:cloudinaryUrl,
+                })
 
-                let emailverify = await axiosinstance.post('doctor/send-verifyemail', { doctorId: docId });
-                if (emailverify.status === 200) {
-                    setShowMore(false)
-                    toast.success(emailverify.data.message);
-                } else {
-                    toast.error(emailverify.data.message);
+                if (response.status === 200) {
+                    setDoctor(response.data.doctor);
+
+                    let emailverify = await axiosinstance.post('doctor/send-verifyemail', { doctorId: docId });
+                    if (emailverify.status === 200) {
+                        setShowMore(false)
+                        toast.success(emailverify.data.message);
+                    } else {
+                        toast.error(emailverify.data.message);
+                    }
+
                 }
 
             } else {
-                toast.error('Something went wrong, Please try after sometime.');
+                toast.error('Cannot upload image. Please try again later');
             }
+
 
         } catch (error) {
             console.log(error);
@@ -236,7 +279,7 @@ function Docprofile() {
                                             <MDBCard className="mb-4">
                                                 <MDBCardBody className="text-center">
                                                     <MDBCardImage
-                                                        src={`/DocImages/${doctor.profileimg}`}
+                                                        src={doctor.profileimg}
                                                         alt="avatar"
                                                         className="rounded-3 m-2"
                                                         style={{ width: '149px', height: '149px' }}
@@ -258,7 +301,7 @@ function Docprofile() {
                                                             <p className="text-muted text-center mb-1 mt-1">Certificates</p>
                                                             <div className="d-flex justify-content-center mb-3">
                                                                 <MDBCardImage
-                                                                    src={`/DocImages/${doctor.certificate}`}
+                                                                    src={doctor.certificate}
                                                                     alt="avatar"
                                                                     className="rounded-3 m-2"
                                                                     style={{ width: '190px', height: '100px' }}
@@ -366,7 +409,7 @@ function Docprofile() {
                                                         {/* {errorMessage && <h6 className="text-center text-danger">{errorMessage}</h6>}
                                                         {successmsg && <h6 className="text-center text-success">Successful, {successmsg}</h6>} */}
                                                         <MDBCardImage
-                                                            src={`/DocImages/${doctor.profileimg}`}
+                                                            src={doctor.profileimg}
                                                             alt="avatar"
                                                             className="rounded-3 m-2"
                                                             style={{ width: '153px', height: '153px' }}

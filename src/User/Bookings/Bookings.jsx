@@ -149,7 +149,7 @@ function Bookings() {
                               <MDBCol md="2">
                                 {booking.doctorData ? (
                                   <MDBCardImage
-                                    src={`/DocImages/${booking.doctorData.profileimg}`}
+                                    src={booking.doctorData.profileimg}
                                     className='rounded-5 '
                                     fluid
                                     alt="Phone"

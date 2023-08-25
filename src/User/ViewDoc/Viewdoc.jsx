@@ -65,7 +65,7 @@ function Viewdoc() {
                                         component="img"
                                         alt="doctor"
                                         height="220"
-                                        src={`/DocImages/${doctor.profileimg}`}
+                                        src={doctor.profileimg}
                                     />
                                     <CardContent>
                                         <Typography gutterBottom variant="h5" component="div">

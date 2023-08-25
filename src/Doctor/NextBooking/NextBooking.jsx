@@ -73,7 +73,7 @@ function NextBooking({ isOpen, onClose }) {
                                 <MDBCol md="2" className="d-flex justify-content-center" >
                                     {user ? (
                                         <MDBCardImage
-                                            src={user.image ? `/UserImages/${user.image}` : user.picture}
+                                            src={user.image ?user.image : user.picture}
                                             className='rounded-5 '
                                             fluid
                                             alt="Phone"

@@ -62,7 +62,7 @@ function Viewdoctor() {
                                 <MDBRow className="g-0">
                                     <MDBCol md="4" className="gradient-custom-adtble text-center text-white"
                                         style={{ borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem' }}>
-                                        <MDBCardImage src={`/DocImages/${doctor.profileimg}`}
+                                        <MDBCardImage src={doctor.profileimg}
                                             alt="Avatar" className=" rounded-3 my-5" style={{ width: '80px' }} fluid />
                                         <MDBTypography tag="h5" className='text-black' >Dr.{doctor.name}</MDBTypography>
                                         <MDBCardText className='text-black' >{doctor.specialization}</MDBCardText>

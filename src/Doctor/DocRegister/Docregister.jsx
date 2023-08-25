@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { axiosinstance } from '../../Axios/Axios'
-import './Docregister.scss'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { axiosinstance } from '../../Axios/Axios';
+import './Docregister.scss';
+import { Image } from 'cloudinary-react';
+import CryptoJS from 'crypto-js';
+import cloudinaryConfig from '../../cloudinaryConfig';
 
 
 function Docregister() {
+
     const navigate = useNavigate()
+
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -14,6 +19,22 @@ function Docregister() {
     const [loading, setLoading] = useState(false);
     const [errormsg, setError] = useState('');
     const [shake, setShake] = useState(false);
+
+    const cloudName = cloudinaryConfig.cloudName;
+    const apiKey = cloudinaryConfig.apiKey;
+    const apiSecret = cloudinaryConfig.apiSecret;
+    const cloudinaryUploadPreset = 'healthease_images';
+
+    const generateSignature = () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = `timestamp=${timestamp}&upload_preset=${cloudinaryUploadPreset}${apiSecret}`;
+        const signature = CryptoJS.SHA1(paramsToSign).toString();
+        return {
+            signature,
+            timestamp
+        };
+    };
+
 
     const registerDoctor = async (e) => {
         e.preventDefault();
@@ -59,17 +80,47 @@ function Docregister() {
 
         try {
             const formData = new FormData();
-            formData.append('name', name);
-            formData.append('email', email);
-            formData.append('password', password);
-            formData.append('repassword', repassword);
-            formData.append('profileimg', profileimg);
-            const response = await axiosinstance.post('doctor/register', formData);
+            // formData.append('name', name);
+            // formData.append('email', email);
+            // formData.append('password', password);
+            // formData.append('repassword', repassword);
+            // formData.append('profileimg', profileimg);
+            const { signature, timestamp } = generateSignature();
+            formData.append('file', profileimg);
+            formData.append('signature', signature);
+            formData.append('timestamp', timestamp);
+            formData.append('api_key', apiKey);
+            formData.append('upload_preset', cloudinaryUploadPreset);
 
-            const data = response.data
-            if (response.status === 200) {
-                console.log('Registration successful');
-                navigate(`/doctor/verify?id=${data.id}&userType=doctor`);
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData,
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.secure_url) {
+                const cloudinaryUrl = data.secure_url;
+                const response = await axiosinstance.post('doctor/register', {
+                    name,
+                    email,
+                    password,
+                    repassword,
+                    profileimg: cloudinaryUrl,
+                });
+
+                const data = response.data
+                if (response.status === 200) {
+                    console.log('Registration successful');
+                    navigate(`/doctor/verify?id=${data.id}&userType=doctor`);
+                }
+            } else {
+                setError('Cannot upload image. Please try again later');
+                setShake(true);
+                setLoading(false);
             }
 
         } catch (error) {
