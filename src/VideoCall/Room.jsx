@@ -15,29 +15,34 @@ import Swal from 'sweetalert2';
 function Room({ user }) {
 
     const socket = useSocket();
-
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const [remoteSocketId, setRemoteSocketId] = useState(null);
     const [myStream, setMyStream] = useState(null);
     const [remoteStream, setRemoteStream] = useState(null);
     const [callAccepted, setCallAccepted] = useState(false);
-    const [callActive, setCallActive] = useState(false)
+    const [callActive, setCallActive] = useState(false);
 
     const handleUserJoined = useCallback(({ email, id }) => {
         console.log(`Email ${email} joined room`);
         setRemoteSocketId(id)
-    }, [])
+    }, []);
 
     const handleCallUser = useCallback(async () => {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: true
-        });
-        const offer = await peer.getOffer()
-        socket.emit('user:call', { to: remoteSocketId, offer })
-        setMyStream(stream);
-        setCallActive(true);
+        console.log('Calling user:', remoteSocketId);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: true
+            });
+            const offer = await peer.getOffer()
+            socket.emit('user:call', { to: remoteSocketId, offer })
+            setMyStream(stream);
+            setCallActive(true);
+        } catch (error) {
+            console.error('Error in handleCallUser:', error);
+        }
+
     }, [remoteSocketId, socket]);
 
     const handleIncommingCall = useCallback(async ({ from, offer }) => {
@@ -110,7 +115,6 @@ function Room({ user }) {
         socket.on('peer:nego:needed', handleNegoNeedIncomming);
         socket.on('peer:nego:final', handleNegoNeedFinal);
 
-
         return () => {
             socket.off('user:joined', handleUserJoined);
             socket.off('incomming:call', handleIncommingCall);
@@ -144,8 +148,8 @@ function Room({ user }) {
         setCallActive(false);
 
         const url = new URL(window.location.href);
-        const bookingConfirmId = url.pathname.split('/').pop(); 
-        console.log(bookingConfirmId,"this is the confirm id for booking");
+        const bookingConfirmId = url.pathname.split('/').pop();
+        console.log(bookingConfirmId, "this is the confirm id for booking");
 
 
 
@@ -170,8 +174,8 @@ function Room({ user }) {
                 console.log(error);
             }
         }
-        
-        updateBooking() 
+
+        updateBooking()
     };
 
 
@@ -180,7 +184,7 @@ function Room({ user }) {
 
     return (
         <>
-        <ToastContainer />
+            <ToastContainer />
             <div className="video-callCard">
                 <div className='videocall-esse my-4'>
                     <h3 className='text-center'>HealthEase</h3>
