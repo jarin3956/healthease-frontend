@@ -10,6 +10,7 @@ import { axiosinstance } from '../Axios/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
+import { BsMicFill, BsMicMuteFill } from 'react-icons/bs'
 
 
 function Room({ user }) {
@@ -22,6 +23,7 @@ function Room({ user }) {
     const [remoteStream, setRemoteStream] = useState(null);
     const [callAccepted, setCallAccepted] = useState(false);
     const [callActive, setCallActive] = useState(false);
+    const [muted, setMuted] = useState(true);
 
     const handleUserJoined = useCallback(({ email, id }) => {
         console.log(`Email ${email} joined room`);
@@ -182,7 +184,9 @@ function Room({ user }) {
     };
 
 
-
+    const handleMute = useCallback(() => {
+        setMuted(!muted)
+    }, [muted])
 
 
     return (
@@ -236,7 +240,7 @@ function Room({ user }) {
                                     component="div"
                                     height="350"
                                 >
-                                    <ReactPlayer className="react-player" playing height="100%" width="100%" url={remoteStream} />
+                                    <ReactPlayer className="react-player" playing muted={muted} height="100%" width="100%" url={remoteStream} />
                                 </CardMedia>
 
                             ) : (
@@ -254,7 +258,7 @@ function Room({ user }) {
                                     component="div"
                                     height="350"
                                 >
-                                    <ReactPlayer className="react-player" playing  height="100%" width="100%" url={myStream} />
+                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream} />
                                 </CardMedia>
 
                             ) : (
@@ -268,6 +272,10 @@ function Room({ user }) {
 
                         </Card>
                     </div>
+                )}
+
+                {myStream && (
+                    <button className={!muted ? 'btn btn-primary ms-3' : 'btn btn-dark ms-3'} onClick={handleMute}>{muted ? <BsMicMuteFill /> : <BsMicFill />}</button>
                 )}
 
                 {callActive && (

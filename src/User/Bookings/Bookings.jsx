@@ -195,7 +195,7 @@ function Bookings() {
                                   {booking.bookingData.Status === 'FAILED' && (
                                     <p className=" mb-0 small text-warning" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
                                   )}
-                                  {booking.bookingData.Status === 'PENDING' && (
+                                  {booking.bookingData.Status === 'CONFIRMED' && (
                                     <p className=" mb-0 small text-primary" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
                                   )}
                                   {booking.bookingData.Status === 'NOTPAID' && (
