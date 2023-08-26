@@ -23,9 +23,9 @@ import { useNavigate } from 'react-router-dom';
 
 function Bookings() {
 
-  const socket = useSocket()
+  const socket = useSocket();
   const token = localStorage.getItem('token');
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [bookings, setBooking] = useState(null);
   const [selectedBookingId, setSelectedBookingId] = useState(null);

@@ -5,17 +5,18 @@ import Docschedule from '../Docschedule/Docschedule';
 import NotFound from '../../Common/NotFound/NotFound';
 import DocChart from '../DocChart/DocChart';
 import { useNavigate } from 'react-router-dom';
-import { useSocket } from '../../Context/SocketProvider'
+import { useSocket } from '../../Context/SocketProvider';
 import Swal from 'sweetalert2';
 
 
 function Dochome() {
 
-  const socket = useSocket()
-  const [schedule, setSchedule] = useState(null)
+  const doctortoken = localStorage.getItem('doctortoken');
+  const navigate = useNavigate();
+  const socket = useSocket();
+  const [schedule, setSchedule] = useState(null);
   const [docId, setDocId] = useState(null);
-  const doctortoken = localStorage.getItem('doctortoken')
-  const navigate = useNavigate()
+  
 
   useEffect(() => {
 
@@ -50,7 +51,6 @@ function Dochome() {
       const getSchedule = async () => {
 
         try {
-
           const axiosInstance = createInstance(doctortoken)
           const response = await axiosInstance.get('doctor/schedule-data')
           if (response.status === 200) {

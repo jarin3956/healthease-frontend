@@ -120,8 +120,6 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-
-
                                                             <button onClick={() => handleStartBookingClick(booking.bookingData._id, booking.userData.email)} className='doc-vdo-startbutt' >
                                                                 Start
                                                             </button>
@@ -224,7 +222,6 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
                                                             <p className=" mb-0 small text-success" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
-
                                                         </MDBCol>
 
                                                     </>

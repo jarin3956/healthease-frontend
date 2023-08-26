@@ -156,8 +156,6 @@ function Room({ user }) {
         const bookingConfirmId = url.pathname.split('/').pop();
         console.log(bookingConfirmId, "this is the confirm id for booking");
 
-
-
         const updateBooking = async () => {
             try {
                 const response = await axiosinstance.post(`booking/completed-booking/${bookingConfirmId}`);
@@ -274,12 +272,12 @@ function Room({ user }) {
                     </div>
                 )}
 
-                {myStream && (
-                    <button className={!muted ? 'btn btn-primary ms-3' : 'btn btn-dark ms-3'} onClick={handleMute}>{muted ? <BsMicMuteFill /> : <BsMicFill />}</button>
-                )}
 
                 {callActive && (
                     <div className='videocall-esse mt-3'>
+                        {myStream && (
+                            <button className={!muted ? 'btn btn-primary' : 'btn btn-dark '} onClick={handleMute}>{muted ? <BsMicMuteFill /> : <BsMicFill />}</button>
+                        )}
                         <div className="call-end-butt">
                             <div onClick={leaveCall} className="btn btn--huge">
                                 <div className="btn--huge__text">
