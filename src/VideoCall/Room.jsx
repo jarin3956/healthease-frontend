@@ -229,7 +229,7 @@ function Room({ user }) {
                                     component="div"
                                     height="350"
                                 >
-                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={remoteStream} />
+                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={remoteStream ? URL.createObjectURL(remoteStream) : null} />
                                 </CardMedia>
 
                             ) : (
@@ -247,8 +247,7 @@ function Room({ user }) {
                                     component="div"
                                     height="350"
                                 >
-                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream} />
-
+                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream ? URL.createObjectURL(myStream) : null} />
                                 </CardMedia>
 
                             ) : (

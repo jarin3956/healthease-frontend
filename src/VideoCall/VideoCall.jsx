@@ -1,6 +1,5 @@
-
 import React, { useEffect } from 'react';
-import { useSocket } from '../Context/SocketProvider'
+import { useSocket } from '../Context/SocketProvider';
 import { useNavigate } from 'react-router-dom';
 
 function VideoCall({ userEmail, doctorEmail, bookingId }) {
@@ -15,7 +14,6 @@ function VideoCall({ userEmail, doctorEmail, bookingId }) {
 
         socket.emit('room:join', joinEventData);
 
-        
         const handleRoomJoin = ({ email, bookingId }) => {
             if (email === doctorEmail) {
                 navigate(`/room/${bookingId}`);
