@@ -35,8 +35,11 @@ function Room({ user }) {
                 audio: true,
                 video: true
             });
-            const offer = await peer.getOffer()
-            socket.emit('user:call', { to: remoteSocketId, offer })
+            console.log('Local stream obtained:', stream);
+            const offer = await peer.getOffer();
+            console.log('Local offer created:', offer);
+            socket.emit('user:call', { to: remoteSocketId, offer });
+            console.log('Sent call request to:', remoteSocketId);
             setMyStream(stream);
             setCallActive(true);
         } catch (error) {
@@ -233,7 +236,7 @@ function Room({ user }) {
                                     component="div"
                                     height="350"
                                 >
-                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={remoteStream ? URL.createObjectURL(remoteStream) : null} />
+                                    <ReactPlayer className="react-player" playing height="100%" width="100%" url={remoteStream} />
                                 </CardMedia>
 
                             ) : (
@@ -251,7 +254,7 @@ function Room({ user }) {
                                     component="div"
                                     height="350"
                                 >
-                                    <ReactPlayer className="react-player" playing muted height="100%" width="100%" url={myStream ? URL.createObjectURL(myStream) : null} />
+                                    <ReactPlayer className="react-player" playing  height="100%" width="100%" url={myStream} />
                                 </CardMedia>
 
                             ) : (
