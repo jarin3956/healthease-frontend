@@ -221,12 +221,18 @@ function Bookings() {
                                     md="2"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-                                    <button
+                                    {/* <button
                                       onClick={() => handleStartBooking(booking.bookingData._id, booking.doctorData.email)}
                                       className="user-vdo-startbutt"
                                     >
                                       Join
-                                    </button>
+                                    </button> */}
+                                    {/* <button
+                                      onClick={() => handleStartBooking(booking.bookingData._id, userData.email)}
+                                      className="user-vdo-startbutt"
+                                    >
+                                      Join
+                                    </button> */}
                                   </MDBCol>
                                 </>
                               )}
@@ -270,7 +276,6 @@ function Bookings() {
                                       PAY
                                     </button>
                                   </MDBCol>
-
                                 </>
                               )}
                             </MDBRow>

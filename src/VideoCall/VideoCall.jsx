@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import { useSocket } from '../Context/SocketProvider';
 import { useNavigate } from 'react-router-dom';
 
-function VideoCall({ userEmail, doctorEmail, bookingId }) {
+function VideoCall({ userEmail, doctorEmail, bookingId, patientId }) {
     console.log(userEmail,"user mail",doctorEmail,"doctor mail",bookingId,"bookingId");
     const socket = useSocket();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const joinEventData = userEmail
+        const joinEventData = doctorEmail
             ? { email: doctorEmail, bookingId }
             : { email: userEmail, bookingId };
 
@@ -16,9 +16,10 @@ function VideoCall({ userEmail, doctorEmail, bookingId }) {
 
         const handleRoomJoin = ({ email, bookingId }) => {
             if (email === doctorEmail) {
-                navigate(`/room/${bookingId}`);
-            } else if (email === userEmail) {
+                socket.emit('request-patient',bookingId,patientId)
                 navigate(`/doctor/room/${bookingId}`);
+            } else if (email === userEmail) {
+                navigate(`/room/${bookingId}`);
             }
         };
 

@@ -17,6 +17,7 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
 
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [selectedEmailId, setSelectedEmailId] = useState(null);
+    const [selectedPatient, setSelectedPatient] = useState(null)
 
     const handleCancelBookingClick = async (bookingId) => {
 
@@ -43,9 +44,10 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
     }
 
 
-    const handleStartBookingClick = async (bookingId, email) => {
+    const handleStartBookingClick = async (bookingId, email,patient) => {
         setSelectedBookingId(bookingId);
         setSelectedEmailId(email);
+        setSelectedPatient(patient);
     }
 
 
@@ -79,7 +81,7 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                                 </MDBCol>
 
 
-                                                {booking.bookingData.Status === "PENDING" && (
+                                                {booking.bookingData.Status === "PENDING" && doctorData && (
                                                     <>
                                                         <MDBCol
                                                             md="1"
@@ -120,7 +122,7 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                                             md="2"
                                                             className="text-center d-flex justify-content-center align-items-center"
                                                         >
-                                                            <button onClick={() => handleStartBookingClick(booking.bookingData._id, booking.userData.email)} className='doc-vdo-startbutt' >
+                                                            <button onClick={() => handleStartBookingClick(booking.bookingData._id, doctorData.email,booking.userData._id)} className='doc-vdo-startbutt' >
                                                                 Start
                                                             </button>
                                                         </MDBCol>
@@ -231,10 +233,11 @@ function Bookings({ bookingData, handleCancelBooking, doctorData }) {
                                         </MDBCardBody>
                                     </MDBCard>
                                 ))}
-                                {selectedBookingId && selectedEmailId && (
+                                {selectedBookingId && selectedEmailId && selectedPatient && (
                                     <VideoCall
                                         doctorEmail={selectedEmailId}
                                         bookingId={selectedBookingId}
+                                        patientId={selectedPatient}
                                     />
                                 )}
                             </MDBCardBody>

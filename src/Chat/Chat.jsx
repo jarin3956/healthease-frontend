@@ -16,7 +16,6 @@ import { useSelector } from 'react-redux';
 function Chat({ user }) {
 
     const navigate = useNavigate()
-
     const [message, setMessage] = useState();
     const [chatHistory, setChatHistory] = useState([]);
     const url = new URL(window.location.href);
@@ -37,9 +36,7 @@ function Chat({ user }) {
     useEffect(() => {
 
         socket.on('doctor-joined', (user) => {
-            // Update UI to show that the doctor has joined
             console.log(`Doctor ${user.name} joined the chat`);
-            // You can set a state variable or perform any other action here
         });
 
         socket.on('recieved-message', (message) => {

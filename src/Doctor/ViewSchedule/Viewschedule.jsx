@@ -292,7 +292,7 @@ function Viewschedule() {
         {upcomming && (
           <>
             {booking && booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING').length > 0 ? (
-              <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING')} handleCancelBooking={handleCancelBooking} />
+              <Bookings bookingData={booking.filter((bookingItem) => bookingItem.bookingData.Status === 'PENDING')} handleCancelBooking={handleCancelBooking} doctorData={doctorData} />
             ) : (
               <NotFound />
             )}
