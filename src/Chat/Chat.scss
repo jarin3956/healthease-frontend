@@ -4,10 +4,12 @@
     border-radius: 5px;
     overflow: hidden;
     margin: auto;
+    display: flex;
+    flex-direction: column; 
 
     .chat-header {
         padding: 10px;
-        background-color: #8fc1cb;
+        background-color: #0f75c8;
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -21,25 +23,29 @@
 
     .chat-body {
         padding: 20px;
+        overflow-y: auto; 
 
         .message {
+            animation: chatAnimation 0.3s ease-in-out;
+            animation-fill-mode: both;
+            animation-delay: 0.1s;
+            display: flex;
+            flex-direction: column;
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 5px;
+            max-width: 100%; 
+            word-wrap: break-word; 
 
             &.incoming {
-                background-color: #e1e1e1;
+                background-color: #c7f9b8;
+                width: 70%; 
+                margin-left: auto;
             }
 
             &.outgoing {
-                background-color: #c5d6db;
-                text-align: right;
-            }
-
-            p {
-                font-size: 14px;
-                color: #333;
-                margin: 0;
+                background-color: #cdcec5;
+                width: 70%; 
             }
         }
     }
@@ -57,11 +63,9 @@
             border-radius: 3px;
         }
 
-
-
         .chat-send-button {
             font-family: inherit;
-            font-size: 15px;
+            font-size: 13px;
             background: #0490DB;
             color: white;
             padding: 0.7em 1em;
@@ -111,7 +115,6 @@
                 transform: translateY(-0.1em);
             }
         }
-
     }
 
     @keyframes chatAnimation {
@@ -125,21 +128,10 @@
             transform: translateY(0);
         }
     }
-
-    .message {
-        animation: chatAnimation 0.3s ease-in-out;
-        animation-fill-mode: both;
-        animation-delay: 0.1s;
-
-        &:nth-child(even) {
-            animation-delay: 0.2s;
-        }
-
-        &:nth-child(odd) {
-            animation-delay: 0.3s;
-        }
-    }
 }
+
+
+
 
 .chat-end-butt {
     width: fit-content;
@@ -155,45 +147,45 @@
     overflow: hidden;
     padding: 10px 25px;
     z-index: 1;
-  
+
     &:before {
-      width: 50%;
-      height: 100%;
-      content: "";
-      margin: auto;
-      position: absolute;
-      top: 0%;
-      left: -50%;
-      background: #0490DB;
-      transition: all 0.5s ease;
-      z-index: -1;
+        width: 50%;
+        height: 100%;
+        content: "";
+        margin: auto;
+        position: absolute;
+        top: 0%;
+        left: -50%;
+        background: #0490DB;
+        transition: all 0.5s ease;
+        z-index: -1;
     }
-  
+
     &:after {
-      width: 50%;
-      height: 100%;
-      content: "";
-      margin: auto;
-      position: absolute;
-      top: 0%;
-      left: 100%;
-      background:  #0490DB;
-      transition: all 0.5s ease;
-      z-index: -1;
+        width: 50%;
+        height: 100%;
+        content: "";
+        margin: auto;
+        position: absolute;
+        top: 0%;
+        left: 100%;
+        background: #0490DB;
+        transition: all 0.5s ease;
+        z-index: -1;
     }
-  
+
     &:hover {
-      color: white;
-      cursor: pointer;
-  
-      &:before {
-        top: 0;
-        left: 0;
-      }
-  
-      &:after {
-        top: 0;
-        left: 50%;
-      }
+        color: white;
+        cursor: pointer;
+
+        &:before {
+            top: 0;
+            left: 0;
+        }
+
+        &:after {
+            top: 0;
+            left: 50%;
+        }
     }
-  }
+}

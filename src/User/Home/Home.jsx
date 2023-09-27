@@ -21,18 +21,14 @@ function Home() {
     useEffect(() => {
         if (token) {
             const fetchSpec = async () => {
-
                 try {
-
                     const axiosInstance = createInstance(token)
                     const response = await axiosInstance.get('view-specialization')
-
                     if (response.status === 200) {
                         setSpec(response.data.spec)
                         setUserMail(response.data.logUser.email)
                         socket.emit('set-up', response.data.logUser._id)
                     }
-
                 } catch (error) {
                     console.log(error);
                 }
