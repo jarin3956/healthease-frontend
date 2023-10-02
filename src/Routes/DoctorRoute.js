@@ -19,6 +19,7 @@ import Room from '../VideoCall/Room';
 import AddPrescription from '../Doctor/AddPrescription/AddPrescription';
 import Chat from '../Chat/Chat';
 import FollowUp from '../Doctor/FollowUp/FollowUp';
+import Footer from '../Common/Footer/Footer'
 
 function DoctorRoute() {
     const doctor = 'doctor'
@@ -47,6 +48,7 @@ function DoctorRoute() {
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>
+            <Footer />
         </>
     )
 }

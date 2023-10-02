@@ -53,7 +53,7 @@ function Chat({ user }) {
 
     const findUserAndDoctor = async () => {
         try {
-            const chatId = selecter.chatRoomId
+            
             if (user === 'user') {
                 const token = localStorage.getItem('token');
                 const axiosInstance = createInstance(token)
@@ -120,27 +120,20 @@ function Chat({ user }) {
                                 <MDBCardBody>
                                     <MDBRow>
                                         <div className="chat-card">
-                                            {/* <div className="chat-header">
-                                                {user === 'user' ? (
-                                                    <div className="chat-head-txt">Feel Free to Ask { docData.name ? docData.name : 'Loading' }</div>
-                                                ) : (
-                                                    <div className="chat-head-txt">Ask { usrData.name ? usrData.name : 'Loading' }</div>
-                                                )}
-                                            </div> */}
                                             <div className="chat-header">
                                                 {user === 'user' ? (
-                                                    <div className="user-info">
-                                                        <div className="user-avatar">
-                                                            <img src={docData.profileimg} alt={docData.name} width="50" height="50" />
+                                                    <div className="user-info d-flex" >
+                                                        <div className="user-avatar" style={{width:'40%'}}>
+                                                            <img src={docData.profileimg} alt={docData.name} width="50" height="50" style={{borderRadius:'50%',margin:'10px'}} />
                                                         </div>
-                                                        <div className="chat-head-txt">{docData.name ? docData.name : 'Loading'}</div>
+                                                        <div className="chat-head-txt" style={{margin:'10px'}} >{docData.name ? `Dr.${docData.name}` : 'Loading'}</div>
                                                     </div>
                                                 ) : (
-                                                    <div className="user-info">
-                                                        <div className="user-avatar">
-                                                            <img src={usrData.image?usrData.image:usrData.picture} alt={usrData.name} width="50" height="50" />
+                                                    <div className="user-info d-flex">
+                                                        <div className="user-avatar" style={{width:'40%'}} >
+                                                            <img src={usrData.image?usrData.image:usrData.picture} alt={usrData.name} width="50" height="50" style={{borderRadius:'50%',margin:'10px'}} />
                                                         </div>
-                                                        <div className="chat-head-txt">{usrData.name ? usrData.name : 'Loading'}</div>
+                                                        <div className="chat-head-txt" style={{margin:'10px'}}>{usrData.name ? usrData.name : 'Loading'}</div>
                                                     </div>
                                                 )}
                                             </div>

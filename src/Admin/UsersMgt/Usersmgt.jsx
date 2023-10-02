@@ -57,10 +57,11 @@ function Usersmgt() {
     }, []);
 
 
-    const blockUser = async (userId) => {
+    const blockUser = async (userId,usrname,usrstate) => {
+        let state = usrstate ? 'Unblock': 'Block'
         const result = await Swal.fire({
             title: 'Are you sure ?',
-            text: 'to change user status',
+            text: `To ${state} ${usrname}`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -176,9 +177,9 @@ function Usersmgt() {
                                                 <Button
                                                     variant="contained"
                                                     color="secondary"
-                                                    onClick={() => blockUser(user._id)}
+                                                    onClick={() => blockUser(user._id,user.name,user.isBlocked)}
                                                     sx={{
-                                                        backgroundColor: '#D41D1D',
+                                                        backgroundColor: `${user.isBlocked ? '#0490DB' : '#D41D1D'}`,
                                                         color: '#fff',
                                                         '&:hover': {
                                                             backgroundColor: '#B40F0F',

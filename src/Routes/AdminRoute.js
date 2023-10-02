@@ -11,12 +11,11 @@ import Specmgt from '../Admin/SpecMgt/Specmgt';
 import CheckAdmin from '../Auth/CheckAdmin';
 import RequireAdmin from "../Auth/RequireAdmin";
 import {  Routes, Route } from 'react-router-dom';
-
 import ErrorPage from '../ErrorPage/ErrorPage';
 import Viewdoctor from '../Admin/ViewDoctor/Viewdoctor';
 import ViewUser from '../Admin/ViewUsers/ViewUser';
-
 import Navbar from '../Common/Navbar/Navbar';
+import Footer from '../Common/Footer/Footer';
 
 function AdminRoute() {
     const admin = 'admin'
@@ -43,7 +42,7 @@ function AdminRoute() {
                 </Route>
                 <Route path='*' element={<ErrorPage/>} />
             </Routes>
-
+            <Footer/>
         </>
     )
 }

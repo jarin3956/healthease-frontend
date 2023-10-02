@@ -7,6 +7,14 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../../Context/SocketProvider';
 import VideoCall from '../../VideoCall/VideoCall';
+import Search from '../../Common/Search/Search';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import NotFound from '../../Common/NotFound/NotFound';
 
 function Home() {
 
@@ -17,6 +25,9 @@ function Home() {
     const [userMail, setUserMail] = useState(null)
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [selectedEmailId, setSelectedEmailId] = useState(null);
+    const [allDoc, setAllDoc] = useState([]);
+    const [searchedData, setSearchedData] = useState([]); 
+    const [searchTerm, setSearchTerm] = useState(''); 
 
     useEffect(() => {
         if (token) {
@@ -28,6 +39,7 @@ function Home() {
                         setSpec(response.data.spec)
                         setUserMail(response.data.logUser.email)
                         socket.emit('set-up', response.data.logUser._id)
+                        setAllDoc(response.data.doctorData)
                     }
                 } catch (error) {
                     console.log(error);
@@ -54,20 +66,90 @@ function Home() {
                     setSelectedBookingId(bookingId)
                     console.log(userMail, 'this is the user maiul');
                     setSelectedEmailId(userMail)
-                } 
+                }
             });
         })
-    }, [socket,userMail])
+    }, [socket, userMail])
 
-    
+    const handleSearch = (query) => {
+        const filteredData = allDoc.filter((doc) => {
+            const lowerCaseQuery = query.toLowerCase();
+            return (
+                doc.name.toLowerCase().includes(lowerCaseQuery)||
+                doc.experience.toString().toLowerCase().includes(lowerCaseQuery)||
+                doc.specialization.toLowerCase().includes(lowerCaseQuery)
+            ) 
+        });
+
+        setSearchedData(filteredData);
+        setSearchTerm(query);
+    };
+
+    const bookAppointment = (docId) => {
+        navigate(`/bookAppointment?doc=${docId}`)
+    }
+
+    const handleGoBack = () => {
+        setSearchTerm('');
+        setSearchedData([]);
+      };
+      
+
+    const dataToDisplay = searchTerm ? searchedData : spec;
 
     return (
         <>
-            <div className="">
+        { searchTerm ? (
+                <div className="viewdoc-Card">
+                    {dataToDisplay.length === 0 ? (
+                        <NotFound/>
+                    ):(
+                        <div className='view-doccard-container'  >
+                        {dataToDisplay.map((doctor) => (
+                            <div className='p-3' >
+                                <Card key={doctor._id} sx={{ width: 300 }}>
+                                    <CardMedia
+                                        component="img"
+                                        alt="doctor"
+                                        height="220"
+                                        src={doctor.profileimg}
+                                        onClick={() => bookAppointment(doctor._id)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            Dr. {doctor.name}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {doctor.specialization} 
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {doctor.experience} Years of experience
+                                        </Typography>
+                                        <Typography variant="body2" color="text.black">
+                                            ₹{doctor.final_fare} for Consultation
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button size="small" onClick={() => bookAppointment(doctor._id)} >Book Appointment</Button>
+                                    </CardActions>
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
+                    )}
+                    
+                    <div className='d-flex justify-content-center pt-3'>
+                    <button className='user-vdo-cancelbutt' onClick={handleGoBack}>Go back</button>
+                    </div>
+                    
+                </div>
+            ):(
+                <div className="">
                 <div className="ho-cookieCard ">
                     <div >
-                        <p className="ho-cookieHeading mt-3 text-center">Home</p>
-                        <p className='text-center the-main-head'>Book an appointment for an online consultation</p>
+                        <div className='d-flex justify-content-center mb-4'>
+                            <Search onSearch={handleSearch} />
+                        </div>
                         {selectedBookingId && selectedEmailId && (
                             <>
                                 <VideoCall
@@ -89,6 +171,9 @@ function Home() {
                     </div>
                 </div>
             </div>
+            )
+        }
+            
         </>
 
     )

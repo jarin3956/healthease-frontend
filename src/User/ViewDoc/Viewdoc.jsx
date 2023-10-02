@@ -66,6 +66,7 @@ function Viewdoc() {
                                         alt="doctor"
                                         height="220"
                                         src={doctor.profileimg}
+                                        onClick={() => bookAppointment(doctor._id)}
                                     />
                                     <CardContent>
                                         <Typography gutterBottom variant="h5" component="div">

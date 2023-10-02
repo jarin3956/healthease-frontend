@@ -21,6 +21,7 @@ import FeedbackPage from '../User/FeedbackPage/FeedbackPage';
 import ViewPrescription from '../User/ViewPrescription/ViewPrescription';
 import Chat from '../Chat/Chat';
 import FollowUp from '../User/FollowUp/FollowUp';
+import Footer from '../Common/Footer/Footer';
 
 
 function UserRoute() {
@@ -54,6 +55,7 @@ function UserRoute() {
                 <Route path='*' element={<ErrorPage/>} />
                
             </Routes>
+            <Footer/>
 
         </>
     )

@@ -56,12 +56,12 @@ function Specmgt() {
         };
     };
 
-    const blockSpec = async (specId) => {
-
+    const blockSpec = async (specId,specname,specstate) => {
+        let state = specstate ? 'Block' : 'Unblock'
         Swal.fire({
             icon: 'warning',
             title: 'Are you sure?',
-            text: 'To change the status of specialization!',
+            text: `To ${state} ${specname} !`,
             showCancelButton: true,
             confirmButtonText: 'Yes, sure it!',
             cancelButtonText: 'No, keep it',
@@ -96,13 +96,13 @@ function Specmgt() {
         }
     }
 
-    const deleteConfirm = async (specId) => {
+    const deleteConfirm = async (specId,specname) => {
         Swal.fire({
             icon: 'warning',
             title: 'Are you sure?',
             text: 'This action cannot be undone!',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
+            confirmButtonText: `Yes, Delete ${specname}!`,
             cancelButtonText: 'No, keep it',
             confirmButtonColor: '#FF0000',
             cancelButtonColor: '#333333',
@@ -358,7 +358,7 @@ function Specmgt() {
                                                 <TableCell align="center">{spec.status === true ? 'Active' : 'Blocked'}</TableCell>
                                                 <TableCell align="center">
                                                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                                        <Button variant="contained" color="secondary" onClick={() => blockSpec(spec._id)}
+                                                        <Button variant="contained" color="secondary" onClick={() => blockSpec(spec._id,spec.name,spec.status)}
                                                             sx={{
                                                                 backgroundColor: '#D49425',
                                                                 color: '#fff',
@@ -381,7 +381,7 @@ function Specmgt() {
                                                         >
                                                             Edit
                                                         </Button>
-                                                        <Button variant="contained" color="secondary" onClick={() => deleteConfirm(spec._id)}
+                                                        <Button variant="contained" color="secondary" onClick={() => deleteConfirm(spec._id,spec.name)}
                                                             sx={{
                                                                 backgroundColor: '#D41D1D',
                                                                 color: '#fff',

@@ -52,10 +52,11 @@ function Doctormgt() {
         }
     }, [])
 
-    const BlockDoctor = async (doctorId) => {
+    const BlockDoctor = async (doctorId,docname,docstate) => {
+        let state = docstate ? 'Unblock' : 'Block'
         const result = await Swal.fire({
             title: 'Are you sure?',
-            text: 'to change user status',
+            text: `To ${state} Dr.${docname}`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -89,10 +90,10 @@ function Doctormgt() {
         }
     };
 
-    const verifyDoctor = async (doctorId) => {
+    const verifyDoctor = async (doctorId,docname) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
-            text: 'To change verify doctor',
+            text: `To verify Dr.${docname}`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -220,7 +221,7 @@ function Doctormgt() {
                                                         <Button
                                                             variant="contained"
                                                             color="secondary"
-                                                            onClick={() => verifyDoctor(doctor._id)}
+                                                            onClick={() => verifyDoctor(doctor._id,doctor.name)}
                                                             sx={{
                                                                 backgroundColor: '#0AC726',
                                                                 color: '#fff',
@@ -236,13 +237,13 @@ function Doctormgt() {
                                                     <Button
                                                         variant="contained"
                                                         color="secondary"
-                                                        onClick={() => BlockDoctor(doctor._id)}
+                                                        onClick={() => BlockDoctor(doctor._id,doctor.name,doctor.isBlocked)}
                                                         sx={{
-                                                            backgroundColor: '#D41D1D',
+                                                            backgroundColor: `${doctor.isBlocked ? '#0490DB' : '#D41D1D'}`,
                                                             color: '#fff',
                                                             '&:hover': {
                                                                 backgroundColor: '#B40F0F',
-
+ 
                                                             },
                                                         }}
                                                     >
