@@ -19,7 +19,7 @@ import {
 } from "mdb-react-ui-kit";
 
 import { useNavigate } from 'react-router-dom';
-
+import NotFound from '../../Common/NotFound/NotFound';
 
 function Bookings() {
 
@@ -33,6 +33,9 @@ function Bookings() {
   const [userData, setUserData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const bookingsPerPage = 10;
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredBookings, setFilteredBookings] = useState([]);
 
   const fetchBooking = async () => {
 
@@ -77,7 +80,7 @@ function Bookings() {
     }
   }
 
-  const handleCancelBooking = (bookingId,booked_Date) => {
+  const handleCancelBooking = (bookingId, booked_Date) => {
 
     const bookedDate = new Date(booked_Date);
     const currentDate = new Date();
@@ -129,6 +132,22 @@ function Bookings() {
     }
   }
 
+  const handleSearch = (query) => {
+    const filtered = bookings.filter((booking) => {
+
+      return (
+        booking.doctorData.name.toLowerCase().includes(query.toLowerCase()) ||
+        booking.bookingData.Booked_date.toString().toLowerCase().includes(query.toLowerCase()) ||
+        booking.bookingData.Booked_day.toLowerCase().includes(query.toLowerCase()) ||
+        booking.bookingData.Booked_timeSlot.toLowerCase().includes(query.toLowerCase()) ||
+        booking.bookingData.Status.toLowerCase().includes(query.toLowerCase())
+      );
+    });
+
+    setFilteredBookings(filtered);
+    setSearchTerm(query);
+  };
+
   return (
 
     <>
@@ -141,156 +160,327 @@ function Bookings() {
                 <MDBCol lg="12" xl="12">
                   <MDBCard style={{ borderRadius: "10px" }}>
                     <p className="text-center mt-5" style={{ fontWeight: '700', fontSize: '25px' }}>Bookings</p>
-                    <MDBCardBody className="p-4">
-                      {bookings.map((booking) => (
-                        <MDBCard className="shadow border m-2">
-                          <MDBCardBody>
-                            <MDBRow>
-                              <MDBCol md="2">
-                                {booking.doctorData ? (
-                                  <MDBCardImage
-                                    src={booking.doctorData.profileimg}
-                                    className='rounded-5 '
-                                    fluid
-                                    alt="Phone"
-                                    style={{
-                                      height: '130px',
-                                      width: '130px',
-                                    }}
-                                  />
-                                ) : (
-                                  <p>No image</p>
-                                )}
-                              </MDBCol>
+                    <div className='d-flex justify-content-center' >
+                      <div className="sea-group">
+                        <svg className="icon" aria-hidden="true" viewBox="0 0 24 24">
+                          <g>
+                            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                          </g>
+                        </svg>
+                        <input placeholder="Search Bookings" type="search" className="input" onChange={(e) => handleSearch(e.target.value)} value={searchTerm} />
+                        <button className='sea-but' >Search</button>
+                      </div>
+                    </div>
 
-                              <>
+                    {searchTerm ? (
+                      
+                        filteredBookings.length === 0 ? (
+                          <NotFound />
+                        ) : (
+                          <MDBCardBody className="p-4">
+                            {filteredBookings.map((booking) => (
+                              <MDBCard className="shadow border m-2">
+                                <MDBCardBody>
+                                  <MDBRow>
+                                    <MDBCol md="2">
+                                      {booking.doctorData ? (
+                                        <MDBCardImage
+                                          src={booking.doctorData.profileimg}
+                                          className='rounded-5 '
+                                          fluid
+                                          alt="Phone"
+                                          style={{
+                                            height: '130px',
+                                            width: '130px',
+                                          }}
+                                        />
+                                      ) : (
+                                        <p>No image</p>
+                                      )}
+                                    </MDBCol>
 
-                                <MDBCol
-                                  md="1"
-                                  className="text-center d-flex justify-content-center align-items-center"
-                                >
-                                  {booking.doctorData ? (
-                                    <p className=" mb-0">Dr.{booking.doctorData.name}</p>
-                                  ) : (
-                                    <p>No data</p>
-                                  )}
-                                </MDBCol>
-                                <MDBCol
-                                  md="4"
-                                  className="text-center d-flex justify-content-center align-items-center"
-                                >
-                                  <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}, {booking.bookingData.Booked_timeSlot}</p>
-                                </MDBCol>
+                                    <>
 
-                                <MDBCol
-                                  md="1"
-                                  className="text-center d-flex justify-content-center align-items-center"
-                                >
-                                  {booking.bookingData.Status === 'CANCELLED' && (
-                                    <p className=" mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
-                                  )}
-                                  {booking.bookingData.Status === 'COMPLETED' && (
-                                    <p className=" mb-0 small text-success" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
-                                  )}
-                                  {booking.bookingData.Status === 'FAILED' && (
-                                    <p className=" mb-0 small text-warning" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
-                                  )}
-                                  {booking.bookingData.Status === 'CONFIRMED' && (
-                                    <p className=" mb-0 small text-primary" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
-                                  )}
-                                  {booking.bookingData.Status === 'NOTPAID' && (
-                                    <p className=" mb-0 small" style={{ fontWeight: '700', color: 'orange' }}>{booking.bookingData.Status}</p>
-                                  )}
-                                </MDBCol>
-                              </>
+                                      <MDBCol
+                                        md="1"
+                                        className="text-center d-flex justify-content-center align-items-center"
+                                      >
+                                        {booking.doctorData ? (
+                                          <p className=" mb-0">Dr.{booking.doctorData.name}</p>
+                                        ) : (
+                                          <p>No data</p>
+                                        )}
+                                      </MDBCol>
+                                      <MDBCol
+                                        md="4"
+                                        className="text-center d-flex justify-content-center align-items-center"
+                                      >
+                                        <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}, {booking.bookingData.Booked_timeSlot}</p>
+                                      </MDBCol>
 
-                              {booking.bookingData.Status === "PENDING" && (
-                                <>
-                                  <MDBCol
-                                    md="2"
-                                    className="text-center d-flex justify-content-center align-items-center"
-                                  >
-                                    <button
-                                      onClick={() => handleCancelBooking(booking.bookingData._id,booking.bookingData.Booked_date)}
-                                      className="user-vdo-cancelbutt"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </MDBCol>
-                                  <MDBCol
-                                    md="2"
-                                    className="text-center d-flex justify-content-center align-items-center"
-                                  >
-                                    {/* <button
+                                      <MDBCol
+                                        md="1"
+                                        className="text-center d-flex justify-content-center align-items-center"
+                                      >
+                                        {booking.bookingData.Status === 'CANCELLED' && (
+                                          <p className=" mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                        )}
+                                        {booking.bookingData.Status === 'COMPLETED' && (
+                                          <p className=" mb-0 small text-success" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                        )}
+                                        {booking.bookingData.Status === 'FAILED' && (
+                                          <p className=" mb-0 small text-warning" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                        )}
+                                        {booking.bookingData.Status === 'CONFIRMED' && (
+                                          <p className=" mb-0 small text-primary" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                        )}
+                                        {booking.bookingData.Status === 'NOTPAID' && (
+                                          <p className=" mb-0 small" style={{ fontWeight: '700', color: 'orange' }}>{booking.bookingData.Status}</p>
+                                        )}
+                                      </MDBCol>
+                                    </>
+
+                                    {booking.bookingData.Status === "PENDING" && (
+                                      <>
+                                        <MDBCol
+                                          md="2"
+                                          className="text-center d-flex justify-content-center align-items-center"
+                                        >
+                                          <button
+                                            onClick={() => handleCancelBooking(booking.bookingData._id, booking.bookingData.Booked_date)}
+                                            className="user-vdo-cancelbutt"
+                                          >
+                                            Cancel
+                                          </button>
+                                        </MDBCol>
+                                        <MDBCol
+                                          md="2"
+                                          className="text-center d-flex justify-content-center align-items-center"
+                                        >
+                                          {/* <button
                                       onClick={() => handleStartBooking(booking.bookingData._id, booking.doctorData.email)}
                                       className="user-vdo-startbutt"
                                     >
                                       Join
                                     </button> */}
-                                    {/* <button
+                                          {/* <button
                                       onClick={() => handleStartBooking(booking.bookingData._id, userData.email)}
                                       className="user-vdo-startbutt"
                                     >
                                       Join
                                     </button> */}
-                                  </MDBCol>
-                                </>
-                              )}
-                              {booking.bookingData.Status === "COMPLETED" && (
-                                <>
-                                  <MDBCol
-                                    md="2"
-                                    className="text-center d-flex justify-content-center align-items-center"
-                                  >
-                                    <button
-                                      onClick={() => navigate(`/view-prescription/${booking.bookingData._id}`)}
-                                      className="user-vdo-startbutt"
-                                    >
-                                      ViewRx
-                                    </button>
-                                  </MDBCol>
-                                  <MDBCol
-                                    md="2"
-                                    className="text-center d-flex justify-content-center align-items-center"
-                                  >
-                                    <button className="chatBtn" onClick={() => handleChat(booking.bookingData._id, booking.doctorData._id)}>
-                                      <svg height="1.6em" fill="white" xmlSpace="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
-                                        <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
-                                      </svg>
-                                      <span className="tooltip">Chat</span>
-                                    </button>
+                                        </MDBCol>
+                                      </>
+                                    )}
+                                    {booking.bookingData.Status === "COMPLETED" && (
+                                      <>
+                                        <MDBCol
+                                          md="2"
+                                          className="text-center d-flex justify-content-center align-items-center"
+                                        >
+                                          <button
+                                            onClick={() => navigate(`/view-prescription/${booking.bookingData._id}`)}
+                                            className="user-vdo-startbutt"
+                                          >
+                                            ViewRx
+                                          </button>
+                                        </MDBCol>
+                                        <MDBCol
+                                          md="2"
+                                          className="text-center d-flex justify-content-center align-items-center"
+                                        >
+                                          <button className="chatBtn" onClick={() => handleChat(booking.bookingData._id, booking.doctorData._id)}>
+                                            <svg height="1.6em" fill="white" xmlSpace="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
+                                              <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
+                                            </svg>
+                                            <span className="tooltip">Chat</span>
+                                          </button>
 
-                                  </MDBCol>
-                                </>
-                              )}
-                              {booking.bookingData.Status === "NOTPAID" && (
+                                        </MDBCol>
+                                      </>
+                                    )}
+                                    {booking.bookingData.Status === "NOTPAID" && (
+                                      <>
+                                        <MDBCol
+                                          md="2"
+                                          className="text-center d-flex justify-content-center align-items-center"
+                                        >
+                                          <button
+                                            onClick={() => navigate(`/follow-up-payment/${booking.bookingData._id}`)}
+                                            className="user-vdo-startbutt"
+                                          >
+                                            PAY
+                                          </button>
+                                        </MDBCol>
+                                      </>
+                                    )}
+                                  </MDBRow>
+                                </MDBCardBody>
+                              </MDBCard>
+                            ))}
+                            {selectedBookingId && selectedEmailId && (
+                              <>
+                                <VideoCall
+                                  userEmail={selectedEmailId}
+                                  bookingId={selectedBookingId}
+                                />
+                              </>
+                            )}
+                          </MDBCardBody>
+                        )
+                      
+                    ) : (
+                      <MDBCardBody className="p-4">
+                        {bookings.map((booking) => (
+                          <MDBCard className="shadow border m-2">
+                            <MDBCardBody>
+                              <MDBRow>
+                                <MDBCol md="2">
+                                  {booking.doctorData ? (
+                                    <MDBCardImage
+                                      src={booking.doctorData.profileimg}
+                                      className='rounded-5 '
+                                      fluid
+                                      alt="Phone"
+                                      style={{
+                                        height: '130px',
+                                        width: '130px',
+                                      }}
+                                    />
+                                  ) : (
+                                    <p>No image</p>
+                                  )}
+                                </MDBCol>
+
                                 <>
+
                                   <MDBCol
-                                    md="2"
+                                    md="1"
                                     className="text-center d-flex justify-content-center align-items-center"
                                   >
-                                    <button
-                                      onClick={() => navigate(`/follow-up-payment/${booking.bookingData._id}`)}
-                                      className="user-vdo-startbutt"
-                                    >
-                                      PAY
-                                    </button>
+                                    {booking.doctorData ? (
+                                      <p className=" mb-0">Dr.{booking.doctorData.name}</p>
+                                    ) : (
+                                      <p>No data</p>
+                                    )}
+                                  </MDBCol>
+                                  <MDBCol
+                                    md="4"
+                                    className="text-center d-flex justify-content-center align-items-center"
+                                  >
+                                    <p className=" mb-0 small">{booking.bookingData.Booked_date}, {booking.bookingData.Booked_day}, {booking.bookingData.Booked_timeSlot}</p>
+                                  </MDBCol>
+
+                                  <MDBCol
+                                    md="1"
+                                    className="text-center d-flex justify-content-center align-items-center"
+                                  >
+                                    {booking.bookingData.Status === 'CANCELLED' && (
+                                      <p className=" mb-0 small text-danger" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                    )}
+                                    {booking.bookingData.Status === 'COMPLETED' && (
+                                      <p className=" mb-0 small text-success" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                    )}
+                                    {booking.bookingData.Status === 'FAILED' && (
+                                      <p className=" mb-0 small text-warning" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                    )}
+                                    {booking.bookingData.Status === 'CONFIRMED' && (
+                                      <p className=" mb-0 small text-primary" style={{ fontWeight: '700' }}>{booking.bookingData.Status}</p>
+                                    )}
+                                    {booking.bookingData.Status === 'NOTPAID' && (
+                                      <p className=" mb-0 small" style={{ fontWeight: '700', color: 'orange' }}>{booking.bookingData.Status}</p>
+                                    )}
                                   </MDBCol>
                                 </>
-                              )}
-                            </MDBRow>
-                          </MDBCardBody>
-                        </MDBCard>
-                      ))}
-                      {selectedBookingId && selectedEmailId && (
-                        <>
-                          <VideoCall
-                            userEmail={selectedEmailId}
-                            bookingId={selectedBookingId}
-                          />
-                        </>
-                      )}
-                    </MDBCardBody>
+
+                                {booking.bookingData.Status === "PENDING" && (
+                                  <>
+                                    <MDBCol
+                                      md="2"
+                                      className="text-center d-flex justify-content-center align-items-center"
+                                    >
+                                      <button
+                                        onClick={() => handleCancelBooking(booking.bookingData._id, booking.bookingData.Booked_date)}
+                                        className="user-vdo-cancelbutt"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </MDBCol>
+                                    <MDBCol
+                                      md="2"
+                                      className="text-center d-flex justify-content-center align-items-center"
+                                    >
+                                      {/* <button
+                                      onClick={() => handleStartBooking(booking.bookingData._id, booking.doctorData.email)}
+                                      className="user-vdo-startbutt"
+                                    >
+                                      Join
+                                    </button> */}
+                                      {/* <button
+                                      onClick={() => handleStartBooking(booking.bookingData._id, userData.email)}
+                                      className="user-vdo-startbutt"
+                                    >
+                                      Join
+                                    </button> */}
+                                    </MDBCol>
+                                  </>
+                                )}
+                                {booking.bookingData.Status === "COMPLETED" && (
+                                  <>
+                                    <MDBCol
+                                      md="2"
+                                      className="text-center d-flex justify-content-center align-items-center"
+                                    >
+                                      <button
+                                        onClick={() => navigate(`/view-prescription/${booking.bookingData._id}`)}
+                                        className="user-vdo-startbutt"
+                                      >
+                                        ViewRx
+                                      </button>
+                                    </MDBCol>
+                                    <MDBCol
+                                      md="2"
+                                      className="text-center d-flex justify-content-center align-items-center"
+                                    >
+                                      <button className="chatBtn" onClick={() => handleChat(booking.bookingData._id, booking.doctorData._id)}>
+                                        <svg height="1.6em" fill="white" xmlSpace="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
+                                          <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
+                                        </svg>
+                                        <span className="tooltip">Chat</span>
+                                      </button>
+
+                                    </MDBCol>
+                                  </>
+                                )}
+                                {booking.bookingData.Status === "NOTPAID" && (
+                                  <>
+                                    <MDBCol
+                                      md="2"
+                                      className="text-center d-flex justify-content-center align-items-center"
+                                    >
+                                      <button
+                                        onClick={() => navigate(`/follow-up-payment/${booking.bookingData._id}`)}
+                                        className="user-vdo-startbutt"
+                                      >
+                                        PAY
+                                      </button>
+                                    </MDBCol>
+                                  </>
+                                )}
+                              </MDBRow>
+                            </MDBCardBody>
+                          </MDBCard>
+                        ))}
+                        {selectedBookingId && selectedEmailId && (
+                          <>
+                            <VideoCall
+                              userEmail={selectedEmailId}
+                              bookingId={selectedBookingId}
+                            />
+                          </>
+                        )}
+                      </MDBCardBody>
+                    )}
                   </MDBCard>
                 </MDBCol>
               </MDBRow>

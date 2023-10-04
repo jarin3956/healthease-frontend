@@ -100,8 +100,8 @@ function Viewdoctor() {
                                                     <MDBCardText className="text-muted">{doctor.fare} Rupees</MDBCardText>
                                                 </MDBCol>
                                                 <MDBCol size="6" className="mb-3">
-                                                    <MDBTypography tag="h6">Rating</MDBTypography>
-                                                    <MDBCardText className="text-muted">None</MDBCardText>
+                                                    <MDBTypography tag="h6">ID</MDBTypography>
+                                                    <MDBCardText className="text-muted">{doctor._id}</MDBCardText>
                                                 </MDBCol>
                                             </MDBRow>
 

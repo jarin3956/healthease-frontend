@@ -84,7 +84,9 @@ function Bookingsmgt() {
     booking.Booked_day.toLowerCase().includes(searchQuery.toLowerCase()) ||
     booking.Booked_timeSlot.toLowerCase().includes(searchQuery.toLowerCase()) ||
     booking.Payment_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.Status.toLowerCase().includes(searchQuery.toLowerCase())
+    booking.Status.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    booking.UserId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    booking.DocId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
 
