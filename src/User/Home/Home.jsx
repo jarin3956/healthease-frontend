@@ -15,6 +15,8 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import NotFound from '../../Common/NotFound/NotFound';
+import News from '../../Common/News/News';
+import Books from '../../Common/Books/Books';
 
 function Home() {
 
@@ -196,7 +198,15 @@ function Home() {
                                 ))}
 
                             </div>
-                            <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500' }}>Medical History</p>
+                            <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500',color:'white' }}>News</p>
+                            <div className='thedisCard row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mt-4'  >
+                                <News />
+                            </div>
+                            <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500',color:'white' }}>Books</p>
+                            <div className='thedisCard row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mt-4'  >
+                                <Books />
+                            </div>
+                            <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500',color:'white' }}>History</p>
                             <div className='thedisCard row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mt-4'  >
                                 <DisplayCards />
                             </div>

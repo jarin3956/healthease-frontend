@@ -1,0 +1,94 @@
+@mixin slide-in-left {
+    @keyframes slide-in-left {
+        0% {
+            transform: translateX(-8px);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateX(0px);
+            opacity: 1;
+        }
+    }
+
+    animation: slide-in-left 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+.newscard {
+    background-color: white;
+    display: flex;
+    border-radius: 20px;
+    padding: 10px;
+    height: 300px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, .30);
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.newscard:hover {
+    background-color: rgb(230, 227, 227);
+    transform: translateY(-5px);
+}
+
+
+
+.shobutton {
+    width: 150px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    border: 3px solid #2d79f3;
+    background-color: #2d79f3;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.137);
+    border-radius: 10px;
+
+    &:hover .arrow {
+        @include slide-in-left;
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+}
+
+.text {
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.arrow path {
+    fill: white;
+}
+
+@keyframes slide-in-left {
+    0% {
+        transform: translateX(-8px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .newscard {
+        height: 400px; 
+        flex-direction: column; 
+    }
+
+    .newscard > div {
+        flex: 1; 
+    }
+
+    .newscard:hover {
+        transform: translateY(0); 
+    }
+}

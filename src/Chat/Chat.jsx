@@ -60,7 +60,6 @@ function Chat({ user }) {
                 const response = await axiosInstance.get(`booking/load-user-chatess/${chatId}`)
                 if (response.status === 200) {
                     setDocData(response.data.doctor)
-
                 }
             } else if (user === 'doctor') {
                 const doctortoken = localStorage.getItem('doctortoken');

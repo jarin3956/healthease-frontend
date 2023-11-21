@@ -4,6 +4,7 @@ import { axiosinstance } from '../../Axios/Axios';
 import Viewspec from '../ViewSpec/Viewspec';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import News from '../../Common/News/News';
 
 
 function Landingpage() {
@@ -32,9 +33,8 @@ function Landingpage() {
         <>
             <ToastContainer />
             <div className="land-cookieCard ">
-                <p className='text-center the-main-head-land'> Embrace the future of medical consultations with HealthEase.</p>
                 <div className='d-flex justify-content-center p-2' >
-                    <img src="LandingImage.png" alt="" className="responsive-image" />
+                    <img src="HEALTHEASE_BANNER.png" alt="HEALTHEASE" className="responsive-image" />
                 </div>
                 <div className="land-contentWrapper">
                     <p className='text-center the-main-head-land'>Book an appointment for an online consultation</p>
@@ -43,6 +43,10 @@ function Landingpage() {
                             <Viewspec spec={special} />
                         ))}
                     </div>
+                </div>
+                <div className="land-contentWrapper">
+                    <p className='text-center the-main-head-land'>News</p>
+                    <News/>
                 </div>
             </div>
         </>
