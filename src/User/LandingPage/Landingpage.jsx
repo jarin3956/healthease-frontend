@@ -44,10 +44,10 @@ function Landingpage() {
                         ))}
                     </div>
                 </div>
-                <div className="land-contentWrapper">
+                {/* <div className="land-contentWrapper">
                     <p className='text-center the-main-head-land'>News</p>
                     <News/>
-                </div>
+                </div> */}
             </div>
         </>
     )

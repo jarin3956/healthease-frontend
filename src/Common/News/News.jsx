@@ -24,12 +24,12 @@ function News() {
         const fetchData = async () => {
             try {
                 const response = await axios.get(apiUrl, { params });
+                
                 setNews(response.data.articles);
             } catch (error) {
                 console.error('Error fetching news:', error);
             }
         };
-
         fetchData();
     }, []);
 
@@ -63,6 +63,7 @@ function News() {
                     </Grid>
                 ))}
             </Grid>
+            
             <button className="shobutton" onClick={handleSeeMore}>
                 <span className="text">{showMore ? 'Show Less' : 'Show More'}</span>
                 <svg className="arrow" viewBox="0 0 448 512" height="1em" xmlns="http://www.w3.org/2000/svg">

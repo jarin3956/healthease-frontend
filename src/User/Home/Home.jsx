@@ -198,10 +198,10 @@ function Home() {
                                 ))}
 
                             </div>
-                            <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500',color:'white' }}>News</p>
+                            {/* <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500',color:'white' }}>News</p>
                             <div className='thedisCard row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mt-4'  >
                                 <News />
-                            </div>
+                            </div> */}
                             <p className='text-center m-3' style={{ fontSize: '40px', fontWeight: '500',color:'white' }}>Books</p>
                             <div className='thedisCard row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 mt-4'  >
                                 <Books />
