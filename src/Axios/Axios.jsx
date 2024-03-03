@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 // const baseURL = 'https://eniacecommerce.online/';
 //const baseURL = 'http://localhost:3001/';
-const baseURL = 'https://54.166.110.206/';
+const baseURL = 'https://healthease-backend-bknf.onrender.com/';
 
 const axiosinstance = axios.create({
   baseURL: baseURL,
