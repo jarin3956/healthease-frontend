@@ -2,8 +2,9 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 // const baseURL = 'https://eniacecommerce.online/';
-//const baseURL = 'http://localhost:3001/';
-const baseURL = 'https://healthease-backend-bknf.onrender.com/';
+// const baseURL = 'http://localhost:3001/';
+// const baseURL = 'https://healthease-backend-bknf.onrender.com/';
+const baseURL = 'https://healtheasebackend.online/';
 
 const axiosinstance = axios.create({
   baseURL: baseURL,
