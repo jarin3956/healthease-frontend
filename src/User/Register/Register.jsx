@@ -38,7 +38,7 @@ function Register() {
     const registerUser = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setErrormsg('')
+        //setErrormsg('');
 
         if (!name || !email || !password || !repassword || !image) {
             setErrormsg('Please fill in all fields.');
@@ -79,12 +79,6 @@ function Register() {
 
         try {
             const formData = new FormData();
-            // formData.append('name', name);
-            // formData.append('email', email);
-            // formData.append('password', password);
-            // formData.append('repassword', repassword);
-            // formData.append('image', image);
-
             formData.append('file', image);
             const { signature, timestamp } = generateSignature();
             formData.append('signature', signature);
